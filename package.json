@@ -1,0 +1,13 @@
+{
+  "name":"MemoramaJSArtoolkit",
+  "version":"0.0.1",
+  "author":"Fernando Segura",
+  "description":"Just a practice to learn how to implement the most efficiently JSArtoolkit with a game like Memorama",  
+  "devDependencies":{
+    "browserify":"latest",
+    "grunt":"latest",
+    "grunt-browserify":"latest",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-shell": "^1.1.2"
+  }
+}
