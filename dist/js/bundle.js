@@ -12,7 +12,7 @@ calibracion.init(function(){
 	memorama.config(configuracion_init);
 	memorama.init();
 })
-},{"../src/calibracion.js":2,"../src/memorama.js":7}],2:[function(require,module,exports){
+},{"../src/calibracion.js":2,"../src/memorama.js":8}],2:[function(require,module,exports){
 function Calibrar(){
 
 }
@@ -155,7 +155,7 @@ Calibrar.prototype.init=function(callback){
     mano_obj.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale());    
     //mostrarPosicion(objeto.getWorldPosition(),"mano");    
     //mostrarPosicion(objetos[pos_elegido].get().position,"objetivo");
-    if(objetos[pos_elegido].colisiona(objeto,function(e){})){
+    if(objetos[pos_elegido].dispatch(objeto,function(e){})){
       console.log("pum colisiono "+pos_elegido);
       pos_elegido++;
       document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
@@ -190,7 +190,34 @@ Calibrar.prototype.getConfiguracion=function(){
 }
 
 module.exports=Calibrar;
-},{"./class/detector":3,"./class/elemento":4}],3:[function(require,module,exports){
+},{"./class/detector":4,"./class/elemento":5}],3:[function(require,module,exports){
+function Manejador(){
+	this.lista_eventos={};
+};
+
+Manejador.prototype.suscribir=function(evento,objeto){
+	if(!this.lista_eventos[evento]) this.lista_eventos[evento]=[];
+	if(this.lista_eventos[evento].indexOf(objeto)==-1){
+		this.lista_eventos[evento].push(objeto);
+	}		
+}
+
+Manejador.prototype.disparar=function(evento,objeto,callback,extras){
+	if(!this.lista_eventos[evento]) return;			
+	extras["manejador"]=this;
+	for(var i=0;i<this.lista_eventos[evento].length;i++){
+		//this.lista_eventos[evento][i].dispatch(objeto);
+		objeto_action=this.lista_eventos[evento][i];		
+		callback(objeto_action.dispatch(objeto),objeto_action,extras);
+	}
+}
+
+Manejador.prototype.baja=function(evento,objeto){
+	if(this.lista_eventos[evento].indexOf(objeto)==-1) return;
+	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);	
+}
+module.exports=Manejador;
+},{}],4:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=139;
@@ -278,7 +305,7 @@ module.exports=function(canvas_element){
             cambiarThreshold:cambiarThreshold
         }
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
@@ -438,7 +465,7 @@ Elemento.prototype.actualizar=function(){
 
        
 
-Elemento.prototype.colisiona=function(mano,callback){   
+Elemento.prototype.dispatch=function(mano,callback){   
     box_mano=new THREE.Box3().setFromObject(mano);
     box_carta=new THREE.Box3().setFromObject(this.get());
     //medidas=box_mano.center().clone();//box_mano.center().clone();
@@ -519,7 +546,7 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{"../libs/animacion.js":6}],5:[function(require,module,exports){
+},{"../libs/animacion.js":7}],6:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -570,7 +597,7 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function Animacion(){	
 }
 
@@ -624,12 +651,13 @@ Animacion.prototype.ocultar=function(objeto,animation){
 module.exports=Animacion;
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function Memorama(){
 
 }
 
 Memorama.prototype.config=function(configuracion){
+  this.Observador=require("./class/ManejadorEventos");
   this.tipo_memorama=configuracion["tipo_memorama"];  
   this.cantidad_cartas=configuracion["cantidad_cartas"] || 4;
   this.WIDTH=configuracion["width"] || 1000;
@@ -659,6 +687,7 @@ Memorama.prototype.config=function(configuracion){
 Memorama.prototype.init=function(){ 
   // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
   mensaje="Bienvenido al ejercicio Memorama<br>";
+  observador=new this.Observador();
   descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
   document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
   avances=document.createElement("id");
@@ -771,28 +800,28 @@ Memorama.prototype.init=function(){
 
 
   */
-  function logicaMemorama(pos_colision){  
-    if(detectados.length==1 && detectados[0].igualA(objetos_mesh[pos_colision])){
+  function logicaMemorama(esColisionado,objeto_actual,extras){  
+    if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
 
-    }else if(detectados.length==1 && detectados[0].esParDe(objetos_mesh[pos_colision])){        
+    }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
         platicarModificada("acierto");
         indicador_acierto.easein();
         acierto.play();
-        objetos_mesh[pos_colision].voltear();               
-        objetos_mesh[pos_colision]=null;
-        pares++;        
+        objeto_actual.voltear();  
+        extras["manejador"].baja("colision",objeto_actual);
+        extras["manejador"].baja("colision",extras["detectados"][0]);
         document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta "+detectados[0].getNombre();
-        detectados=[];  
-    }else if(detectados.length==0){     
-        objetos_mesh[pos_colision].voltear();
-        detectados.push(objetos_mesh[pos_colision]);
-    }else if(detectados[0].get().id!=objetos_mesh[pos_colision].get().id){     
+        extras["detectados"]=[];  
+    }else if(extras["detectados"].length==0){     
+        objeto_actual.voltear();
+        extras["detectados"].push(objeto_actual);
+    }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
         platicarModificada("error_por_intento");
         indicador_error.easein();
         error.play();        
         document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de "+objetos_mesh[pos_colision].getNombre();
-        detectados[0].voltear();
-        detectados.pop();
+        extras["detectados"][0].voltear();
+        extras["detectados"].pop();
     }
     //*/
 }
@@ -805,6 +834,8 @@ Memorama.prototype.init=function(){
 
   function verificarColision(){    
     mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
+    observador.disparar("colisiona",objeto,logicaMemorama,{detectados:detectados});
+    /*
     for(var i=0;i<objetos_mesh.length;i++){
       if(objetos_mesh[i]==null)
         continue;
@@ -816,6 +847,7 @@ Memorama.prototype.init=function(){
         break;
       } 
     }
+    */
   }
 
   /*
@@ -877,4 +909,4 @@ Memorama.prototype.init=function(){
 }
 
 module.exports=Memorama;
-},{"./class/elemento":4,"./class/labels":5}]},{},[1,4,3,5,2]);
+},{"./class/ManejadorEventos":3,"./class/elemento":5,"./class/labels":6}]},{},[1,5,4,6,2]);

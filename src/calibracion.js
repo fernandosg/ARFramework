@@ -140,7 +140,7 @@ Calibrar.prototype.init=function(callback){
     mano_obj.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale());    
     //mostrarPosicion(objeto.getWorldPosition(),"mano");    
     //mostrarPosicion(objetos[pos_elegido].get().position,"objetivo");
-    if(objetos[pos_elegido].colisiona(objeto,function(e){})){
+    if(objetos[pos_elegido].dispatch(objeto,function(e){})){
       console.log("pum colisiono "+pos_elegido);
       pos_elegido++;
       document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];

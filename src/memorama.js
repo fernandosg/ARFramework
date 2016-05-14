@@ -3,6 +3,7 @@ function Memorama(){
 }
 
 Memorama.prototype.config=function(configuracion){
+  this.Observador=require("./class/ManejadorEventos");
   this.tipo_memorama=configuracion["tipo_memorama"];  
   this.cantidad_cartas=configuracion["cantidad_cartas"] || 4;
   this.WIDTH=configuracion["width"] || 1000;
@@ -32,6 +33,7 @@ Memorama.prototype.config=function(configuracion){
 Memorama.prototype.init=function(){ 
   // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
   mensaje="Bienvenido al ejercicio Memorama<br>";
+  observador=new this.Observador();
   descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
   document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
   avances=document.createElement("id");
@@ -144,28 +146,28 @@ Memorama.prototype.init=function(){
 
 
   */
-  function logicaMemorama(pos_colision){  
-    if(detectados.length==1 && detectados[0].igualA(objetos_mesh[pos_colision])){
+  function logicaMemorama(esColisionado,objeto_actual,extras){  
+    if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
 
-    }else if(detectados.length==1 && detectados[0].esParDe(objetos_mesh[pos_colision])){        
+    }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
         platicarModificada("acierto");
         indicador_acierto.easein();
         acierto.play();
-        objetos_mesh[pos_colision].voltear();               
-        objetos_mesh[pos_colision]=null;
-        pares++;        
+        objeto_actual.voltear();  
+        extras["manejador"].baja("colision",objeto_actual);
+        extras["manejador"].baja("colision",extras["detectados"][0]);
         document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta "+detectados[0].getNombre();
-        detectados=[];  
-    }else if(detectados.length==0){     
-        objetos_mesh[pos_colision].voltear();
-        detectados.push(objetos_mesh[pos_colision]);
-    }else if(detectados[0].get().id!=objetos_mesh[pos_colision].get().id){     
+        extras["detectados"]=[];  
+    }else if(extras["detectados"].length==0){     
+        objeto_actual.voltear();
+        extras["detectados"].push(objeto_actual);
+    }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
         platicarModificada("error_por_intento");
         indicador_error.easein();
         error.play();        
         document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de "+objetos_mesh[pos_colision].getNombre();
-        detectados[0].voltear();
-        detectados.pop();
+        extras["detectados"][0].voltear();
+        extras["detectados"].pop();
     }
     //*/
 }
@@ -178,6 +180,8 @@ Memorama.prototype.init=function(){
 
   function verificarColision(){    
     mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
+    observador.disparar("colisiona",objeto,logicaMemorama,{detectados:detectados});
+    /*
     for(var i=0;i<objetos_mesh.length;i++){
       if(objetos_mesh[i]==null)
         continue;
@@ -189,6 +193,7 @@ Memorama.prototype.init=function(){
         break;
       } 
     }
+    */
   }
 
   /*

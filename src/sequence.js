@@ -124,7 +124,7 @@ Sequence.prototype.init=function(){
     mano_obj.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale());    
     mostrarPosicion(objeto.getWorldPosition(),"mano");    
     mostrarPosicion(objetos[pos_elegido].get().position,"objetivo");
-    if(objetos[pos_elegido].colisiona(objeto,distancia)){
+    if(objetos[pos_elegido].dispatch(objeto,distancia)){
       pos_elegido=aleatorio();
       document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
     }

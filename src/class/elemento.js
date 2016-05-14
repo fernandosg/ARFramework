@@ -157,7 +157,7 @@ Elemento.prototype.actualizar=function(){
 
        
 
-Elemento.prototype.colisiona=function(mano,callback){   
+Elemento.prototype.dispatch=function(mano,callback){   
     box_mano=new THREE.Box3().setFromObject(mano);
     box_carta=new THREE.Box3().setFromObject(this.get());
     //medidas=box_mano.center().clone();//box_mano.center().clone();
