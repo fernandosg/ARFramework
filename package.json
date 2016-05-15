@@ -1,8 +1,8 @@
 {
-  "name":"MemoramaJSArtoolkit",
+  "name":"ARFramework",
   "version":"0.0.1",
   "author":"Fernando Segura",
-  "description":"Just a practice to learn how to implement the most efficiently JSArtoolkit with a game like Memorama",  
+  "description":"JFramework for use the library JSArtoolkit, and apply concepts like collisions, and drawing elements in 2d and 3d with graphics engine like ThreeJS",  
   "devDependencies":{
     "browserify":"latest",
     "grunt":"latest",

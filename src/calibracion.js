@@ -100,18 +100,26 @@ Calibrar.prototype.init=function(callback){
     ctx.drawImage(video.video,0,0,WIDTH_CANVAS,HEIGHT_CANVAS);
     canvas.changed=true;    
     if(calibrar){
+      threshold_total=0;
+      threshold_conteo=0;
       for(var i=0;i<300;i++){
         detector_ar.cambiarThreshold(i);
         if(detector_ar.markerToObject(objeto)){
-          console.log("EL THREESHOLD FUE DE "+i);
-          umbral=i+5;
-          window.cancelAnimationFrame(req_id);  
-          umbral=i;
-          calibracion_correcta=true;    
-          calibrar=false;
-          Siguiente();//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIEN
-          break;
+          threshold_total+=i;
+          threshold_conteo++;
+          //umbral=i+5;          
         }
+      }
+      if(threshold_conteo>0){
+        threshold_total=threshold_total/threshold_conteo;
+        detector_ar.cambiarThreshold(threshold_total);
+        window.cancelAnimationFrame(req_id);  
+        umbral=threshold_total;
+        calibracion_correcta=true;    
+        calibrar=false;
+        threshold_conteo=0;
+        threshold_total=0;
+        Siguiente();//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIE                  
       }
       console.log("error");
       calibrar=false;
