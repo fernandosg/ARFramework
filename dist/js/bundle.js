@@ -11,6 +11,8 @@ calibracion.init(function(){
 	configuracion_init["tipo_memorama"]="cocina";
 	memorama.config(configuracion_init);
 	memorama.init();
+	mensajes.alerta({texto:"Bienvenido al memorama"});
+	clasificarOpcion("bienvenida");
 })
 },{"../src/calibracion.js":2,"../src/memorama.js":9}],2:[function(require,module,exports){
 function Calibrar(){
@@ -721,11 +723,20 @@ Mensajes.prototype.alerta=function(datos){
 module.exports=Mensajes;
 },{}],9:[function(require,module,exports){
 function Memorama(){
+  this.bloqueado=false;  
+  this.Observador=require("./class/ManejadorEventos");
+  this.Mensajes=require("./libs/mensajes");
+}
 
+Memorama.prototype.bloquear=function(){
+  this.bloqueado=false;
+}
+
+Memorama.prototype.desbloquear=function(){
+  this.bloqueado=true;
 }
 
 Memorama.prototype.config=function(configuracion){
-  this.Observador=require("./class/ManejadorEventos");
   this.tipo_memorama=configuracion["tipo_memorama"];  
   this.cantidad_cartas=configuracion["cantidad_cartas"] || 4;
   this.WIDTH=configuracion["width"] || 1000;
@@ -755,6 +766,7 @@ Memorama.prototype.config=function(configuracion){
 Memorama.prototype.init=function(){ 
   // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
   mensaje="Bienvenido al ejercicio Memorama<br>";
+  mensajes=new this.Mensajes(this);
   observador=new this.Observador();
   descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
   document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
@@ -833,7 +845,7 @@ Memorama.prototype.init=function(){
 
 
   //CREACION DE KATHIA
-  document.getElementById("kathia").appendChild(renderer_pixi.view);
+  document.getElementById("kathia").appendChild(kathia_renderer.view);
 
   //CREACION DE LA ETIQUETA DONDE SE ESCRIBE LA RESPUESTA DE KATHIA
   texto=Labels(250,250);
@@ -906,20 +918,7 @@ Memorama.prototype.init=function(){
 
   function verificarColision(){    
     mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
-    observador.disparar("colision",objeto,logicaMemorama,{detectados:detectados});
-    /*
-    for(var i=0;i<objetos_mesh.length;i++){
-      if(objetos_mesh[i]==null)
-        continue;
-      if(objetos_mesh[i].colisiona(objeto)){//if(mano.colisiona(objetos[i].get())){
-        console.log("Colisiona con "+objetos[i].getNombre()+" "+i+" "); 
-        console.dir(objeto.getWorldPosition());
-        console.dir(objetos_mesh[i].get().position);
-        logicaMemorama(i);
-        break;
-      } 
-    }
-    */
+    observador.disparar("colision",objeto,logicaMemorama,{detectados:detectados});   
   }
 
   /*
@@ -964,11 +963,12 @@ Memorama.prototype.init=function(){
     parent_memorama.canvas.changed = true;
     label.material.map.needsUpdate=true;
     //textura_kathia.needsUpdate=true;
-    if(parent_memorama.detector_ar.markerToObject(objeto)){
-      mostrarPosicionMano(objeto.getWorldPosition());
-      if(objeto.getWorldPosition().z>300 && objeto.getWorldPosition().z<=500)
-        verificarColision();    
-    }
+    if(!this.bloqueado)
+      if(parent_memorama.detector_ar.markerToObject(objeto)){
+        mostrarPosicionMano(objeto.getWorldPosition());
+        if(objeto.getWorldPosition().z>300 && objeto.getWorldPosition().z<=500)
+          verificarColision();    
+      }
     if(!pausado_kathia)
       animate();  
     rendering();
@@ -976,9 +976,9 @@ Memorama.prototype.init=function(){
   }
 
    
-  initKathia(texto);
+  iniciarKathia(texto);
   loopMemorama();
 }
 
 module.exports=Memorama;
-},{"./class/ManejadorEventos":3,"./class/elemento":5,"./class/labels":6}]},{},[1,5,4,6,2]);
+},{"./class/ManejadorEventos":3,"./class/elemento":5,"./class/labels":6,"./libs/mensajes":8}]},{},[1,5,4,6,2]);

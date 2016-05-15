@@ -10,4 +10,6 @@ calibracion.init(function(){
 	configuracion_init["tipo_memorama"]="cocina";
 	memorama.config(configuracion_init);
 	memorama.init();
+	mensajes.alerta({texto:"Bienvenido al memorama"});
+	clasificarOpcion("bienvenida");
 })
