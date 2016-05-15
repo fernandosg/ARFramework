@@ -12,9 +12,9 @@ calibracion.init(function(){
 	memorama.config(configuracion_init);
 	memorama.init();
 })
-},{"../src/calibracion.js":2,"../src/memorama.js":8}],2:[function(require,module,exports){
+},{"../src/calibracion.js":2,"../src/memorama.js":9}],2:[function(require,module,exports){
 function Calibrar(){
-
+  this.bloqueado=false;
 }
 
 
@@ -22,8 +22,18 @@ Calibrar.prototype.config=function(configuracion){
   this.cantidad_cartas=configuracion.cantidad_cartas || 4;  
 }
 
+Calibrar.prototype.bloquear=function(){
+  this.bloqueado=true;
+}
+
+Calibrar.prototype.desbloquear=function(){
+  this.bloqueado=false;
+}
+
 Calibrar.prototype.init=function(callback){ 
-  Observador=require("./class/ManejadorEventos");
+  var Observador=require("./class/ManejadorEventos");
+  Mensajes=require("./libs/mensajes.js");
+  mensajes=new Mensajes(this);
   observador=new Observador();
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -185,7 +195,6 @@ Calibrar.prototype.init=function(callback){
         observador.suscribir("colision",objetos[objetos.length-1]);
         planoScene.add(elemento.get());
       }
-      console.log("wow genere varios elementos "+objetos.length);
 
   }
 
@@ -199,7 +208,7 @@ Calibrar.prototype.getConfiguracion=function(){
 }
 
 module.exports=Calibrar;
-},{"./class/ManejadorEventos":3,"./class/detector":4,"./class/elemento":5}],3:[function(require,module,exports){
+},{"./class/ManejadorEventos":3,"./class/detector":4,"./class/elemento":5,"./libs/mensajes.js":8}],3:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -686,6 +695,31 @@ module.exports=Animacion;
 
 
 },{}],8:[function(require,module,exports){
+function Mensajes(juego){
+	this.juego=juego;
+}
+
+Mensajes.prototype.precaucion=function(datos){
+	this.juego.bloquear();
+	var parent=this;
+	console.log(datos.texto);
+	setTimeout(function(){
+		console.log("Desbloqueado");
+		parent.juego.desbloquear();
+	},datos.tiempo);
+}
+
+Mensajes.prototype.alerta=function(datos){
+	this.juego.bloquear();
+	var parent=this;
+	console.log(datos.texto);
+	setTimeout(function(){
+		console.log("Desbloqueado");
+		parent.juego.desbloquear();
+	},datos.tiempo);
+}
+module.exports=Mensajes;
+},{}],9:[function(require,module,exports){
 function Memorama(){
 
 }

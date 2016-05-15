@@ -1,5 +1,5 @@
 function Calibrar(){
-
+  this.bloqueado=false;
 }
 
 
@@ -7,8 +7,18 @@ Calibrar.prototype.config=function(configuracion){
   this.cantidad_cartas=configuracion.cantidad_cartas || 4;  
 }
 
+Calibrar.prototype.bloquear=function(){
+  this.bloqueado=true;
+}
+
+Calibrar.prototype.desbloquear=function(){
+  this.bloqueado=false;
+}
+
 Calibrar.prototype.init=function(callback){ 
-  Observador=require("./class/ManejadorEventos");
+  var Observador=require("./class/ManejadorEventos");
+  Mensajes=require("./libs/mensajes.js");
+  mensajes=new Mensajes(this);
   observador=new Observador();
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -170,7 +180,6 @@ Calibrar.prototype.init=function(callback){
         observador.suscribir("colision",objetos[objetos.length-1]);
         planoScene.add(elemento.get());
       }
-      console.log("wow genere varios elementos "+objetos.length);
 
   }
 
