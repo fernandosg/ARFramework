@@ -23,6 +23,8 @@ Calibrar.prototype.config=function(configuracion){
 }
 
 Calibrar.prototype.init=function(callback){ 
+  Observador=require("./class/ManejadorEventos");
+  observador=new Observador();
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
@@ -64,12 +66,12 @@ Calibrar.prototype.init=function(callback){
   videoTexture=new THREE.Texture(canvas);
   videoTexture.minFilter = THREE.LinearFilter;
   videoTexture.magFilter = THREE.LinearFilter;
-  movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, depthTest: false, depthWrite: false} );//new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );			
+  movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, depthTest: false, depthWrite: false} );//new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );     
   var movieGeometry = new THREE.PlaneGeometry(2,2,0.0);
   movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
   movieScreen.scale.x=-1;
   movieScreen.material.side = THREE.DoubleSide;
-  videoScene.add(movieScreen);	
+  videoScene.add(movieScreen);  
 
   mano_obj=new Elemento(60,60,new THREE.PlaneGeometry(60,60));
   mano_obj.init();
@@ -96,41 +98,40 @@ Calibrar.prototype.init=function(callback){
 
    /*
     FUNCION PARA RENDERIZADO DE LAS ESCENAS.
-
   */
   var calibracion_correcta=false,puntos_encontrados;  
   umbral=0;
-  function rendering(){	
-  	renderer.clear();
-  	renderer.render( videoScene, videoCamera );
-  	renderer.clearDepth();
+  function rendering(){ 
+    renderer.clear();
+    renderer.render( videoScene, videoCamera );
+    renderer.clearDepth();
     renderer.render( planoScene, planoCamera );
     renderer.clearDepth();
-  	renderer.render( realidadScene, realidadCamera );
+    renderer.render( realidadScene, realidadCamera );
   }
   detener=false;
-  function loop(){  	    
+  function loop(){        
     movieScreen.material.map.needsUpdate=true;
     ctx.drawImage(video.video,0,0,WIDTH_CANVAS,HEIGHT_CANVAS);
     canvas.changed=true;    
     if(calibrar){
-    	for(var i=0;i<300;i++){
-    		detector_ar.cambiarThreshold(i);
-		    if(detector_ar.markerToObject(objeto)){
-		      console.log("EL THREESHOLD FUE DE "+i);
+      for(var i=0;i<300;i++){
+        detector_ar.cambiarThreshold(i);
+        if(detector_ar.markerToObject(objeto)){
+          console.log("EL THREESHOLD FUE DE "+i);
           umbral=i+5;
-		      window.cancelAnimationFrame(req_id);  
+          window.cancelAnimationFrame(req_id);  
           umbral=i;
           calibracion_correcta=true;    
-		      calibrar=false;
-		      Siguiente();//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIEN
+          calibrar=false;
+          Siguiente();//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIEN
           break;
-		    }
-		  }
-		  console.log("error");
-		  calibrar=false;
-	  }
-  	rendering();
+        }
+      }
+      console.log("error");
+      calibrar=false;
+    }
+    rendering();
     if(calibracion_correcta && !puntos_encontrados){      
       if(detector_ar.markerToObject(objeto))
         verificarColision();      
@@ -141,27 +142,26 @@ Calibrar.prototype.init=function(callback){
       callback();
     }
     if(!detener)
-  	 req_id=requestAnimationFrame(loop);  
+     req_id=requestAnimationFrame(loop);  
   }
   var pos_elegido=0;
   document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
   document.getElementById("calibrar").addEventListener("click",function(){
-  	console.log("calibrando");
-  	calibrar=true;
-  	
+    console.log("calibrando");
+    calibrar=true;
+    
   });
 
   function verificarColision(){    
     mano_obj.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale());    
-    //mostrarPosicion(objeto.getWorldPosition(),"mano");    
-    //mostrarPosicion(objetos[pos_elegido].get().position,"objetivo");
-    if(objetos[pos_elegido].dispatch(objeto,function(e){})){
-      console.log("pum colisiono "+pos_elegido);
-      pos_elegido++;
-      document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
-      if(pos_elegido==cantidad_cartas)
-        puntos_encontrados=true;
-    }
+    observador.dispararParticular("colision",objetos[pos_elegido],objeto,function(esColision,extras){
+      if(esColision){        
+        pos_elegido++;
+        document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
+        if(pos_elegido==cantidad_cartas)
+          puntos_encontrados=true;
+      }
+    });
   }
 
   function Siguiente(){    
@@ -174,6 +174,7 @@ Calibrar.prototype.init=function(callback){
         elemento.calculoOrigen();
         objetos.push(elemento);
         elemento.definirBackground(colores[x-1]);
+        observador.suscribir("colision",objetos[objetos.length-1]);
         planoScene.add(elemento.get());
       }
       console.log("wow genere varios elementos "+objetos.length);
@@ -190,7 +191,7 @@ Calibrar.prototype.getConfiguracion=function(){
 }
 
 module.exports=Calibrar;
-},{"./class/detector":4,"./class/elemento":5}],3:[function(require,module,exports){
+},{"./class/ManejadorEventos":3,"./class/detector":4,"./class/elemento":5}],3:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -200,6 +201,8 @@ Manejador.prototype.suscribir=function(evento,objeto){
 	if(this.lista_eventos[evento].indexOf(objeto)==-1){
 		this.lista_eventos[evento].push(objeto);
 	}		
+	console.log("Suscribiendo");
+	console.dir(this.lista_eventos);
 }
 
 Manejador.prototype.disparar=function(evento,objeto,callback,extras){
@@ -210,6 +213,14 @@ Manejador.prototype.disparar=function(evento,objeto,callback,extras){
 		objeto_action=this.lista_eventos[evento][i];		
 		callback(objeto_action.dispatch(objeto),objeto_action,extras);
 	}
+}
+
+Manejador.prototype.dispararParticular=function(evento,objeto,compara,callback){
+	pos=this.lista_eventos[evento].indexOf(objeto);
+	if(pos==-1) return;
+	extras={};
+	extras["observador"]=this;
+	callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
 Manejador.prototype.baja=function(evento,objeto){
@@ -465,7 +476,22 @@ Elemento.prototype.actualizar=function(){
 
        
 
-Elemento.prototype.dispatch=function(mano,callback){   
+Elemento.prototype.dispatch=function(mano){   
+    box_mano=new THREE.Box3().setFromObject(mano);
+    box_carta=new THREE.Box3().setFromObject(this.get());
+    //medidas=box_mano.center().clone();//box_mano.center().clone();
+    //medidas.z=(medidas.z*-1);
+    //distancia=box_carta.center().distanceTo(medidas);      
+    pos1=box_mano.center().clone();
+    pos1.z=0;
+    pos2=box_carta.center().clone();
+    pos2.z=0;
+    distancia=Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2); 
+
+}
+
+Elemento.prototype.colisiona=function(mano){   
     box_mano=new THREE.Box3().setFromObject(mano);
     box_carta=new THREE.Box3().setFromObject(this.get());
     //medidas=box_mano.center().clone();//box_mano.center().clone();
@@ -759,6 +785,7 @@ Memorama.prototype.init=function(){
     objetos[objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg",
       objetos[objetos.length-1]); 
     capa_elemento=document.createElement("div");
+    observador.suscribir("colision",objetos[objetos.length-1]);
   }
 //*/
 
@@ -800,28 +827,31 @@ Memorama.prototype.init=function(){
 
 
   */
-  function logicaMemorama(esColisionado,objeto_actual,extras){  
-    if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
+  function logicaMemorama(esColisionado,objeto_actual,extras){ 
+    if(esColisionado){
+      if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
 
-    }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
-        platicarModificada("acierto");
-        indicador_acierto.easein();
-        acierto.play();
-        objeto_actual.voltear();  
-        extras["manejador"].baja("colision",objeto_actual);
-        extras["manejador"].baja("colision",extras["detectados"][0]);
-        document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta "+detectados[0].getNombre();
-        extras["detectados"]=[];  
-    }else if(extras["detectados"].length==0){     
-        objeto_actual.voltear();
-        extras["detectados"].push(objeto_actual);
-    }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
-        platicarModificada("error_por_intento");
-        indicador_error.easein();
-        error.play();        
-        document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de "+objetos_mesh[pos_colision].getNombre();
-        extras["detectados"][0].voltear();
-        extras["detectados"].pop();
+      }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
+          platicarModificada("acierto");
+          indicador_acierto.easein();
+          acierto.play();
+          objeto_actual.voltear();  
+          extras["manejador"].baja("colision",objeto_actual);
+          extras["manejador"].baja("colision",extras["detectados"][0]);
+          document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
+          extras["detectados"]=[];  
+      }else if(extras["detectados"].length==0){     
+          objeto_actual.voltear();
+          extras["detectados"].push(objeto_actual);
+      }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
+          platicarModificada("error_por_intento");
+          indicador_error.easein();
+          error.play();        
+          document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
+          extras["detectados"][0].voltear();
+          extras["detectados"].pop();
+      }
+      detectados=extras["detectados"];
     }
     //*/
 }
@@ -834,7 +864,7 @@ Memorama.prototype.init=function(){
 
   function verificarColision(){    
     mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
-    observador.disparar("colisiona",objeto,logicaMemorama,{detectados:detectados});
+    observador.disparar("colision",objeto,logicaMemorama,{detectados:detectados});
     /*
     for(var i=0;i<objetos_mesh.length;i++){
       if(objetos_mesh[i]==null)

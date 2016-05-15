@@ -7,6 +7,8 @@ Manejador.prototype.suscribir=function(evento,objeto){
 	if(this.lista_eventos[evento].indexOf(objeto)==-1){
 		this.lista_eventos[evento].push(objeto);
 	}		
+	console.log("Suscribiendo");
+	console.dir(this.lista_eventos);
 }
 
 Manejador.prototype.disparar=function(evento,objeto,callback,extras){
@@ -17,6 +19,14 @@ Manejador.prototype.disparar=function(evento,objeto,callback,extras){
 		objeto_action=this.lista_eventos[evento][i];		
 		callback(objeto_action.dispatch(objeto),objeto_action,extras);
 	}
+}
+
+Manejador.prototype.dispararParticular=function(evento,objeto,compara,callback){
+	pos=this.lista_eventos[evento].indexOf(objeto);
+	if(pos==-1) return;
+	extras={};
+	extras["observador"]=this;
+	callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
 Manejador.prototype.baja=function(evento,objeto){

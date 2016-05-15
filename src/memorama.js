@@ -105,6 +105,7 @@ Memorama.prototype.init=function(){
     objetos[objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg",
       objetos[objetos.length-1]); 
     capa_elemento=document.createElement("div");
+    observador.suscribir("colision",objetos[objetos.length-1]);
   }
 //*/
 
@@ -146,28 +147,31 @@ Memorama.prototype.init=function(){
 
 
   */
-  function logicaMemorama(esColisionado,objeto_actual,extras){  
-    if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
+  function logicaMemorama(esColisionado,objeto_actual,extras){ 
+    if(esColisionado){
+      if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
 
-    }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
-        platicarModificada("acierto");
-        indicador_acierto.easein();
-        acierto.play();
-        objeto_actual.voltear();  
-        extras["manejador"].baja("colision",objeto_actual);
-        extras["manejador"].baja("colision",extras["detectados"][0]);
-        document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta "+detectados[0].getNombre();
-        extras["detectados"]=[];  
-    }else if(extras["detectados"].length==0){     
-        objeto_actual.voltear();
-        extras["detectados"].push(objeto_actual);
-    }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
-        platicarModificada("error_por_intento");
-        indicador_error.easein();
-        error.play();        
-        document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de "+objetos_mesh[pos_colision].getNombre();
-        extras["detectados"][0].voltear();
-        extras["detectados"].pop();
+      }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
+          platicarModificada("acierto");
+          indicador_acierto.easein();
+          acierto.play();
+          objeto_actual.voltear();  
+          extras["manejador"].baja("colision",objeto_actual);
+          extras["manejador"].baja("colision",extras["detectados"][0]);
+          document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
+          extras["detectados"]=[];  
+      }else if(extras["detectados"].length==0){     
+          objeto_actual.voltear();
+          extras["detectados"].push(objeto_actual);
+      }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
+          platicarModificada("error_por_intento");
+          indicador_error.easein();
+          error.play();        
+          document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
+          extras["detectados"][0].voltear();
+          extras["detectados"].pop();
+      }
+      detectados=extras["detectados"];
     }
     //*/
 }
@@ -180,7 +184,7 @@ Memorama.prototype.init=function(){
 
   function verificarColision(){    
     mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
-    observador.disparar("colisiona",objeto,logicaMemorama,{detectados:detectados});
+    observador.disparar("colision",objeto,logicaMemorama,{detectados:detectados});
     /*
     for(var i=0;i<objetos_mesh.length;i++){
       if(objetos_mesh[i]==null)

@@ -157,7 +157,22 @@ Elemento.prototype.actualizar=function(){
 
        
 
-Elemento.prototype.dispatch=function(mano,callback){   
+Elemento.prototype.dispatch=function(mano){   
+    box_mano=new THREE.Box3().setFromObject(mano);
+    box_carta=new THREE.Box3().setFromObject(this.get());
+    //medidas=box_mano.center().clone();//box_mano.center().clone();
+    //medidas.z=(medidas.z*-1);
+    //distancia=box_carta.center().distanceTo(medidas);      
+    pos1=box_mano.center().clone();
+    pos1.z=0;
+    pos2=box_carta.center().clone();
+    pos2.z=0;
+    distancia=Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2); 
+
+}
+
+Elemento.prototype.colisiona=function(mano){   
     box_mano=new THREE.Box3().setFromObject(mano);
     box_carta=new THREE.Box3().setFromObject(this.get());
     //medidas=box_mano.center().clone();//box_mano.center().clone();
