@@ -11,5 +11,8 @@ calibracion.init(function(){
 	memorama.config(configuracion_init);
 	memorama.init();
 	mensajes.alerta({texto:"Bienvenido al memorama"});
-	clasificarOpcion("bienvenida");
+	clasificarOpcion("bienvenida");	
+	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS 
+	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
+	//clasificarOpcion("instrucciones");
 })

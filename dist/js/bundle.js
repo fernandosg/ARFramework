@@ -12,7 +12,10 @@ calibracion.init(function(){
 	memorama.config(configuracion_init);
 	memorama.init();
 	mensajes.alerta({texto:"Bienvenido al memorama"});
-	clasificarOpcion("bienvenida");
+	clasificarOpcion("bienvenida");	
+	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS */
+	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
+	//clasificarOpcion("instrucciones");
 })
 },{"../src/calibracion.js":2,"../src/memorama.js":9}],2:[function(require,module,exports){
 function Calibrar(){
@@ -716,7 +719,7 @@ Mensajes.prototype.alerta=function(datos){
 	var parent=this;
 	console.log(datos.texto);
 	setTimeout(function(){
-		console.log("Desbloqueado");
+		console.log("Desbloqueado en alerta");
 		parent.juego.desbloquear();
 	},datos.tiempo);
 }
@@ -764,7 +767,7 @@ Memorama.prototype.config=function(configuracion){
 
 
 Memorama.prototype.init=function(){ 
-  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
+  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento    
   mensaje="Bienvenido al ejercicio Memorama<br>";
   mensajes=new this.Mensajes(this);
   observador=new this.Observador();
@@ -781,8 +784,6 @@ Memorama.prototype.init=function(){
   */
 
 
-  var error = new Audio("./assets/sounds/error.wav"); // buffers automatically when created
-  var acierto = new Audio("./assets/sounds/acierto.wav"); 
   var videoScene=new THREE.Scene(),realidadScene=new THREE.Scene(),planoScene=new THREE.Scene();  
   
   WIDTH_CANVAS=this.WIDTH;
@@ -886,9 +887,9 @@ Memorama.prototype.init=function(){
       if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
 
       }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
-          platicarModificada("acierto");
+          clasificarOpcion("acierto");
           indicador_acierto.easein();
-          acierto.play();
+          //acierto.play();
           objeto_actual.voltear();  
           extras["manejador"].baja("colision",objeto_actual);
           extras["manejador"].baja("colision",extras["detectados"][0]);
@@ -898,9 +899,10 @@ Memorama.prototype.init=function(){
           objeto_actual.voltear();
           extras["detectados"].push(objeto_actual);
       }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
-          platicarModificada("error_por_intento");
+          clasificarOpcion("fallo");
+          mensajes.alerta({texto:"Bloqueando por problemas de fallo",tiempo:3000});
           indicador_error.easein();
-          error.play();        
+          //error.play();        
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
           extras["detectados"][0].voltear();
           extras["detectados"].pop();
@@ -962,7 +964,6 @@ Memorama.prototype.init=function(){
     parent_memorama.canvas_context.drawImage(parent_memorama.video.video,0,0,WIDTH_CANVAS,HEIGHT_CANVAS);
     parent_memorama.canvas.changed = true;
     label.material.map.needsUpdate=true;
-    //textura_kathia.needsUpdate=true;
     if(!this.bloqueado)
       if(parent_memorama.detector_ar.markerToObject(objeto)){
         mostrarPosicionMano(objeto.getWorldPosition());

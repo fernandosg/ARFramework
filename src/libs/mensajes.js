@@ -17,7 +17,7 @@ Mensajes.prototype.alerta=function(datos){
 	var parent=this;
 	console.log(datos.texto);
 	setTimeout(function(){
-		console.log("Desbloqueado");
+		console.log("Desbloqueado en alerta");
 		parent.juego.desbloquear();
 	},datos.tiempo);
 }
