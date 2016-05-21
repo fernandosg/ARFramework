@@ -17,16 +17,30 @@ var sonidoError = new Audio("./assets/sounds/error.wav");
 var banderaAcierto = true;
 var banderaFallo = true;
 
-
+sonidos={"bienvenida":sonidoBienvenida,"instrucciones":sonidoInstrucciones,"acierto":sonidoAcierto01,"fallo":sonidoFallo01,"finalizar":sonidoFinalizar,"saludo":sonidoSaludo,"error":sonidoError};
+sonidosEspera=[];
 // Definición de eventos de sonidos.
 sonidoBienvenida.onended = function () {
     redimensionarKathia("400px", "300px");
 };
+for(var sonido in sonidos){
+    sonidos[sonido].onended=function(){        
+        if(sonidosEspera[1]){
+            sonidosEspera[1].play();
+        }
+        sonidosEspera.shift();
+    }
+}
 
+function reproducir(opcion){
+    sonidosEspera.push(sonidos[opcion]);
+    sonidosEspera[0].play();
+}
 
 
 function seleccionarAudio(opcion) {
-    
+    reproducir(opcion);
+    /*
     switch(opcion) {
         case "bienvenida":
             sonidoBienvenida.play();
@@ -68,5 +82,6 @@ function seleccionarAudio(opcion) {
             
         default:
     }
+    */
 }
 

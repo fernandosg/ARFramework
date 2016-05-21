@@ -13,9 +13,11 @@ calibracion.init(function(){
 	memorama.init();
 	mensajes.alerta({texto:"Bienvenido al memorama"});
 	clasificarOpcion("bienvenida");	
-	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS */
+	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS 
 	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
-	//clasificarOpcion("instrucciones");
+	//
+	*/	
+	clasificarOpcion("instrucciones");
 })
 },{"../src/calibracion.js":2,"../src/memorama.js":9}],2:[function(require,module,exports){
 function Calibrar(){
@@ -888,8 +890,7 @@ Memorama.prototype.init=function(){
 
       }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
           clasificarOpcion("acierto");
-          indicador_acierto.easein();
-          //acierto.play();
+          indicador_acierto.easein();         
           objeto_actual.voltear();  
           extras["manejador"].baja("colision",objeto_actual);
           extras["manejador"].baja("colision",extras["detectados"][0]);

@@ -14,5 +14,7 @@ calibracion.init(function(){
 	clasificarOpcion("bienvenida");	
 	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS 
 	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
-	//clasificarOpcion("instrucciones");
+	//
+	*/	
+	clasificarOpcion("instrucciones");
 })
