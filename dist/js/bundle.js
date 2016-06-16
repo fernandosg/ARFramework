@@ -1,33 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
-Memorama=require("../src/memorama.js");
-memorama=new Memorama();
 calibracion=new Calibrar();
-calibracion.config({cantidad_cartas:4});
-
-calibracion.init(function(){
-	configuracion_init=calibracion.getConfiguracion();
-	configuracion_init["tipo_memorama"]="cocina";
-	memorama.config(configuracion_init);
-	memorama.init();
-	mensajes.alerta({texto:"Bienvenido al memorama"});
-	clasificarOpcion("bienvenida");	
-	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS 
-	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
-	//
-	*/	
-	clasificarOpcion("instrucciones");
-})
-},{"../src/calibracion.js":2,"../src/memorama.js":9}],2:[function(require,module,exports){
+ARWeb=require("../src/class/arweb.js");
+arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
+arweb.init();
+arweb.addStage(calibracion);
+arweb.run();
+},{"../src/calibracion.js":2,"../src/class/arweb.js":4}],2:[function(require,module,exports){
 function Calibrar(){
   this.bloqueado=false;
 }
 
-
-Calibrar.prototype.config=function(configuracion){
-  this.cantidad_cartas=configuracion.cantidad_cartas || 4;  
-}
 
 Calibrar.prototype.bloquear=function(){
   this.bloqueado=true;
@@ -37,185 +21,110 @@ Calibrar.prototype.desbloquear=function(){
   this.bloqueado=false;
 }
 
-Calibrar.prototype.init=function(callback){ 
+Calibrar.prototype.init=function(stage){ 
   var Observador=require("./class/ManejadorEventos");
   Mensajes=require("./libs/mensajes.js");
   mensajes=new Mensajes(this);
-  observador=new Observador();
+  stage.observador=new Observador();
+  stage.cantidad_cartas=4;
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
-  document.getElementById("informacion_nivel").innerHTML=mensaje+""+descripcion;
-  var req_id,calibrar=false;
-  var cantidad_cartas=this.cantidad_cartas;
-  DetectorAR=require("./class/detector");
-  Elemento=require("./class/elemento");
-    THREE.Matrix4.prototype.setFromArray = function(m) {
-          return this.set(
-            m[0], m[4], m[8], m[12],
-            m[1], m[5], m[9], m[13],
-            m[2], m[6], m[10], m[14],
-            m[3], m[7], m[11], m[15]
-          );
-  }
-  objetos=[];
-  var colores=["rgb(34, 208, 6)","rgb(25, 11, 228)","rgb(244, 6, 6)","rgb(244, 232, 6)"];
-  var planoScene=new THREE.Scene(),realidadScene=new THREE.Scene(),videoScene=new THREE.Scene();
-    var WIDTH_CANVAS=1000,HEIGHT_CANVAS=800;
-  videoCamera=new THREE.Camera();
-  realidadCamera=new THREE.Camera();
-  planoCamera=new THREE.PerspectiveCamera();//THREE.Camera(); 
-  planoCamera.near=0.1;
-  planoCamera.far=2000;
-  planoCamera.updateProjectionMatrix();
-  //webglAvailable();
-  renderer = new THREE.WebGLRenderer();
-  //planoCamera.lookAt(planoScene.position);
-  renderer.autoClear = false;
-  renderer.setSize(WIDTH_CANVAS,HEIGHT_CANVAS);
-  document.getElementById("ra").appendChild(renderer.domElement);
-
-  // Elementos para detectar camara
-  canvas=document.createElement("canvas");
-  canvas.width=WIDTH_CANVAS;
-  canvas.height=HEIGHT_CANVAS;
-  video=new THREEx.WebcamTexture(WIDTH_CANVAS,HEIGHT_CANVAS);
-  videoTexture=new THREE.Texture(canvas);
-  videoTexture.minFilter = THREE.LinearFilter;
-  videoTexture.magFilter = THREE.LinearFilter;
-  movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, depthTest: false, depthWrite: false} );//new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );     
-  var movieGeometry = new THREE.PlaneGeometry(2,2,0.0);
-  movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
-  movieScreen.scale.x=-1;
-  movieScreen.material.side = THREE.DoubleSide;
-  videoScene.add(movieScreen);  
-
-  mano_obj=new Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  mano_obj.init();
-  mano_obj.etiqueta("Detector");
-  //mano_obj.definirBackground("0xffffff");  
-  mano_obj.definir("./assets/img/mano_escala.png",mano_obj);
-  objeto=new THREE.Object3D();
-  objeto.add(mano_obj.get());
-  objeto.position.z=-1;
-  objeto.matrixAutoUpdate = false;
-  realidadScene.add(objeto);
-
-  ctx=canvas.getContext("2d");
-  detector_ar=DetectorAR(canvas);
-  detector_ar.init();
-  detector_ar.setCameraMatrix(realidadCamera);
+  document.getElementById("informacion_nivel").innerHTML=mensaje+""+descripcion;  
+  //var cantidad_cartas=this.cantidad_cartas;
+  stage.objetos=[];
+  stage.colores=["rgb(34, 208, 6)","rgb(25, 11, 228)","rgb(244, 6, 6)","rgb(244, 232, 6)"];    
 
   //CREACION DE OBJETOS A SELECCIONAR PARA CALIBRAR
-  limite_renglon=Math.floor(this.cantidad_cartas/2)+1;
+  limite_renglon=Math.floor(stage.cantidad_cartas/2)+1;
   tamano_elemento=80;
-  margenes_espacio=(WIDTH_CANVAS-(tamano_elemento*limite_renglon))/limite_renglon;
+  margenes_espacio=(this.WIDTH_CANVAS-(tamano_elemento*limite_renglon))/limite_renglon;
  
-
 
    /*
     FUNCION PARA RENDERIZADO DE LAS ESCENAS.
   */
-  var calibracion_correcta=false,puntos_encontrados;  
-  umbral=0;
-  function rendering(){ 
-    renderer.clear();
-    renderer.render( videoScene, videoCamera );
-    renderer.clearDepth();
-    renderer.render( planoScene, planoCamera );
-    renderer.clearDepth();
-    renderer.render( realidadScene, realidadCamera );
-  }
-  detener=false;
-  function loop(){        
-    movieScreen.material.map.needsUpdate=true;
-    ctx.drawImage(video.video,0,0,WIDTH_CANVAS,HEIGHT_CANVAS);
-    canvas.changed=true;    
+  stage.calibracion_correcta=false;
+  stage.puntos_encontrados;  
+  stage.umbral=0;  
+  stage.pos_elegido=0;
+  stage.detener=false;
+  calibrar=false;
+  document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
+  document.getElementById("calibrar").addEventListener("click",function(){
+    console.log("calibrando");
+    calibrar=true;    
+  });
+}
+
+Calibrar.prototype.loop=function(stage){        
     if(calibrar){
       threshold_total=0;
       threshold_conteo=0;
       for(var i=0;i<300;i++){
-        detector_ar.cambiarThreshold(i);
-        if(detector_ar.markerToObject(objeto)){
+        this.detector_ar.cambiarThreshold(i);
+        if(this.detector_ar.markerToObject(this.objeto)){
           threshold_total+=i;
           threshold_conteo++;
-          //umbral=i+5;          
         }
       }
       if(threshold_conteo>0){
         threshold_total=threshold_total/threshold_conteo;
-        detector_ar.cambiarThreshold(threshold_total);
-        window.cancelAnimationFrame(req_id);  
-        umbral=threshold_total;
-        calibracion_correcta=true;    
+        this.detector_ar.cambiarThreshold(threshold_total);        
+        stage.calibracion_correcta=true;    
         calibrar=false;
         threshold_conteo=0;
         threshold_total=0;
-        Siguiente();//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIE                  
+        stage.Siguiente(this,stage);//PARTE PARA INDICAR LOS OBJETOS A COLISIONAR PARA VER SI FUNCIONA BIE                  
       }
-      console.log("error");
       calibrar=false;
     }
-    rendering();
-    if(calibracion_correcta && !puntos_encontrados){      
-      if(detector_ar.markerToObject(objeto))
-        verificarColision();      
-    }else if(puntos_encontrados){ 
-      window.cancelAnimationFrame(req_id);    
+    if(stage.calibracion_correcta && !stage.puntos_encontrados)      
+      this.allowDetect(true);
+    else if(stage.puntos_encontrados){    
       document.getElementById("informacion_calibrar").setAttribute("style","display:none;");
-      detener=true;
-      callback();
+      stage.detener=true;
     }
-    if(!detener)
-     req_id=requestAnimationFrame(loop);  
+    if(stage.detener)
+     this.finishStage(); 
   }
-  var pos_elegido=0;
-  document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
-  document.getElementById("calibrar").addEventListener("click",function(){
-    console.log("calibrando");
-    calibrar=true;
-    
-  });
 
-  function verificarColision(){    
-    mano_obj.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale());    
-    observador.dispararParticular("colision",objetos[pos_elegido],objeto,function(esColision,extras){
+
+
+Calibrar.prototype.Siguiente=function(parent,stage){    
+    stage.objetos=[];
+     for(var x=1,cont_fila=1,pos_y=-100,fila_pos=x,pos_x=-200;x<=stage.cantidad_cartas;x++,pos_y=((fila_pos>=limite_renglon-1) ? pos_y+120+50 : pos_y) ,fila_pos=((fila_pos>=limite_renglon-1) ? 1 : fila_pos+1),pos_x=(fila_pos==1 ? -200 : (pos_x+margenes_espacio+tamano_elemento))){             
+        var elemento=new parent.Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
+        elemento.init();
+        elemento.etiqueta(stage.colores[x-1]);
+        elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
+        elemento.calculoOrigen();
+        stage.objetos.push(elemento);
+        elemento.definirBackground(stage.colores[x-1]);
+        stage.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
+        parent.anadir(elemento.get());
+      }
+
+}
+
+Calibrar.prototype.fnAfter=function(stage){    
+    this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
+    stage.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
       if(esColision){        
-        pos_elegido++;
-        document.getElementById("colorSelect").style.backgroundColor=colores[pos_elegido];
-        if(pos_elegido==cantidad_cartas)
-          puntos_encontrados=true;
+        stage.pos_elegido++;
+        document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
+        if(stage.pos_elegido==stage.cantidad_cartas)
+          stage.puntos_encontrados=true;
       }
     });
   }
 
-  function Siguiente(){    
-    objetos=[];
-     for(var x=1,cont_fila=1,pos_y=-100,fila_pos=x,pos_x=-200;x<=cantidad_cartas;x++,pos_y=((fila_pos>=limite_renglon-1) ? pos_y+120+50 : pos_y) ,fila_pos=((fila_pos>=limite_renglon-1) ? 1 : fila_pos+1),pos_x=(fila_pos==1 ? -200 : (pos_x+margenes_espacio+tamano_elemento))){             
-        var elemento=new Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
-        elemento.init();
-        elemento.etiqueta(colores[x-1]);
-        elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
-        elemento.calculoOrigen();
-        objetos.push(elemento);
-        elemento.definirBackground(colores[x-1]);
-        observador.suscribir("colision",objetos[objetos.length-1]);
-        planoScene.add(elemento.get());
-      }
-
-  }
-
-  req_id=requestAnimationFrame(loop);
-  console.log("hii");
-  //Siguiente();
-}
-
-Calibrar.prototype.getConfiguracion=function(){
-  return {camara_video:videoCamera,camara_plano:planoCamera,camara_real:realidadCamera,umbral:umbral,renderer:renderer,movie_screen:movieScreen,video:video,canvas_context:ctx,canvas:canvas,detector:detector_ar}
-}
+/*Calibrar.prototype.getConfiguracion=function(){
+  return {camara_video:videoCamera,camara_plano:planoCamera,camara_real:realidadCamera,umbral:umbral,renderer:renderer,movie_screen:movieScreen,video:video,canvas_context:ctx,canvas:canvas,detector:this.detector_ar}
+}*/
 
 module.exports=Calibrar;
-},{"./class/ManejadorEventos":3,"./class/detector":4,"./class/elemento":5,"./libs/mensajes.js":8}],3:[function(require,module,exports){
+},{"./class/ManejadorEventos":3,"./libs/mensajes.js":11}],3:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -253,6 +162,100 @@ Manejador.prototype.baja=function(evento,objeto){
 }
 module.exports=Manejador;
 },{}],4:[function(require,module,exports){
+function ARWeb(configuracion){	
+	this.detect=false;
+	this.etapas=[];
+	this.renderer=new THREE.WebGLRenderer();
+  	this.renderer.autoClear = false;
+  	this.WIDTH_CANVAS=configuracion["width"];
+  	this.HEIGHT_CANVAS=configuracion["height"];
+  	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
+  	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
+  	 THREE.Matrix4.prototype.setFromArray = function(m) {
+          return this.set(
+            m[0], m[4], m[8], m[12],
+            m[1], m[5], m[9], m[13],
+            m[2], m[6], m[10], m[14],
+            m[3], m[7], m[11], m[15]
+          );
+  	}
+}
+
+ARWeb.prototype.allowDetect=function(detect){
+	this.detect=detect;
+}
+
+ARWeb.prototype.init=function(){	
+	var Escenario=require("./escenario.js");
+	var WebcamStream=require("./webcamstream.js");
+  	var DetectorAR=require("./detector");
+  	this.Elemento=require("./elemento");
+	this.planoEscena=new Escenario();
+	this.realidadEscena=new Escenario();
+	this.videoEscena=new Escenario();
+	this.planoEscena.initCamara(function(){
+		this.camara=new THREE.PerspectiveCamera();//THREE.Camera(); 
+  		this.camara.near=0.1;
+  		this.camara.far=2000;
+  		this.camara.updateProjectionMatrix();
+	});
+	this.realidadEscena.initCamara();
+	this.videoEscena.initCamara();
+	this.webcam=new WebcamStream({"WIDTH":this.WIDTH_CANVAS,"HEIGHT":this.HEIGHT_CANVAS});
+	this.videoEscena.anadir(this.webcam.getElemento());
+	this.mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+  	this.mano_obj.init();
+  	this.mano_obj.etiqueta("Detector");
+  	this.mano_obj.definir("../../assets/img/mano_escala.png",this.mano_obj);
+  	this.objeto=new THREE.Object3D();
+  	this.objeto.add(this.mano_obj.get());
+  	this.objeto.position.z=-1;
+  	this.objeto.matrixAutoUpdate = false;
+  	this.realidadEscena.anadir(this.objeto);
+  	this.detector_ar=DetectorAR(this.webcam.getCanvas());
+  	this.detector_ar.init();
+  	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
+}
+
+ARWeb.prototype.addStage=function(fn){
+	this.etapas.push(fn);
+}
+
+ARWeb.prototype.anadir=function(elemento){
+	this.planoEscena.anadir(elemento);
+}
+
+ARWeb.prototype.prueba=function(){
+	return this;
+}
+
+ARWeb.prototype.loop=function(){
+	this.renderer.clear();
+	this.videoEscena.update.call(this,this.videoEscena);
+	this.planoEscena.update.call(this,this.planoEscena);
+	this.realidadEscena.update.call(this,this.realidadEscena);
+	this.webcam.update();
+	if(this.detect)
+		if(this.detector_ar.markerToObject(this.objeto))
+			this.etapas[0].fnAfter.call(this,this.etapas[0]);
+	if(this.etapas.length>0)
+		this.etapas[0].loop.call(this,this.etapas[0]);	
+
+	requestAnimationFrame(this.loop.bind(this));
+}
+
+ARWeb.prototype.run=function(){
+	this.etapas[0].init.call(this,this.etapas[0]);
+	this.loop();
+}
+
+ARWeb.prototype.finishStage=function(){
+	this.etapas.shift();
+}
+
+
+module.exports=ARWeb;
+},{"./detector":5,"./elemento":6,"./escenario.js":7,"./webcamstream.js":9}],5:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=139;
@@ -340,7 +343,7 @@ module.exports=function(canvas_element){
             cambiarThreshold:cambiarThreshold
         }
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
@@ -596,7 +599,33 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{"../libs/animacion.js":7}],6:[function(require,module,exports){
+},{"../libs/animacion.js":10}],7:[function(require,module,exports){
+function Escenario(){
+	this.escena=new THREE.Scene();		
+}
+
+Escenario.prototype.initCamara=function(fn){
+	if(fn==undefined){
+		this.camara=new THREE.Camera();
+	}else
+		fn.call(this);
+}
+
+
+Escenario.prototype.anadir=function(elemento){
+	this.escena.add(elemento);
+}
+
+Escenario.prototype.getCamara=function(){
+	return this.camara;
+}
+
+Escenario.prototype.update=function(scene){
+	this.renderer.render(scene.escena,scene.camara);
+	this.renderer.clearDepth();
+}
+module.exports=Escenario;
+},{}],8:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -647,7 +676,39 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+function WebcamStream(configuracion){
+  this.canvas=document.createElement("canvas");
+  this.canvas.width=configuracion["WIDTH"];
+  this.canvas.height=configuracion["HEIGHT"];
+  this.ctx=this.canvas.getContext("2d");
+  this.video=new THREEx.WebcamTexture(configuracion["WIDTH"],configuracion["HEIGHT"]);
+  var textura=new THREE.Texture(this.canvas);
+  textura.minFilter = THREE.LinearFilter;
+  textura.magFilter = THREE.LinearFilter;
+  var material = new THREE.MeshBasicMaterial( { map: textura, depthTest: false, depthWrite: false} );//new THREE.MeshBasicMaterial( { map: textura, overdraw: true, side:THREE.DoubleSide } );     
+  var geometria = new THREE.PlaneGeometry(2,2,0.0);
+  this.elemento = new THREE.Mesh( geometria, material );
+  this.elemento.scale.x=-1;
+  this.elemento.material.side = THREE.DoubleSide;  
+}
+
+WebcamStream.prototype.getElemento=function(){
+	return this.elemento;
+}
+
+WebcamStream.prototype.update=function(web){
+	this.ctx.drawImage(this.video.video,0,0,this.canvas.width,this.canvas.height);
+    this.canvas.changed=true;        
+    this.elemento.material.map.needsUpdate=true;
+}
+
+WebcamStream.prototype.getCanvas=function(){
+	return this.canvas;
+}
+
+module.exports=WebcamStream;
+},{}],10:[function(require,module,exports){
 function Animacion(){	
 }
 
@@ -701,7 +762,7 @@ Animacion.prototype.ocultar=function(objeto,animation){
 module.exports=Animacion;
 
 
-},{}],8:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function Mensajes(juego){
 	this.juego=juego;
 }
@@ -726,261 +787,4 @@ Mensajes.prototype.alerta=function(datos){
 	},datos.tiempo);
 }
 module.exports=Mensajes;
-},{}],9:[function(require,module,exports){
-function Memorama(){
-  this.bloqueado=false;  
-  this.Observador=require("./class/ManejadorEventos");
-  this.Mensajes=require("./libs/mensajes");
-}
-
-Memorama.prototype.bloquear=function(){
-  this.bloqueado=false;
-}
-
-Memorama.prototype.desbloquear=function(){
-  this.bloqueado=true;
-}
-
-Memorama.prototype.config=function(configuracion){
-  this.tipo_memorama=configuracion["tipo_memorama"];  
-  this.cantidad_cartas=configuracion["cantidad_cartas"] || 4;
-  this.WIDTH=configuracion["width"] || 1000;
-  this.HEIGHT=configuracion["height"] || 800;
-
-  this.planoCamera=configuracion["camara_plano"] || new THREE.PerspectiveCamera();//THREE.Camera();
-  if(!configuracion["camara_plano"]){
-    this.planoCamera.near=0.1;
-    this.planoCamera.far=2000;
-  }  
-  this.videoCamera=configuracion["camara_video"] || new THREE.Camera();
-  this.realidadCamera=configuracion["camara_real"] || new THREE.Camera();  
-  this.renderer = configuracion["renderer"] || new THREE.WebGLRenderer();
-  if(!configuracion["renderer"]){
-    this.renderer.autoClear = false;
-    this.renderer.setSize(this.WIDTH,this.HEIGHT);
-    document.getElementById("ra").appendChild(this.renderer.domElement);
-  }
-  this.movie_screen=configuracion["movie_screen"];  
-  this.video=configuracion["video"];
-  this.canvas=configuracion["canvas"];
-  this.canvas_context=configuracion["canvas_context"];
-  this.detector_ar=configuracion["detector"];
-}
-
-
-Memorama.prototype.init=function(){ 
-  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento    
-  mensaje="Bienvenido al ejercicio Memorama<br>";
-  mensajes=new this.Mensajes(this);
-  observador=new this.Observador();
-  descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
-  document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
-  avances=document.createElement("id");
-  avances.id="avances_memorama";
-  document.getElementById("informacion_nivel").appendChild(avances);
-  var Labels=require("./class/labels");
-  var Elemento=require("./class/elemento");
-  parent_memorama=this;
-  /*
-    MODIFICO LA FUNCION setFromArray DE LA CLASE Matrix4
-  */
-
-
-  var videoScene=new THREE.Scene(),realidadScene=new THREE.Scene(),planoScene=new THREE.Scene();  
-  
-  WIDTH_CANVAS=this.WIDTH;
-  HEIGHT_CANVAS=this.HEIGHT;//configuracion["height"];
-
-
-  this.planoCamera.lookAt(planoScene.position);
-  videoScene.add(this.movie_screen);
-  /* 
-    SE CREA LA MANO, COMO OBJETO CANVAS DONDE SE DIBUJA LA IMAGEN DE mano_escala.
-    LA POSICION DE ESTE OBJETO SE ACTUALIZARA
-  */
-  
-  mano=new Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  mano.init();  
-  mano.etiqueta("Detector");
-  mano.definir("./assets/img/mano_escala.png",mano);
-  //mano.get().position.z=-1;
-  objeto=new THREE.Object3D();
-  objeto.add(mano.get());
-  objeto.position.z=-1;
-  objeto.matrixAutoUpdate = false;
-  realidadScene.add(objeto);
-
-   // CREACION DEL ELEMENTO ACIERTO (LA IMAGEN DE LA ESTRELLA)
-  indicador_acierto=new Elemento(500,500,new THREE.PlaneGeometry(500,500));
-  indicador_acierto.init();
-  indicador_acierto.definir("./assets/img/scale/star.png",indicador_acierto);
-  indicador_acierto.position(new THREE.Vector3(0,0,-2500));
-  planoScene.add(indicador_acierto.get());
-
-  // CREACION DEL ELEMENTO ERROR (LA IMAGEN DE LA X)
-  indicador_error=new Elemento(500,500,new THREE.PlaneGeometry(500,500));
-  indicador_error.init();
-  indicador_error.definir("./assets/img/scale/error.png",indicador_error);
-  indicador_error.position(new THREE.Vector3(0,0,-2500));
-  planoScene.add(indicador_error.get());
-
-///*
-  // CREACION DE LAS CARTAS COMO ELEMENTOS
-  console.log("veamos la cantidad de cartas "+this.cantidad_cartas);
- var cartas={animales:["medusa","ballena","cangrejo","pato"],cocina:["pinzas","refractorio","sarten","rallador"]};  
-  objetos=[],objetos_mesh=[],objetos_3d=[];        
-  limite_renglon=Math.floor(this.cantidad_cartas/2)+1;
-  for(var i=1,cont_fila=1,pos_y=-100,fila_pos=i,pos_x=-200;i<=this.cantidad_cartas;i++,pos_y=((i%2!=0) ? pos_y+130 : pos_y) ,fila_pos=((fila_pos>=limite_renglon-1) ? 1 : fila_pos+1),pos_x=(i%2==0 ? 200 : -200)){         
-    var elemento=new Elemento(120,120,new THREE.PlaneGeometry(120,120));
-    elemento.init();
-    elemento.etiqueta(cartas[this.tipo_memorama][fila_pos-1]);
-    elemento.scale(.7,.7);
-    elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
-    objetos_mesh.push(elemento);
-    objetos.push(elemento);
-    planoScene.add(elemento.get());
-    objetos[objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg",
-      objetos[objetos.length-1]); 
-    capa_elemento=document.createElement("div");
-    observador.suscribir("colision",objetos[objetos.length-1]);
-  }
-//*/
-
-
-  //CREACION DE KATHIA
-  document.getElementById("kathia").appendChild(kathia_renderer.view);
-
-  //CREACION DE LA ETIQUETA DONDE SE ESCRIBE LA RESPUESTA DE KATHIA
-  texto=Labels(250,250);
-  texto.init();
-  texto.definir({
-    color:'#ff0000',
-    alineacion:'center',
-    tiporafia:'200px Arial',
-    x:250/2,
-    y:250/2
-  });
-  label=texto.crear("HELLO WORLD");
-  planoScene.add(label);
-
-  label.position.set(-1.5,-6.6,-20);
-
-
-
-
-  var pares=0;
-  detectados=[];
-
-  /*
-    FUNCION LOGICA MEMORAMA
-    EN ESTA FUNCION ES DONDE SE DEFINE LAS ACCIONES CORRESPONDIENTES A LA LOGICA DE MEMORAMA:
-      ES PAR{
-        SI ES PAR, LOS ELEMENTOS SE ELIMINAN DE LA COLA DE ELEMENTOS DIBUJADOS.    
-      }
-      IMPAR{
-        SI NO ES PAR, LOS ELEMENTOS SE ROTAN DE TAL MANERA DE QUE SE OCULTE Y SE DA UNA NOTIFICACION 
-        DE MANERA GRAFICA 
-      }
-
-
-  */
-  function logicaMemorama(esColisionado,objeto_actual,extras){ 
-    if(esColisionado){
-      if(extras["detectados"].length==1 && extras["detectados"][0].igualA(objeto_actual)){
-
-      }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
-          clasificarOpcion("acierto");
-          indicador_acierto.easein();         
-          objeto_actual.voltear();  
-          extras["manejador"].baja("colision",objeto_actual);
-          extras["manejador"].baja("colision",extras["detectados"][0]);
-          document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
-          extras["detectados"]=[];  
-      }else if(extras["detectados"].length==0){     
-          objeto_actual.voltear();
-          extras["detectados"].push(objeto_actual);
-      }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
-          clasificarOpcion("fallo");
-          mensajes.alerta({texto:"Bloqueando por problemas de fallo",tiempo:3000});
-          indicador_error.easein();
-          //error.play();        
-          document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
-          extras["detectados"][0].voltear();
-          extras["detectados"].pop();
-      }
-      detectados=extras["detectados"];
-    }
-    //*/
-}
-  
-  /*
-    FUNCION PARA VERIFICAR LA COLISION.
-      SE ACTUALIZA LA POSICION DE LA MANO CON EL OBJETO3D QUE ES ACTUALIZADO A RAIZ DE LA UBICACION DEL MARCADOR
-      EN ESTA FUNCION SE ITERA SOBRE TODAS LAS CARTAS AGREGADAS A ESCENA
-  */
-
-  function verificarColision(){    
-    mano.actualizarPosicionesYescala(objeto.getWorldPosition(),objeto.getWorldScale()); 
-    observador.disparar("colision",objeto,logicaMemorama,{detectados:detectados});   
-  }
-
-  /*
-    FUNCION PARA ACTUALIZAR EL ELEMENTO RANGE HTML.
-      UNA PROPUESTA VISUAL DE LA PROFUNDIDAD ACTUAL  
-  */
-  function actualizarDistancia(z){
-    document.getElementById("distancia").value=((100*z)/1246);  
-  }
-
-  /*
-    FUNCION PARA MOSTRAR POSICION DE MANO
-  */
-  function mostrarPosicionMano(pos){
-    document.getElementById("pos_x_mano").innerHTML=pos.x;
-    document.getElementById("pos_y_mano").innerHTML=pos.y;
-    document.getElementById("pos_z_mano").innerHTML=pos.z;
-  }
-
-  /*
-    FUNCION PARA RENDERIZADO DE LAS ESCENAS.
-
-  */
-  function rendering(){ 
-    parent_memorama.renderer.clear();
-    parent_memorama.renderer.render( videoScene, parent_memorama.videoCamera );
-    parent_memorama.renderer.clearDepth();
-    parent_memorama.renderer.render( planoScene, parent_memorama.planoCamera );
-    parent_memorama.renderer.clearDepth();
-    parent_memorama.renderer.render( realidadScene, parent_memorama.realidadCamera );
-  }
-
-  /*
-    FUNCION DE ANIMACION
-
-  */
-  function loopMemorama(){  
-    parent_memorama.movie_screen.material.map.needsUpdate=true;       
-    for(var i=0;i<objetos.length;i++)
-      objetos[i].actualizar();          
-    parent_memorama.canvas_context.drawImage(parent_memorama.video.video,0,0,WIDTH_CANVAS,HEIGHT_CANVAS);
-    parent_memorama.canvas.changed = true;
-    label.material.map.needsUpdate=true;
-    if(!this.bloqueado)
-      if(parent_memorama.detector_ar.markerToObject(objeto)){
-        mostrarPosicionMano(objeto.getWorldPosition());
-        if(objeto.getWorldPosition().z>300 && objeto.getWorldPosition().z<=500)
-          verificarColision();    
-      }
-    if(!pausado_kathia)
-      animate();  
-    rendering();
-    requestAnimationFrame(loopMemorama);    
-  }
-
-   
-  iniciarKathia(texto);
-  loopMemorama();
-}
-
-module.exports=Memorama;
-},{"./class/ManejadorEventos":3,"./class/elemento":5,"./class/labels":6,"./libs/mensajes":8}]},{},[1,5,4,6,2]);
+},{}]},{},[1,6,5,8,2,7,9]);

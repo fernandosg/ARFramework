@@ -9,7 +9,8 @@ module.exports = function (grunt) {
       dist: {
         files: {
           //'dist/js/bundle.js': ['js/app.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/*.js'],
-          'dist/js/bundle.js': ['js/app.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/calibracion.js'],
+          //'dist/js/bundle.js': ['js/app.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/calibracion.js'],
+          'dist/js/bundle.js': ['js/app.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/calibracion.js','src/class/escenario.js',"src/class/webcamstream.js"],
         }
       }
     }    

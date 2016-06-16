@@ -1,20 +1,8 @@
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
-Memorama=require("../src/memorama.js");
-memorama=new Memorama();
 calibracion=new Calibrar();
-calibracion.config({cantidad_cartas:4});
-
-calibracion.init(function(){
-	configuracion_init=calibracion.getConfiguracion();
-	configuracion_init["tipo_memorama"]="cocina";
-	memorama.config(configuracion_init);
-	memorama.init();
-	mensajes.alerta({texto:"Bienvenido al memorama"});
-	clasificarOpcion("bienvenida");	
-	/* DE ALGUNA MANERA ENCADENAR LOS SONIDOS 
-	//mensajes.alerta({texto:"Instrucciones al memorama",tiempo:4000});
-	//
-	*/	
-	clasificarOpcion("instrucciones");
-})
+ARWeb=require("../src/class/arweb.js");
+arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
+arweb.init();
+arweb.addStage(calibracion);
+arweb.run();
