@@ -12,10 +12,8 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  var Observador=require("./class/ManejadorEventos");
   Mensajes=require("./libs/mensajes.js");
   mensajes=new Mensajes(this);
-  stage.observador=new Observador();
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -91,7 +89,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);
-        stage.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
+        parent.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
         parent.anadir(elemento.get());
       }
 
@@ -99,7 +97,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 
 Calibrar.prototype.fnAfter=function(stage){    
     this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-    stage.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
+    this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
       if(esColision){        
         stage.pos_elegido++;
         document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];

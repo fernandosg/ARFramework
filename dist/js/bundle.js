@@ -25,10 +25,8 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  var Observador=require("./class/ManejadorEventos");
   Mensajes=require("./libs/mensajes.js");
   mensajes=new Mensajes(this);
-  stage.observador=new Observador();
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -104,7 +102,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);
-        stage.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
+        parent.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
         parent.anadir(elemento.get());
       }
 
@@ -112,7 +110,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 
 Calibrar.prototype.fnAfter=function(stage){    
     this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-    stage.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
+    this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
       if(esColision){        
         stage.pos_elegido++;
         document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
@@ -127,7 +125,7 @@ Calibrar.prototype.fnAfter=function(stage){
 }*/
 
 module.exports=Calibrar;
-},{"./class/ManejadorEventos":3,"./libs/mensajes.js":11}],3:[function(require,module,exports){
+},{"./libs/mensajes.js":11}],3:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -192,6 +190,8 @@ ARWeb.prototype.init=function(){
 	var Escenario=require("./escenario.js");
 	var WebcamStream=require("./webcamstream.js");
   	var DetectorAR=require("./detector");
+  	var Observador=require("./ManejadorEventos");
+  	this.observador=new Observador();
   	this.Elemento=require("./elemento");
 	this.planoEscena=new Escenario();
 	this.realidadEscena=new Escenario();
@@ -263,7 +263,7 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"./detector":5,"./elemento":6,"./escenario.js":7,"./webcamstream.js":9}],5:[function(require,module,exports){
+},{"./ManejadorEventos":3,"./detector":5,"./elemento":6,"./escenario.js":7,"./webcamstream.js":9}],5:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=139;
@@ -824,10 +824,8 @@ Memorama.prototype.init=function(stage){
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al ejercicio Memorama<br>";
 
-  var Observador=require("./class/ManejadorEventos");
   //var Mensajes=require("./libs/mensajes");
   //mensajes=new this.Mensajes(this);
-  stage.observador=new Observador();
   descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
   document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
   avances=document.createElement("id");
@@ -867,7 +865,7 @@ Memorama.prototype.init=function(stage){
     stage.objetos[stage.objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+stage.tipo_memorama+"/cart"+fila_pos+"_"+cartas[stage.tipo_memorama][fila_pos-1]+".jpg",
       stage.objetos[stage.objetos.length-1]); 
     capa_elemento=document.createElement("div");
-    stage.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
+    this.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
   }
 //*/
 
@@ -931,9 +929,9 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
 Memorama.prototype.fnAfter=function(stage){  
     if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
       this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
-      stage.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage});   
+      this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
     }
   }
 
 module.exports=Memorama;
-},{"./class/ManejadorEventos":3,"./class/labels":8}]},{},[1,6,5,8,2,7,9]);
+},{"./class/labels":8}]},{},[1,6,5,8,2,7,9]);

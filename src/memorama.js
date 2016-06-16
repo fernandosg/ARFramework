@@ -21,10 +21,8 @@ Memorama.prototype.init=function(stage){
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al ejercicio Memorama<br>";
 
-  var Observador=require("./class/ManejadorEventos");
   //var Mensajes=require("./libs/mensajes");
   //mensajes=new this.Mensajes(this);
-  stage.observador=new Observador();
   descripcion="El objetivo de este ejercicio, es tocar los pares de cada carta.<br>No te preocupes si no logras en el primer intento, puedes seguir jugando hasta seleccionar cada uno de los pares<br><br>";
   document.getElementById("informacion_nivel").innerHTML=mensaje+descripcion;
   avances=document.createElement("id");
@@ -64,7 +62,7 @@ Memorama.prototype.init=function(stage){
     stage.objetos[stage.objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+stage.tipo_memorama+"/cart"+fila_pos+"_"+cartas[stage.tipo_memorama][fila_pos-1]+".jpg",
       stage.objetos[stage.objetos.length-1]); 
     capa_elemento=document.createElement("div");
-    stage.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
+    this.observador.suscribir("colision",stage.objetos[stage.objetos.length-1]);
   }
 //*/
 
@@ -128,7 +126,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
 Memorama.prototype.fnAfter=function(stage){  
     if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
       this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
-      stage.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage});   
+      this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
     }
   }
 
