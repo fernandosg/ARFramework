@@ -70,14 +70,16 @@ ARWeb.prototype.loop=function(){
 	this.videoEscena.update.call(this,this.videoEscena);
 	this.planoEscena.update.call(this,this.planoEscena);
 	this.realidadEscena.update.call(this,this.realidadEscena);
-	this.webcam.update();
-	if(this.detect)
-		if(this.detector_ar.markerToObject(this.objeto))
-			this.etapas[0].fnAfter.call(this,this.etapas[0]);
-	if(this.etapas.length>0)
+	this.webcam.update();	
+	if(this.etapas.length>0){
+		if(this.detect)
+			if(this.detector_ar.markerToObject(this.objeto))
+				this.etapas[0].fnAfter.call(this,this.etapas[0]);
 		this.etapas[0].loop.call(this,this.etapas[0]);	
-
-	requestAnimationFrame(this.loop.bind(this));
+		requestAnimationFrame(this.loop.bind(this));
+	}else{
+		console.log("Finished AR")
+	}
 }
 
 ARWeb.prototype.run=function(){
@@ -87,6 +89,9 @@ ARWeb.prototype.run=function(){
 
 ARWeb.prototype.finishStage=function(){
 	this.etapas.shift();
+	this.planoEscena.limpiar();
+	if(this.etapas.length>0)
+		this.etapas[0].init.call(this,this.etapas[0]);
 }
 
 

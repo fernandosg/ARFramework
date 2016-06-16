@@ -1,8 +1,11 @@
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
+Memorama=require("../src/memorama.js");
 calibracion=new Calibrar();
+memorama=new Memorama();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 arweb.addStage(calibracion);
+arweb.addStage(memorama);
 arweb.run();

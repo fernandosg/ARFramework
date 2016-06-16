@@ -22,4 +22,9 @@ Escenario.prototype.update=function(scene){
 	this.renderer.render(scene.escena,scene.camara);
 	this.renderer.clearDepth();
 }
+
+Escenario.prototype.limpiar=function(){
+	while(this.escena.children.length>0)
+		this.escena.remove(this.escena.children[0]);
+}
 module.exports=Escenario;
