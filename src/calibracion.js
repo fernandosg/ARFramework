@@ -33,7 +33,7 @@ Calibrar.prototype.init=function(stage){
     FUNCION PARA RENDERIZADO DE LAS ESCENAS.
   */
   stage.calibracion_correcta=false;
-  stage.puntos_encontrados;  
+  stage.puntos_encontrados=false;  
   stage.umbral=0;  
   stage.pos_elegido=0;
   stage.detener=false;
@@ -85,7 +85,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         var elemento=new parent.Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
         elemento.init();
         elemento.etiqueta(stage.colores[x-1]);
-        elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
+        elemento.position(pos_x,pos_y,-600);  
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);
@@ -96,15 +96,18 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 }
 
 Calibrar.prototype.fnAfter=function(stage){    
-    this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-    this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
-      if(esColision){        
-        stage.pos_elegido++;
-        document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
-        if(stage.pos_elegido==stage.cantidad_cartas)
-          stage.puntos_encontrados=true;
-      }
-    });
+    if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
+      this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
+      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
+        //console.log("FN AFTER "+stage.pos_elegido+" "+stage.cantidad_cartas);
+        if(esColision){        
+          stage.pos_elegido++;
+          document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
+          if(stage.pos_elegido==stage.cantidad_cartas)
+            stage.puntos_encontrados=true;
+        }
+      });
+    }
   }
 
 /*Calibrar.prototype.getConfiguracion=function(){

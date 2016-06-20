@@ -5,16 +5,16 @@ Memorama=require("../src/memorama.js");
 Basketball=require("../src/basketball.js");
 calibracion=new Calibrar();
 //memorama=new Memorama();
-basketball=new Basketball();
+//basketball=new Basketball();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-//arweb.addStage(calibracion);
+arweb.addStage(calibracion);
 //arweb.addStage(memorama);
-arweb.addStage(basketball);
+//arweb.addStage(basketball);
 arweb.run();
 },{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":13}],2:[function(require,module,exports){
 function Basketball(){
@@ -24,7 +24,7 @@ function Basketball(){
 Basketball.prototype.init = function(stage) {
 	stage.balon=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.balon.init();
-	stage.balon.definir("./assets/img/basket/balon.png");
+	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
 	stage.balon.visible(false);
 	this.anadir(stage.balon.get());
 	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
@@ -34,8 +34,14 @@ Basketball.prototype.init = function(stage) {
 	this.anadir(stage.canasta.get())
 };
 
+
+
 Basketball.prototype.fnAfter = function(stage) {
-	
+	console.log("Detecto algo");
+	if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
+		stage.balon.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
+		//this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
+	}	
 };
 
 Basketball.prototype.loop = function(stage) {
@@ -79,7 +85,7 @@ Calibrar.prototype.init=function(stage){
     FUNCION PARA RENDERIZADO DE LAS ESCENAS.
   */
   stage.calibracion_correcta=false;
-  stage.puntos_encontrados;  
+  stage.puntos_encontrados=false;  
   stage.umbral=0;  
   stage.pos_elegido=0;
   stage.detener=false;
@@ -131,7 +137,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         var elemento=new parent.Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
         elemento.init();
         elemento.etiqueta(stage.colores[x-1]);
-        elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
+        elemento.position(pos_x,pos_y,-600);  
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);
@@ -142,15 +148,18 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 }
 
 Calibrar.prototype.fnAfter=function(stage){    
-    this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-    this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
-      if(esColision){        
-        stage.pos_elegido++;
-        document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
-        if(stage.pos_elegido==stage.cantidad_cartas)
-          stage.puntos_encontrados=true;
-      }
-    });
+    if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
+      this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
+      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
+        //console.log("FN AFTER "+stage.pos_elegido+" "+stage.cantidad_cartas);
+        if(esColision){        
+          stage.pos_elegido++;
+          document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
+          if(stage.pos_elegido==stage.cantidad_cartas)
+            stage.puntos_encontrados=true;
+        }
+      });
+    }
   }
 
 /*Calibrar.prototype.getConfiguracion=function(){
@@ -300,7 +309,7 @@ module.exports=ARWeb;
 },{"./ManejadorEventos":4,"./detector":6,"./elemento":7,"./escenario.js":8,"./webcamstream.js":10}],6:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
-        var threshold=139;
+        var threshold=120;
         function init(){
             JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
             JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
@@ -889,14 +898,14 @@ Memorama.prototype.init=function(stage){
   stage.indicador_acierto=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_acierto.init();
   stage.indicador_acierto.definir("./assets/img/scale/star.png",stage.indicador_acierto);
-  stage.indicador_acierto.position(new THREE.Vector3(0,0,-2500));
+  stage.indicador_acierto.position(0,0,-2500);
   this.anadir(stage.indicador_acierto.get());
 
   // CREACION DEL ELEMENTO ERROR (LA IMAGEN DE LA X)
   stage.indicador_error=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_error.init();
   stage.indicador_error.definir("./assets/img/scale/error.png",stage.indicador_error);
-  stage.indicador_error.position(new THREE.Vector3(0,0,-2500));
+  stage.indicador_error.position(0,0,-2500);
   this.anadir(stage.indicador_error.get());
 
 ///*
@@ -910,7 +919,7 @@ Memorama.prototype.init=function(stage){
     elemento.init();
     elemento.etiqueta(cartas[stage.tipo_memorama][fila_pos-1]);
     elemento.scale(.7,.7);
-    elemento.position(new THREE.Vector3(pos_x,pos_y,-600));  
+    elemento.position(pos_x,pos_y,-600);  
     stage.objetos.push(elemento);
     this.anadir(elemento.get());
     stage.objetos[stage.objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+stage.tipo_memorama+"/cart"+fila_pos+"_"+cartas[stage.tipo_memorama][fila_pos-1]+".jpg",
@@ -1068,4 +1077,4 @@ ColorStage.prototype.init=function(stage){
       });
 }
 module.exports=ColorStage;
-},{}]},{},[1,2,7,6,9,14,8,10]);
+},{}]},{},[1,2,3,7,6,9,14,8,10]);

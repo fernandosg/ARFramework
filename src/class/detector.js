@@ -1,6 +1,6 @@
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
-        var threshold=139;
+        var threshold=120;
         function init(){
             JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
             JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
