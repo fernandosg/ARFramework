@@ -53,6 +53,7 @@ ARWeb.prototype.init=function(){
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
+  	this.canvas_video=this.webcam.getCanvas();
 }
 
 ARWeb.prototype.addStage=function(fn){

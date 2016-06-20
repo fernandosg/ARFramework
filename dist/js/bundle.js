@@ -2,15 +2,48 @@
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
 Memorama=require("../src/memorama.js");
+Basketball=require("../src/basketball.js");
 calibracion=new Calibrar();
-memorama=new Memorama();
+//memorama=new Memorama();
+basketball=new Basketball();
+//ColorStage=require("../src/trackingcolor.js");
+//var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
-arweb.addStage(calibracion);
-arweb.addStage(memorama);
+//arweb.addStage(tracking);
+//arweb.addStage(calibracion);
+//arweb.addStage(memorama);
+arweb.addStage(basketball);
 arweb.run();
-},{"../src/calibracion.js":2,"../src/class/arweb.js":4,"../src/memorama.js":12}],2:[function(require,module,exports){
+},{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":13}],2:[function(require,module,exports){
+function Basketball(){
+	
+}
+
+Basketball.prototype.init = function(stage) {
+	stage.balon=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
+	stage.balon.init();
+	stage.balon.definir("./assets/img/basket/balon.png");
+	stage.balon.visible(false);
+	this.anadir(stage.balon.get());
+	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
+	stage.canasta.init();
+	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
+	stage.canasta.position(30,30,-600);
+	this.anadir(stage.canasta.get())
+};
+
+Basketball.prototype.fnAfter = function(stage) {
+	
+};
+
+Basketball.prototype.loop = function(stage) {
+	stage.balon.actualizar();
+	stage.canasta.actualizar();
+};
+module.exports=Basketball;
+},{}],3:[function(require,module,exports){
 function Calibrar(){
   this.bloqueado=false;
 }
@@ -125,7 +158,7 @@ Calibrar.prototype.fnAfter=function(stage){
 }*/
 
 module.exports=Calibrar;
-},{"./libs/mensajes.js":11}],3:[function(require,module,exports){
+},{"./libs/mensajes.js":12}],4:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -162,7 +195,7 @@ Manejador.prototype.baja=function(evento,objeto){
 	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);	
 }
 module.exports=Manejador;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 function ARWeb(configuracion){	
 	this.detect=false;
 	this.etapas=[];
@@ -218,6 +251,7 @@ ARWeb.prototype.init=function(){
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
+  	this.canvas_video=this.webcam.getCanvas();
 }
 
 ARWeb.prototype.addStage=function(fn){
@@ -263,7 +297,7 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"./ManejadorEventos":3,"./detector":5,"./elemento":6,"./escenario.js":7,"./webcamstream.js":9}],5:[function(require,module,exports){
+},{"./ManejadorEventos":4,"./detector":6,"./elemento":7,"./escenario.js":8,"./webcamstream.js":10}],6:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=139;
@@ -351,7 +385,7 @@ module.exports=function(canvas_element){
             cambiarThreshold:cambiarThreshold
         }
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
@@ -387,6 +421,9 @@ Elemento.prototype.calculoOrigen=function(){
     this.z=this.posiciones.z;
 }
 
+Elemento.prototype.cambiarVisible=function(){
+    this.elemento_raiz.visible=this.elemento_raiz.visible ? false : true;
+}
 
 /*
         Elemento.prototype.calculoAncho=function(height_test){
@@ -496,9 +533,23 @@ Elemento.prototype.position=function(pos){
 }
 
 
+Elemento.prototype.position=function(x,y,z){
+    this.elemento_raiz.position.set(x,y,z);
+    this.x=x;
+    this.y=y;
+    this.posiciones=this.elemento_raiz.position;
+}
+
+Elemento.prototype.visible=function(){
+    this.elemento_raiz.visible=true;
+}
+
+
 Elemento.prototype.actualizar=function(){
-    for(var i=0;i<this.elemento_raiz.children.length;i++)
-        this.elemento_raiz.children[i].material.map.needsUpdate=true;
+    for(var i=0;i<this.elemento_raiz.children.length;i++){
+        if(this.elemento_raiz.children[i].material.map)
+            this.elemento_raiz.children[i].material.map.needsUpdate=true;
+    }
     if(this.x!=this.elemento_raiz.position.x ||this.y!=this.elemento_raiz.position.y){           
         this.x=this.elemento_raiz.position.x;
         this.y=this.elemento_raiz.position.y;
@@ -607,7 +658,7 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{"../libs/animacion.js":10}],7:[function(require,module,exports){
+},{"../libs/animacion.js":11}],8:[function(require,module,exports){
 function Escenario(){
 	this.escena=new THREE.Scene();		
 }
@@ -638,7 +689,7 @@ Escenario.prototype.limpiar=function(){
 		this.escena.remove(this.escena.children[0]);
 }
 module.exports=Escenario;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -689,7 +740,7 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function WebcamStream(configuracion){
   this.canvas=document.createElement("canvas");
   this.canvas.width=configuracion["WIDTH"];
@@ -721,7 +772,7 @@ WebcamStream.prototype.getCanvas=function(){
 }
 
 module.exports=WebcamStream;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function Animacion(){	
 }
 
@@ -775,7 +826,7 @@ Animacion.prototype.ocultar=function(objeto,animation){
 module.exports=Animacion;
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 function Mensajes(juego){
 	this.juego=juego;
 }
@@ -800,7 +851,7 @@ Mensajes.prototype.alerta=function(datos){
 	},datos.tiempo);
 }
 module.exports=Mensajes;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 function Memorama(){
   this.bloqueado=false;  
 }
@@ -934,4 +985,87 @@ Memorama.prototype.fnAfter=function(stage){
   }
 
 module.exports=Memorama;
-},{"./class/labels":8}]},{},[1,6,5,8,2,7,9]);
+},{"./class/labels":9}],14:[function(require,module,exports){
+function ColorStage(){
+	this.colors;
+	this.codesColors=[];
+	this.countingColors=false;
+}
+ColorStage.prototype.RGBtoHSV=function(r,g,b){
+	var r=r/255;
+	var g=g/255;
+	var b=b/255;
+	max=Math.max(r,g,b);
+	min=Math.min(r,g,b);
+	delta=max-min;
+	v=max;
+	var h=0;
+	if(max==r){
+		mod=((g-b)/delta) % 6;
+		h=60*mod;
+	}else if(max==g){
+		mod=((b-r)/delta) +2;
+		h=60*mod;
+	}else if(max==b){
+		mod=((r-g)/delta) +4;
+		h=60*mod;
+	}
+	s=(max==0) ? 0 : (delta/max);
+	return {h:h,s:s,v:v}
+}
+
+ColorStage.prototype.registerColor=function(stage){
+	stage.countingColors=stage.countingColors ? false : true;
+}
+
+ColorStage.prototype.checkColors=function(stage){
+	stage.codesColors.forEach(function(elem){
+		console.dir(elem);
+	})
+}
+
+ColorStage.prototype.fnAfter=function(stage){
+
+}
+
+
+ColorStage.prototype.loop=function(stage){
+	stage.elemento.actualizar();
+}
+
+ColorStage.prototype.init=function(stage){
+	stage.elemento=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+	stage.elemento.init();
+	stage.elemento.definirBackground("rgb(255, 0, 0)");
+	stage.elemento.position(0,0,-400);
+	stage.elemento.cambiarVisible();
+	this.anadir(stage.elemento.get());
+      tracking.ColorTracker.registerColor('green', function(r, g, b) {
+        colors=stage.RGBtoHSV(r,g,b);           
+        //Range of color green
+        if ((colors["h"]<=140 && colors["h"]>=78) && (colors["s"]<=.97 && colors["s"]>=.40) &&(colors["v"]<=1 && colors["v"]>=.30)) {        
+          return true;
+        }
+        return false;
+      });
+      var tracker = new tracking.ColorTracker(["green"]);
+      tracking.track(this.canvas_video, tracker, { camera: true,context:this.canvas_video.getContext("2d") });
+      tracker.on('track', function(event) {
+      	//Data attribute have the two colors detected
+        event.data.forEach(function(rect) {
+          if (rect.color === 'custom') {
+            rect.color = tracker.customColor;
+          }
+          //Call the registerColors and then checkColors for all the colors detected
+          if(stage.countingColors){
+          	stage.codesColors.push(event);
+          	if(stage.codesColors.length==10)
+          		stage.registerColor();
+          }
+          stage.elemento.position((rect.x- (this.canvas_video.width / 2)),((this.canvas_video.height / 2) - rect.y),-400);
+          stage.elemento.visible();
+        });
+      });
+}
+module.exports=ColorStage;
+},{}]},{},[1,2,7,6,9,14,8,10]);

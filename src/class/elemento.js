@@ -33,6 +33,9 @@ Elemento.prototype.calculoOrigen=function(){
     this.z=this.posiciones.z;
 }
 
+Elemento.prototype.cambiarVisible=function(){
+    this.elemento_raiz.visible=this.elemento_raiz.visible ? false : true;
+}
 
 /*
         Elemento.prototype.calculoAncho=function(height_test){
@@ -142,9 +145,23 @@ Elemento.prototype.position=function(pos){
 }
 
 
+Elemento.prototype.position=function(x,y,z){
+    this.elemento_raiz.position.set(x,y,z);
+    this.x=x;
+    this.y=y;
+    this.posiciones=this.elemento_raiz.position;
+}
+
+Elemento.prototype.visible=function(){
+    this.elemento_raiz.visible=true;
+}
+
+
 Elemento.prototype.actualizar=function(){
-    for(var i=0;i<this.elemento_raiz.children.length;i++)
-        this.elemento_raiz.children[i].material.map.needsUpdate=true;
+    for(var i=0;i<this.elemento_raiz.children.length;i++){
+        if(this.elemento_raiz.children[i].material.map)
+            this.elemento_raiz.children[i].material.map.needsUpdate=true;
+    }
     if(this.x!=this.elemento_raiz.position.x ||this.y!=this.elemento_raiz.position.y){           
         this.x=this.elemento_raiz.position.x;
         this.y=this.elemento_raiz.position.y;
