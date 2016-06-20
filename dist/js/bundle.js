@@ -31,6 +31,7 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
 	stage.canasta.position(30,30,-600);
+    this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
 };
@@ -38,13 +39,19 @@ Basketball.prototype.init = function(stage) {
 
 
 Basketball.prototype.fnAfter = function(stage) {
-	stage.balon.visible();
-	/*	
-	if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
-		stage.balon.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
-		//this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
-	}*/
+	stage.balon.visible();	
+	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
+		stage.logica(this,stage);
+	}
 };
+
+Basketball.prototype.logica=function(that,stage){	
+   that.observador.dispararParticular("colision",stage.canasta,that.puntero,function(esColision,extras){
+   	if(esColision){
+   		console.log("Enceste");
+   	}
+   });
+}
 
 Basketball.prototype.loop = function(stage) {
 	stage.balon.actualizar();
