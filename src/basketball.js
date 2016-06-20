@@ -7,22 +7,24 @@ Basketball.prototype.init = function(stage) {
 	stage.balon.init();
 	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
 	stage.balon.visible(false);
-	this.anadir(stage.balon.get());
+	this.setPuntero(stage.balon.get());
 	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
 	stage.canasta.position(30,30,-600);
-	this.anadir(stage.canasta.get())
+	this.anadir(stage.canasta.get());
+	this.allowDetect(true);
 };
 
 
 
 Basketball.prototype.fnAfter = function(stage) {
-	console.log("Detecto algo");
+	stage.balon.visible();
+	/*	
 	if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
 		stage.balon.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
 		//this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
-	}	
+	}*/
 };
 
 Basketball.prototype.loop = function(stage) {

@@ -261,12 +261,15 @@ Elemento.prototype.getUmbral=function(){
 
 
 Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
+
     this.posiciones.x=posicion.x;
     this.posiciones.y=posicion.y;
     this.posiciones.z=posicion.z;
     this.escalas.x=escala.x;
     this.escalas.y=escala.y;
     this.escalas.z=escala.z;
+    this.elemento_raiz.position=posicion;
+    this.elemento_raiz.scale=escala;
     this.calculoOrigen();
 }
 module.exports=Elemento;

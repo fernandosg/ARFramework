@@ -41,15 +41,16 @@ ARWeb.prototype.init=function(){
 	this.videoEscena.initCamara();
 	this.webcam=new WebcamStream({"WIDTH":this.WIDTH_CANVAS,"HEIGHT":this.HEIGHT_CANVAS});
 	this.videoEscena.anadir(this.webcam.getElemento());
-	this.mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  	this.mano_obj.init();
-  	this.mano_obj.etiqueta("Detector");
-  	this.mano_obj.definir("../../assets/img/mano_escala.png",this.mano_obj);
-  	this.objeto=new THREE.Object3D();
-  	this.objeto.add(this.mano_obj.get());
-  	this.objeto.position.z=-1;
-  	this.objeto.matrixAutoUpdate = false;
-  	this.realidadEscena.anadir(this.objeto);
+	var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+  	mano_obj.init();
+  	mano_obj.etiqueta("Detector");
+  	mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
+  	var objeto=new THREE.Object3D();
+  	objeto.add(mano_obj.get());
+  	objeto.position.z=-1;
+  	objeto.matrixAutoUpdate = false;
+  	this.puntero=objeto;
+  	this.realidadEscena.anadir(this.puntero);
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
@@ -58,6 +59,12 @@ ARWeb.prototype.init=function(){
 
 ARWeb.prototype.addStage=function(fn){
 	this.etapas.push(fn);
+}
+
+ARWeb.prototype.setPuntero=function(obj){
+  	obj.matrixAutoUpdate = false;
+	this.puntero=obj;
+	this.realidadEscena.anadir(this.puntero);
 }
 
 ARWeb.prototype.anadir=function(elemento){
@@ -76,7 +83,7 @@ ARWeb.prototype.loop=function(){
 	this.webcam.update();	
 	if(this.etapas.length>0){
 		if(this.detect)
-			if(this.detector_ar.markerToObject(this.objeto))
+			if(this.detector_ar.markerToObject(this.puntero))
 				this.etapas[0].fnAfter.call(this,this.etapas[0]);
 		this.etapas[0].loop.call(this,this.etapas[0]);	
 		requestAnimationFrame(this.loop.bind(this));

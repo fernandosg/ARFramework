@@ -5,16 +5,16 @@ Memorama=require("../src/memorama.js");
 Basketball=require("../src/basketball.js");
 calibracion=new Calibrar();
 //memorama=new Memorama();
-//basketball=new Basketball();
+basketball=new Basketball();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
 //arweb.addStage(memorama);
-//arweb.addStage(basketball);
+arweb.addStage(basketball);
 arweb.run();
 },{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":13}],2:[function(require,module,exports){
 function Basketball(){
@@ -26,22 +26,24 @@ Basketball.prototype.init = function(stage) {
 	stage.balon.init();
 	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
 	stage.balon.visible(false);
-	this.anadir(stage.balon.get());
+	this.setPuntero(stage.balon.get());
 	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
 	stage.canasta.position(30,30,-600);
-	this.anadir(stage.canasta.get())
+	this.anadir(stage.canasta.get());
+	this.allowDetect(true);
 };
 
 
 
 Basketball.prototype.fnAfter = function(stage) {
-	console.log("Detecto algo");
+	stage.balon.visible();
+	/*	
 	if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
 		stage.balon.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale()); 
 		//this.observador.disparar("colision",this.objeto,stage.logicaMemorama,{detectados:stage.detectados,stage:stage,manejador:this.observador});   
-	}	
+	}*/
 };
 
 Basketball.prototype.loop = function(stage) {
@@ -248,15 +250,16 @@ ARWeb.prototype.init=function(){
 	this.videoEscena.initCamara();
 	this.webcam=new WebcamStream({"WIDTH":this.WIDTH_CANVAS,"HEIGHT":this.HEIGHT_CANVAS});
 	this.videoEscena.anadir(this.webcam.getElemento());
-	this.mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  	this.mano_obj.init();
-  	this.mano_obj.etiqueta("Detector");
-  	this.mano_obj.definir("../../assets/img/mano_escala.png",this.mano_obj);
-  	this.objeto=new THREE.Object3D();
-  	this.objeto.add(this.mano_obj.get());
-  	this.objeto.position.z=-1;
-  	this.objeto.matrixAutoUpdate = false;
-  	this.realidadEscena.anadir(this.objeto);
+	var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+  	mano_obj.init();
+  	mano_obj.etiqueta("Detector");
+  	mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
+  	var objeto=new THREE.Object3D();
+  	objeto.add(mano_obj.get());
+  	objeto.position.z=-1;
+  	objeto.matrixAutoUpdate = false;
+  	this.puntero=objeto;
+  	this.realidadEscena.anadir(this.puntero);
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
@@ -265,6 +268,12 @@ ARWeb.prototype.init=function(){
 
 ARWeb.prototype.addStage=function(fn){
 	this.etapas.push(fn);
+}
+
+ARWeb.prototype.setPuntero=function(obj){
+  	obj.matrixAutoUpdate = false;
+	this.puntero=obj;
+	this.realidadEscena.anadir(this.puntero);
 }
 
 ARWeb.prototype.anadir=function(elemento){
@@ -283,7 +292,7 @@ ARWeb.prototype.loop=function(){
 	this.webcam.update();	
 	if(this.etapas.length>0){
 		if(this.detect)
-			if(this.detector_ar.markerToObject(this.objeto))
+			if(this.detector_ar.markerToObject(this.puntero))
 				this.etapas[0].fnAfter.call(this,this.etapas[0]);
 		this.etapas[0].loop.call(this,this.etapas[0]);	
 		requestAnimationFrame(this.loop.bind(this));
@@ -658,12 +667,15 @@ Elemento.prototype.getUmbral=function(){
 
 
 Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
+
     this.posiciones.x=posicion.x;
     this.posiciones.y=posicion.y;
     this.posiciones.z=posicion.z;
     this.escalas.x=escala.x;
     this.escalas.y=escala.y;
     this.escalas.z=escala.z;
+    this.elemento_raiz.position=posicion;
+    this.elemento_raiz.scale=escala;
     this.calculoOrigen();
 }
 module.exports=Elemento;
