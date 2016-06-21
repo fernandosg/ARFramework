@@ -30,7 +30,7 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
-	stage.canasta.position(30,30,-600);
+	stage.canasta.position({x:30,y:30,z:-600});
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
@@ -146,7 +146,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         var elemento=new parent.Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
         elemento.init();
         elemento.etiqueta(stage.colores[x-1]);
-        elemento.position(pos_x,pos_y,-600);  
+        elemento.position({x:pos_x,y:pos_y,z:-600});  
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);
@@ -551,19 +551,14 @@ Elemento.prototype.scale=function(x,y){
 }
 
 Elemento.prototype.position=function(pos){
-    this.elemento_raiz.position.set(pos.x,pos.y,pos.z);
+    for(var prop in pos){
+        this.elemento_raiz.position[prop]=pos[prop]
+    }
     this.x=pos.x;
     this.y=pos.y;
-    this.posiciones=pos;
-}
-
-
-Elemento.prototype.position=function(x,y,z){
-    this.elemento_raiz.position.set(x,y,z);
-    this.x=x;
-    this.y=y;
     this.posiciones=this.elemento_raiz.position;
 }
+
 
 Elemento.prototype.visible=function(){
     this.elemento_raiz.visible=true;
@@ -917,14 +912,14 @@ Memorama.prototype.init=function(stage){
   stage.indicador_acierto=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_acierto.init();
   stage.indicador_acierto.definir("./assets/img/scale/star.png",stage.indicador_acierto);
-  stage.indicador_acierto.position(0,0,-2500);
+  stage.indicador_acierto.position({x:0,y:0,z:-2500});
   this.anadir(stage.indicador_acierto.get());
 
   // CREACION DEL ELEMENTO ERROR (LA IMAGEN DE LA X)
   stage.indicador_error=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_error.init();
   stage.indicador_error.definir("./assets/img/scale/error.png",stage.indicador_error);
-  stage.indicador_error.position(0,0,-2500);
+  stage.indicador_error.position({x:0,y:0,z:-2500});
   this.anadir(stage.indicador_error.get());
 
 ///*
@@ -938,7 +933,7 @@ Memorama.prototype.init=function(stage){
     elemento.init();
     elemento.etiqueta(cartas[stage.tipo_memorama][fila_pos-1]);
     elemento.scale(.7,.7);
-    elemento.position(pos_x,pos_y,-600);  
+    elemento.position({x:pos_x,y:pos_y,z:-600});  
     stage.objetos.push(elemento);
     this.anadir(elemento.get());
     stage.objetos[stage.objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+stage.tipo_memorama+"/cart"+fila_pos+"_"+cartas[stage.tipo_memorama][fila_pos-1]+".jpg",

@@ -138,19 +138,14 @@ Elemento.prototype.scale=function(x,y){
 }
 
 Elemento.prototype.position=function(pos){
-    this.elemento_raiz.position.set(pos.x,pos.y,pos.z);
+    for(var prop in pos){
+        this.elemento_raiz.position[prop]=pos[prop]
+    }
     this.x=pos.x;
     this.y=pos.y;
-    this.posiciones=pos;
-}
-
-
-Elemento.prototype.position=function(x,y,z){
-    this.elemento_raiz.position.set(x,y,z);
-    this.x=x;
-    this.y=y;
     this.posiciones=this.elemento_raiz.position;
 }
+
 
 Elemento.prototype.visible=function(){
     this.elemento_raiz.visible=true;

@@ -11,7 +11,7 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
-	stage.canasta.position(30,30,-600);
+	stage.canasta.position({x:30,y:30,z:-600});
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);

@@ -85,7 +85,7 @@ Calibrar.prototype.Siguiente=function(parent,stage){
         var elemento=new parent.Elemento(tamano_elemento,tamano_elemento,new THREE.PlaneGeometry(tamano_elemento,tamano_elemento));
         elemento.init();
         elemento.etiqueta(stage.colores[x-1]);
-        elemento.position(pos_x,pos_y,-600);  
+        elemento.position({x:pos_x,y:pos_y,z:-600});  
         elemento.calculoOrigen();
         stage.objetos.push(elemento);
         elemento.definirBackground(stage.colores[x-1]);

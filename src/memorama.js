@@ -35,14 +35,14 @@ Memorama.prototype.init=function(stage){
   stage.indicador_acierto=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_acierto.init();
   stage.indicador_acierto.definir("./assets/img/scale/star.png",stage.indicador_acierto);
-  stage.indicador_acierto.position(0,0,-2500);
+  stage.indicador_acierto.position({x:0,y:0,z:-2500});
   this.anadir(stage.indicador_acierto.get());
 
   // CREACION DEL ELEMENTO ERROR (LA IMAGEN DE LA X)
   stage.indicador_error=new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   stage.indicador_error.init();
   stage.indicador_error.definir("./assets/img/scale/error.png",stage.indicador_error);
-  stage.indicador_error.position(0,0,-2500);
+  stage.indicador_error.position({x:0,y:0,z:-2500});
   this.anadir(stage.indicador_error.get());
 
 ///*
@@ -56,7 +56,7 @@ Memorama.prototype.init=function(stage){
     elemento.init();
     elemento.etiqueta(cartas[stage.tipo_memorama][fila_pos-1]);
     elemento.scale(.7,.7);
-    elemento.position(pos_x,pos_y,-600);  
+    elemento.position({x:pos_x,y:pos_y,z:-600});  
     stage.objetos.push(elemento);
     this.anadir(elemento.get());
     stage.objetos[stage.objetos.length-1].definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+stage.tipo_memorama+"/cart"+fila_pos+"_"+cartas[stage.tipo_memorama][fila_pos-1]+".jpg",
