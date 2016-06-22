@@ -22,12 +22,26 @@ ARWeb.prototype.allowDetect=function(detect){
 	this.detect=detect;
 }
 
+ARWeb.prototype.bloquear=function(){
+	this.allowDetect(false);
+}
+ARWeb.prototype.desbloquear=function(){
+	this.allowDetect(true);
+}
+
+ARWeb.prototype.lanzarMensaje=function(tipo,datos){
+	if(this.mensajes[tipo]!=undefined)
+		this.mensajes[tipo](datos);
+}
+
 ARWeb.prototype.init=function(){	
 	var Escenario=require("./escenario.js");
 	var WebcamStream=require("./webcamstream.js");
   	var DetectorAR=require("./detector");
   	var Observador=require("./ManejadorEventos");
+  	var Mensajes=require("../libs/mensajes.js");
   	this.observador=new Observador();
+  	this.mensajes=new Mensajes(this);
   	this.Elemento=require("./elemento");
 	this.planoEscena=new Escenario();
 	this.realidadEscena=new Escenario();

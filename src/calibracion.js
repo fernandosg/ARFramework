@@ -12,8 +12,6 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  Mensajes=require("./libs/mensajes.js");
-  mensajes=new Mensajes(this);
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";

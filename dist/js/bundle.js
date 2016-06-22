@@ -73,8 +73,6 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  Mensajes=require("./libs/mensajes.js");
-  mensajes=new Mensajes(this);
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -192,7 +190,7 @@ Calibrar.prototype.fnAfter=function(stage){
 
 
 module.exports=Calibrar;
-},{"./libs/mensajes.js":13}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -254,12 +252,26 @@ ARWeb.prototype.allowDetect=function(detect){
 	this.detect=detect;
 }
 
+ARWeb.prototype.bloquear=function(){
+	this.allowDetect(false);
+}
+ARWeb.prototype.desbloquear=function(){
+	this.allowDetect(true);
+}
+
+ARWeb.prototype.lanzarMensaje=function(tipo,datos){
+	if(this.mensajes[tipo]!=undefined)
+		this.mensajes[tipo](datos);
+}
+
 ARWeb.prototype.init=function(){	
 	var Escenario=require("./escenario.js");
 	var WebcamStream=require("./webcamstream.js");
   	var DetectorAR=require("./detector");
   	var Observador=require("./ManejadorEventos");
+  	var Mensajes=require("../libs/mensajes.js");
   	this.observador=new Observador();
+  	this.mensajes=new Mensajes(this);
   	this.Elemento=require("./elemento");
 	this.planoEscena=new Escenario();
 	this.realidadEscena=new Escenario();
@@ -334,7 +346,7 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"./ManejadorEventos":4,"./detector":6,"./detectormarker.js":7,"./elemento":8,"./escenario.js":9,"./webcamstream.js":11}],6:[function(require,module,exports){
+},{"../libs/mensajes.js":13,"./ManejadorEventos":4,"./detector":6,"./detectormarker.js":7,"./elemento":8,"./escenario.js":9,"./webcamstream.js":11}],6:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=120;
