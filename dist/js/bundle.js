@@ -112,7 +112,18 @@ Calibrar.prototype.init=function(stage){
   objeto.position.z=-1;
   objeto.matrixAutoUpdate = false;
   this.puntero=objeto;
+  this.puntero.visible=false;
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:this.puntero});
+  this.anadirMarcador({id:1,callback:stage.ayuda,puntero:this.puntero});
+  this.anadirMarcador({id:2,callback:stage.config,puntero:this.puntero});
+}
+
+Calibrar.prototype.ayuda=function(stage){
+  console.log("Marker for help");
+}
+
+Calibrar.prototype.config=function(){
+  console.log("Marker for config");
 }
 
 Calibrar.prototype.loop=function(stage){    
