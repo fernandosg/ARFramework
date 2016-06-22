@@ -1,8 +1,8 @@
 function Basketball(){
-	
+
 }
 
-Basketball.prototype.init = function(stage) {
+Basketball.prototype.init = function(stage) {	
 	stage.balon=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.balon.init();
 	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
@@ -15,15 +15,15 @@ Basketball.prototype.init = function(stage) {
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
+	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.balon.get()});
 };
 
 
 
 Basketball.prototype.fnAfter = function(stage) {
-	stage.balon.visible();	
-	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
+	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500)
 		stage.logica(this,stage);
-	}
+	
 };
 
 Basketball.prototype.logica=function(that,stage){	

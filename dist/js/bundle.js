@@ -5,23 +5,23 @@ Memorama=require("../src/memorama.js");
 Basketball=require("../src/basketball.js");
 calibracion=new Calibrar();
 //memorama=new Memorama();
-basketball=new Basketball();
+//basketball=new Basketball();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-//arweb.addStage(calibracion);
+arweb.addStage(calibracion);
 //arweb.addStage(memorama);
-arweb.addStage(basketball);
+//arweb.addStage(basketball);
 arweb.run();
-},{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":13}],2:[function(require,module,exports){
+},{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":14}],2:[function(require,module,exports){
 function Basketball(){
-	
+
 }
 
-Basketball.prototype.init = function(stage) {
+Basketball.prototype.init = function(stage) {	
 	stage.balon=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.balon.init();
 	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
@@ -34,15 +34,15 @@ Basketball.prototype.init = function(stage) {
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
+	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.balon.get()});
 };
 
 
 
 Basketball.prototype.fnAfter = function(stage) {
-	stage.balon.visible();	
-	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
+	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500)
 		stage.logica(this,stage);
-	}
+	
 };
 
 Basketball.prototype.logica=function(that,stage){	
@@ -101,18 +101,27 @@ Calibrar.prototype.init=function(stage){
   calibrar=false;
   document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
   document.getElementById("calibrar").addEventListener("click",function(){
-    console.log("calibrando");
     calibrar=true;    
   });
+  var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+  mano_obj.init();
+  mano_obj.etiqueta("Detector");
+  mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
+  var objeto=new THREE.Object3D();
+  objeto.add(mano_obj.get());
+  objeto.position.z=-1;
+  objeto.matrixAutoUpdate = false;
+  this.puntero=objeto;
+  this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:this.puntero});
 }
 
-Calibrar.prototype.loop=function(stage){        
+Calibrar.prototype.loop=function(stage){    
     if(calibrar){
       threshold_total=0;
       threshold_conteo=0;
       for(var i=0;i<300;i++){
         this.detector_ar.cambiarThreshold(i);
-        if(this.detector_ar.markerToObject(this.objeto)){
+        if(this.detector_ar.detectMarker(this)){
           threshold_total+=i;
           threshold_conteo++;
         }
@@ -157,10 +166,9 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 }
 
 Calibrar.prototype.fnAfter=function(stage){    
-    if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
-      this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
-        //console.log("FN AFTER "+stage.pos_elegido+" "+stage.cantidad_cartas);
+    if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
+      this.mano_obj.actualizarPosicionesYescala(this.puntero.getWorldPosition(),this.puntero.getWorldScale());        
+      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.puntero,function(esColision,extras){
         if(esColision){        
           stage.pos_elegido++;
           document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
@@ -171,12 +179,9 @@ Calibrar.prototype.fnAfter=function(stage){
     }
   }
 
-/*Calibrar.prototype.getConfiguracion=function(){
-  return {camara_video:videoCamera,camara_plano:planoCamera,camara_real:realidadCamera,umbral:umbral,renderer:renderer,movie_screen:movieScreen,video:video,canvas_context:ctx,canvas:canvas,detector:this.detector_ar}
-}*/
 
 module.exports=Calibrar;
-},{"./libs/mensajes.js":12}],4:[function(require,module,exports){
+},{"./libs/mensajes.js":13}],4:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -222,6 +227,7 @@ function ARWeb(configuracion){
   	this.WIDTH_CANVAS=configuracion["width"];
   	this.HEIGHT_CANVAS=configuracion["height"];
   	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
+  	this.DetectorMarker=require("./detectormarker.js");
   	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
   	 THREE.Matrix4.prototype.setFromArray = function(m) {
           return this.set(
@@ -256,21 +262,17 @@ ARWeb.prototype.init=function(){
 	this.realidadEscena.initCamara();
 	this.videoEscena.initCamara();
 	this.webcam=new WebcamStream({"WIDTH":this.WIDTH_CANVAS,"HEIGHT":this.HEIGHT_CANVAS});
-	this.videoEscena.anadir(this.webcam.getElemento());
-	var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  	mano_obj.init();
-  	mano_obj.etiqueta("Detector");
-  	mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
-  	var objeto=new THREE.Object3D();
-  	objeto.add(mano_obj.get());
-  	objeto.position.z=-1;
-  	objeto.matrixAutoUpdate = false;
-  	this.puntero=objeto;
-  	this.realidadEscena.anadir(this.puntero);
+	this.videoEscena.anadir(this.webcam.getElemento());	
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
   	this.canvas_video=this.webcam.getCanvas();
+}
+
+ARWeb.prototype.anadirMarcador=function(marcador){
+	this.detector_ar.addMarker(new this.DetectorMarker(marcador.id,marcador.callback,marcador.puntero));
+	if(marcador.puntero!=undefined)
+  		this.realidadEscena.anadir(marcador.puntero);
 }
 
 ARWeb.prototype.addStage=function(fn){
@@ -299,9 +301,8 @@ ARWeb.prototype.loop=function(){
 	this.webcam.update();	
 	if(this.etapas.length>0){
 		if(this.detect)
-			if(this.detector_ar.markerToObject(this.puntero))
-				this.etapas[0].fnAfter.call(this,this.etapas[0]);
-		this.etapas[0].loop.call(this,this.etapas[0]);	
+			this.detector_ar.detectMarker(this);	
+		this.etapas[0].loop.call(this,this.etapas[0]);					
 		requestAnimationFrame(this.loop.bind(this));
 	}else{
 		console.log("Finished AR")
@@ -322,10 +323,11 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"./ManejadorEventos":4,"./detector":6,"./elemento":7,"./escenario.js":8,"./webcamstream.js":10}],6:[function(require,module,exports){
+},{"./ManejadorEventos":4,"./detector":6,"./detectormarker.js":7,"./elemento":8,"./escenario.js":9,"./webcamstream.js":11}],6:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=120;
+        var markers={};
         function init(){
             JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
             JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
@@ -390,14 +392,26 @@ module.exports=function(canvas_element){
             return matriz_encontrada;
         }    
 
-        var markerToObject=function(objeto){
+        var detectMarker=function(armarker){
             var markerCount = detector.detectMarkerLite(JSARRaster, threshold); 
-            if(markerCount>0){            
-                objeto.transformFromArray(obtenerMarcador(markerCount));
-                objeto.matrixWorldNeedsUpdate=true;
+            if(markerCount>0){ 
+                for(var i=0,marcador_id=-1;i<markerCount;i++){
+                    marcador_id=getMarkerNumber(i);
+                    if(markers[marcador_id]!=undefined){
+                        if(markers[marcador_id].puntero!=undefined){
+                            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
+                            markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
+                        }
+                        markers[marcador_id].detected().call(armarker,marcador_id);
+                    }
+                }
                 return true;            
             }
             return false;
+        }
+
+        var addMarker=function(marker){
+            markers[marker.id]=marker;
         }
 
         var cambiarThreshold=function (threshold_nuevo){
@@ -406,11 +420,24 @@ module.exports=function(canvas_element){
         return{
             init:init,
             setCameraMatrix,setCameraMatrix,
-            markerToObject:markerToObject,
+            detectMarker:detectMarker,
+            addMarker:addMarker,
             cambiarThreshold:cambiarThreshold
         }
 }
 },{}],7:[function(require,module,exports){
+function DetectorMarker(id,callback,puntero){
+	this.id=id;
+	this.callback=callback;
+	this.puntero=puntero;
+}
+
+DetectorMarker.prototype.detected = function() {
+	return this.callback;
+};
+
+module.exports=DetectorMarker;
+},{}],8:[function(require,module,exports){
 var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
@@ -681,7 +708,7 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{"../libs/animacion.js":11}],8:[function(require,module,exports){
+},{"../libs/animacion.js":12}],9:[function(require,module,exports){
 function Escenario(){
 	this.escena=new THREE.Scene();		
 }
@@ -712,7 +739,7 @@ Escenario.prototype.limpiar=function(){
 		this.escena.remove(this.escena.children[0]);
 }
 module.exports=Escenario;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -763,7 +790,7 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function WebcamStream(configuracion){
   this.canvas=document.createElement("canvas");
   this.canvas.width=configuracion["WIDTH"];
@@ -795,7 +822,7 @@ WebcamStream.prototype.getCanvas=function(){
 }
 
 module.exports=WebcamStream;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 function Animacion(){	
 }
 
@@ -849,7 +876,7 @@ Animacion.prototype.ocultar=function(objeto,animation){
 module.exports=Animacion;
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 function Mensajes(juego){
 	this.juego=juego;
 }
@@ -874,7 +901,7 @@ Mensajes.prototype.alerta=function(datos){
 	},datos.tiempo);
 }
 module.exports=Mensajes;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 function Memorama(){
   this.bloqueado=false;  
 }
@@ -1008,7 +1035,7 @@ Memorama.prototype.fnAfter=function(stage){
   }
 
 module.exports=Memorama;
-},{"./class/labels":9}],14:[function(require,module,exports){
+},{"./class/labels":10}],15:[function(require,module,exports){
 function ColorStage(){
 	this.colors;
 	this.codesColors=[];
@@ -1091,4 +1118,4 @@ ColorStage.prototype.init=function(stage){
       });
 }
 module.exports=ColorStage;
-},{}]},{},[1,2,3,7,6,9,14,8,10]);
+},{}]},{},[1,2,3,8,6,10,15,9,11,7]);

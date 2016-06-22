@@ -6,6 +6,7 @@ function ARWeb(configuracion){
   	this.WIDTH_CANVAS=configuracion["width"];
   	this.HEIGHT_CANVAS=configuracion["height"];
   	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
+  	this.DetectorMarker=require("./detectormarker.js");
   	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
   	 THREE.Matrix4.prototype.setFromArray = function(m) {
           return this.set(
@@ -40,21 +41,17 @@ ARWeb.prototype.init=function(){
 	this.realidadEscena.initCamara();
 	this.videoEscena.initCamara();
 	this.webcam=new WebcamStream({"WIDTH":this.WIDTH_CANVAS,"HEIGHT":this.HEIGHT_CANVAS});
-	this.videoEscena.anadir(this.webcam.getElemento());
-	var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
-  	mano_obj.init();
-  	mano_obj.etiqueta("Detector");
-  	mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
-  	var objeto=new THREE.Object3D();
-  	objeto.add(mano_obj.get());
-  	objeto.position.z=-1;
-  	objeto.matrixAutoUpdate = false;
-  	this.puntero=objeto;
-  	this.realidadEscena.anadir(this.puntero);
+	this.videoEscena.anadir(this.webcam.getElemento());	
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
   	this.canvas_video=this.webcam.getCanvas();
+}
+
+ARWeb.prototype.anadirMarcador=function(marcador){
+	this.detector_ar.addMarker(new this.DetectorMarker(marcador.id,marcador.callback,marcador.puntero));
+	if(marcador.puntero!=undefined)
+  		this.realidadEscena.anadir(marcador.puntero);
 }
 
 ARWeb.prototype.addStage=function(fn){
@@ -83,9 +80,8 @@ ARWeb.prototype.loop=function(){
 	this.webcam.update();	
 	if(this.etapas.length>0){
 		if(this.detect)
-			if(this.detector_ar.markerToObject(this.puntero))
-				this.etapas[0].fnAfter.call(this,this.etapas[0]);
-		this.etapas[0].loop.call(this,this.etapas[0]);	
+			this.detector_ar.detectMarker(this);	
+		this.etapas[0].loop.call(this,this.etapas[0]);					
 		requestAnimationFrame(this.loop.bind(this));
 	}else{
 		console.log("Finished AR")

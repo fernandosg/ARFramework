@@ -40,18 +40,27 @@ Calibrar.prototype.init=function(stage){
   calibrar=false;
   document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
   document.getElementById("calibrar").addEventListener("click",function(){
-    console.log("calibrando");
     calibrar=true;    
   });
+  var mano_obj=new this.Elemento(60,60,new THREE.PlaneGeometry(60,60));
+  mano_obj.init();
+  mano_obj.etiqueta("Detector");
+  mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
+  var objeto=new THREE.Object3D();
+  objeto.add(mano_obj.get());
+  objeto.position.z=-1;
+  objeto.matrixAutoUpdate = false;
+  this.puntero=objeto;
+  this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:this.puntero});
 }
 
-Calibrar.prototype.loop=function(stage){        
+Calibrar.prototype.loop=function(stage){    
     if(calibrar){
       threshold_total=0;
       threshold_conteo=0;
       for(var i=0;i<300;i++){
         this.detector_ar.cambiarThreshold(i);
-        if(this.detector_ar.markerToObject(this.objeto)){
+        if(this.detector_ar.detectMarker(this)){
           threshold_total+=i;
           threshold_conteo++;
         }
@@ -96,10 +105,9 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 }
 
 Calibrar.prototype.fnAfter=function(stage){    
-    if(this.objeto.getWorldPosition().z>300 && this.objeto.getWorldPosition().z<=500){  
-      this.mano_obj.actualizarPosicionesYescala(this.objeto.getWorldPosition(),this.objeto.getWorldScale());        
-      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.objeto,function(esColision,extras){
-        //console.log("FN AFTER "+stage.pos_elegido+" "+stage.cantidad_cartas);
+    if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
+      this.mano_obj.actualizarPosicionesYescala(this.puntero.getWorldPosition(),this.puntero.getWorldScale());        
+      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.puntero,function(esColision,extras){
         if(esColision){        
           stage.pos_elegido++;
           document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
@@ -110,8 +118,5 @@ Calibrar.prototype.fnAfter=function(stage){
     }
   }
 
-/*Calibrar.prototype.getConfiguracion=function(){
-  return {camara_video:videoCamera,camara_plano:planoCamera,camara_real:realidadCamera,umbral:umbral,renderer:renderer,movie_screen:movieScreen,video:video,canvas_context:ctx,canvas:canvas,detector:this.detector_ar}
-}*/
 
 module.exports=Calibrar;

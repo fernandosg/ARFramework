@@ -8,7 +8,7 @@ module.exports = function (grunt) {
     browserify: {
       dist: {
         files: {
-          'dist/js/bundle.js': ['js/app.js','src/basketball.js','src/calibracion.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/trackingcolor.js','src/class/escenario.js',"src/class/webcamstream.js"],
+          'dist/js/bundle.js': ['js/app.js','src/basketball.js','src/calibracion.js','src/class/elemento.js','src/class/detector.js','src/class/labels.js','src/trackingcolor.js','src/class/escenario.js',"src/class/webcamstream.js","src/class/detectormarker.js"],
         }
       }
     }    
