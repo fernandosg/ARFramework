@@ -1141,4 +1141,4 @@ ColorStage.prototype.init=function(stage){
       });
 }
 module.exports=ColorStage;
-},{}]},{},[1,2,3,8,6,10,15,9,11,7]);
+},{}]},{},[1,2,3,15,4,5,6,7,8,9,10,11]);
