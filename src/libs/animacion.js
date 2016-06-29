@@ -32,11 +32,7 @@ Animacion.prototype.easein={
 
 Animacion.prototype.mostrar=function(objeto,grados){
 	if(objeto.getGradosActual()<=grados){
-		var parent=this;
-		/*
-        window.requestAnimationFrame(function(){
-        	animation.mostrar(objeto,animation,grados);
-        });*/            			
+		var parent=this;		         		
 		objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
         objeto.incrementGrados();
 		requestAnimationFrame(parent.mostrar.bind(parent,objeto,grados));        
@@ -47,10 +43,7 @@ Animacion.prototype.mostrar=function(objeto,grados){
 
 Animacion.prototype.ocultar=function(objeto){
 	 if(objeto.getGradosActual()>=0){
-	 	var parent=this;
-        /*window.requestAnimationFrame(function(){
-            animation.ocultar(objeto,animation);
-        });*/         
+	 	var parent=this;              
 		requestAnimationFrame(function(){
 			parent.ocultar(objeto).bind(parent)
 		})
