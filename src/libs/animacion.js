@@ -1,4 +1,5 @@
 function Animacion(){	
+	this.request=0;
 }
 
 Animacion.prototype.easein={
@@ -29,23 +30,34 @@ Animacion.prototype.easein={
 	}
 }
 
-Animacion.prototype.mostrar=function(objeto,animation,grados){
+Animacion.prototype.mostrar=function(objeto,grados){
 	if(objeto.getGradosActual()<=grados){
+		var parent=this;
+		/*
         window.requestAnimationFrame(function(){
         	animation.mostrar(objeto,animation,grados);
-        });    
-        objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
+        });*/            			
+		objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
         objeto.incrementGrados();
+		requestAnimationFrame(parent.mostrar.bind(parent,objeto,grados));        
+    }else{
+    	console.log("se acabo");
     }
 }
 
-Animacion.prototype.ocultar=function(objeto,animation){
+Animacion.prototype.ocultar=function(objeto){
 	 if(objeto.getGradosActual()>=0){
-        window.requestAnimationFrame(function(){
+	 	var parent=this;
+        /*window.requestAnimationFrame(function(){
             animation.ocultar(objeto,animation);
-        }); 
+        });*/         
+		requestAnimationFrame(function(){
+			parent.ocultar(objeto).bind(parent)
+		})
         objeto.rotarY(THREE.Math.degToRad( objeto.getGradosActual()));
         objeto.decrementGrados();
+    }else{
+    	console.log("se acabo");
     }
 }
 module.exports=Animacion;

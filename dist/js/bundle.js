@@ -2,9 +2,9 @@
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
 Memorama=require("../src/memorama.js");
-Basketball=require("../src/basketball.js");
-calibracion=new Calibrar();
-//memorama=new Memorama();
+//Basketball=require("../src/basketball.js");
+//calibracion=new Calibrar();
+memorama=new Memorama();
 //basketball=new Basketball();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
@@ -12,11 +12,11 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
-//arweb.addStage(memorama);
+//arweb.addStage(calibracion);
+arweb.addStage(memorama);
 //arweb.addStage(basketball);
 arweb.run();
-},{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":14}],2:[function(require,module,exports){
+},{"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":14}],2:[function(require,module,exports){
 function Basketball(){
 
 }
@@ -689,9 +689,9 @@ Elemento.prototype.easein=function(){
 Elemento.prototype.voltear=function(){
     this.estado=(this.estado) ? false : true;
     if(this.estado){
-        this.animacion.ocultar(this,this.animacion);//this.ocultar(this);
+        this.animacion.ocultar(this);//this.ocultar(this);
     }else{
-        this.animacion.mostrar(this,this.animacion,180);
+        this.animacion.mostrar(this,180);
     }
 }
 
@@ -847,6 +847,7 @@ WebcamStream.prototype.getCanvas=function(){
 module.exports=WebcamStream;
 },{}],12:[function(require,module,exports){
 function Animacion(){	
+	this.request=0;
 }
 
 Animacion.prototype.easein={
@@ -877,23 +878,34 @@ Animacion.prototype.easein={
 	}
 }
 
-Animacion.prototype.mostrar=function(objeto,animation,grados){
+Animacion.prototype.mostrar=function(objeto,grados){
 	if(objeto.getGradosActual()<=grados){
+		var parent=this;
+		/*
         window.requestAnimationFrame(function(){
         	animation.mostrar(objeto,animation,grados);
-        });    
-        objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
+        });*/            			
+		objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
         objeto.incrementGrados();
+		requestAnimationFrame(parent.mostrar.bind(parent,objeto,grados));        
+    }else{
+    	console.log("se acabo");
     }
 }
 
-Animacion.prototype.ocultar=function(objeto,animation){
+Animacion.prototype.ocultar=function(objeto){
 	 if(objeto.getGradosActual()>=0){
-        window.requestAnimationFrame(function(){
+	 	var parent=this;
+        /*window.requestAnimationFrame(function(){
             animation.ocultar(objeto,animation);
-        }); 
+        });*/         
+		requestAnimationFrame(function(){
+			parent.ocultar(objeto).bind(parent)
+		})
         objeto.rotarY(THREE.Math.degToRad( objeto.getGradosActual()));
         objeto.decrementGrados();
+    }else{
+    	console.log("se acabo");
     }
 }
 module.exports=Animacion;

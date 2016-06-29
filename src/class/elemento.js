@@ -226,9 +226,9 @@ Elemento.prototype.easein=function(){
 Elemento.prototype.voltear=function(){
     this.estado=(this.estado) ? false : true;
     if(this.estado){
-        this.animacion.ocultar(this,this.animacion);//this.ocultar(this);
+        this.animacion.ocultar(this);//this.ocultar(this);
     }else{
-        this.animacion.mostrar(this,this.animacion,180);
+        this.animacion.mostrar(this,180);
     }
 }
 
