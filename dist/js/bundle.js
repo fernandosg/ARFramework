@@ -845,10 +845,8 @@ WebcamStream.prototype.getCanvas=function(){
 module.exports=WebcamStream;
 },{}],12:[function(require,module,exports){
 function Animacion(){	
-	this.request=-1;
 	this.pila_objetos=[];
 	this.pila_objetos_animaciones={};
-	this.conteo=0;
 }
 
 Animacion.prototype.easein={
@@ -881,50 +879,45 @@ Animacion.prototype.easein={
 Animacion.prototype.run=function(id){
 	for(var i=0,length=this.pila_objetos.length;i<length;i++){		
 		if(typeof this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]==="undefined")
-			this.pila_objetos_animaciones[this.pila_objetos[i]]["animaciones"][0](this.pila_objetos_animaciones[this.pila_objetos[i]]);		
+			this.pila_objetos_animaciones[this.pila_objetos[i]]["animacion"](this.pila_objetos_animaciones[this.pila_objetos[i]]);		
 	}
 		
 }
 
 
 Animacion.prototype.detectarCola=function(arguments,callback){	
-	if(this.pila_objetos.indexOf(arguments[0].get().id)!=-1){
-		if(this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"][0]!=undefined){
-			delete this.pila_objetos_animaciones[arguments[0].get().id].params[0].animado;
-       		window.cancelAnimationFrame(this.pila_objetos_animaciones[arguments[0].get().id].params[0].req_anim);
-       	}
-		this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"]=[callback];
-	}else{
+	if(this.pila_objetos.indexOf(arguments[0].get().id)!=-1)
+		window.cancelAnimationFrame(this.pila_objetos_animaciones[arguments[0].get().id].params[0]["req_anim"]);			
+	else{
 		this.pila_objetos.push(arguments[0].get().id);
 		this.pila_objetos_animaciones[arguments[0].get().id]={};
-		this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"]=[callback];
-		this.pila_objetos_animaciones[arguments[0].get().id]["params"]=arguments;
-	}	
+	}
+	this.pila_objetos_animaciones[arguments[0].get().id]["params"]=arguments;
+	this.pila_objetos_animaciones[arguments[0].get().id]["animacion"]=callback;
 }
 
 
 function mostrarEvent(anim){
-		if(anim.params[0].getGradosActual()<=anim.params[1]){	
-			anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
-			anim.params[0].incrementGrados();
-			anim.params[0]["animado"]=true;
-			anim.params[0]["req_anim"]=requestAnimationFrame(mostrarEvent.bind(this,anim));
-		}else{
-			delete anim.params[0]["animado"];
-			//this.pila_objetos_animaciones[arguments.params[0].get().id]["animaciones"][arguments.params[2]]=undefined;						
-		};		
-	}
+	if(anim.params[0].getGradosActual()<=anim.params[1]){	
+		anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
+		anim.params[0].incrementGrados();
+		anim.params[0]["animado"]=true;
+		anim.params[0]["req_anim"]=requestAnimationFrame(mostrarEvent.bind(this,anim));
+	}else{
+		delete anim.params[0]["animado"];
+	};		
+}
 
 function ocultarEvent(anim){
-		if(anim.params[0].getGradosActual()>=0){
-	        anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
-	        anim.params[0].decrementGrados();
-			anim.params[0]["animado"]=true;
-			anim.params[0]["req_anim"]=requestAnimationFrame(ocultarEvent.bind(this,anim));			
-	    }else{	    	   
-			delete anim.params[0]["animado"];
-	    }
+	if(anim.params[0].getGradosActual()>=0){
+		anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
+		anim.params[0].decrementGrados();
+		anim.params[0]["animado"]=true;
+		anim.params[0]["req_anim"]=requestAnimationFrame(ocultarEvent.bind(this,anim));			
+	}else{	    	   
+		delete anim.params[0]["animado"];
 	}
+}
 
 Animacion.prototype.mostrar=function(){
 	this.detectarCola(arguments,mostrarEvent);
