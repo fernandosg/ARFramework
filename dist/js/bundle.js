@@ -461,12 +461,10 @@ DetectorMarker.prototype.detected = function() {
 
 module.exports=DetectorMarker;
 },{}],8:[function(require,module,exports){
-var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
-    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();   
-    this.animacion=new Animacion();
+    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();       
 }
 
 
@@ -686,12 +684,12 @@ Elemento.prototype.easein=function(){
     this.animacion.easein.mostrar(this.get(),-800,-2500,this.animacion);
 }
 
-Elemento.prototype.voltear=function(){
+Elemento.prototype.voltear=function(animacion){
     this.estado=(this.estado) ? false : true;
     if(this.estado){
-        this.animacion.ocultar(this);//this.ocultar(this);
+        animacion.ocultar(this);//this.ocultar(this);
     }else{
-        this.animacion.mostrar(this,180);
+        animacion.mostrar(this,180);
     }
 }
 
@@ -731,7 +729,7 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{"../libs/animacion.js":12}],9:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function Escenario(){
 	this.escena=new THREE.Scene();		
 }
@@ -847,7 +845,10 @@ WebcamStream.prototype.getCanvas=function(){
 module.exports=WebcamStream;
 },{}],12:[function(require,module,exports){
 function Animacion(){	
-	this.request=0;
+	this.request=-1;
+	this.pila_objetos=[];
+	this.pila_objetos_animaciones={};
+	this.conteo=0;
 }
 
 Animacion.prototype.easein={
@@ -877,40 +878,65 @@ Animacion.prototype.easein={
 			animation.easein.mostrado=false;
 	}
 }
-
-Animacion.prototype.mostrar=function(objeto,grados){
-	if(objeto.getGradosActual()<=grados){
-		var parent=this;
-		/*
-        window.requestAnimationFrame(function(){
-        	animation.mostrar(objeto,animation,grados);
-        });*/            			
-		objeto.rotarY(THREE.Math.degToRad(objeto.getGradosActual()));
-        objeto.incrementGrados();
-		requestAnimationFrame(parent.mostrar.bind(parent,objeto,grados));        
-    }else{
-    	console.log("se acabo");
-    }
+Animacion.prototype.run=function(id){
+	for(var i=0,length=this.pila_objetos.length;i<length;i++){		
+		if(typeof this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]==="undefined")
+			this.pila_objetos_animaciones[this.pila_objetos[i]]["animaciones"][0](this.pila_objetos_animaciones[this.pila_objetos[i]]);		
+	}
+		
 }
 
-Animacion.prototype.ocultar=function(objeto){
-	 if(objeto.getGradosActual()>=0){
-	 	var parent=this;
-        /*window.requestAnimationFrame(function(){
-            animation.ocultar(objeto,animation);
-        });*/         
-		requestAnimationFrame(function(){
-			parent.ocultar(objeto).bind(parent)
-		})
-        objeto.rotarY(THREE.Math.degToRad( objeto.getGradosActual()));
-        objeto.decrementGrados();
-    }else{
-    	console.log("se acabo");
-    }
+
+Animacion.prototype.detectarCola=function(arguments,callback){	
+	if(this.pila_objetos.indexOf(arguments[0].get().id)!=-1){
+		if(this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"][0]!=undefined){
+			delete this.pila_objetos_animaciones[arguments[0].get().id].params[0].animado;
+       		window.cancelAnimationFrame(this.pila_objetos_animaciones[arguments[0].get().id].params[0].req_anim);
+       	}
+		this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"]=[callback];
+	}else{
+		this.pila_objetos.push(arguments[0].get().id);
+		this.pila_objetos_animaciones[arguments[0].get().id]={};
+		this.pila_objetos_animaciones[arguments[0].get().id]["animaciones"]=[callback];
+		this.pila_objetos_animaciones[arguments[0].get().id]["params"]=arguments;
+	}	
+}
+
+
+function mostrarEvent(anim){
+		if(anim.params[0].getGradosActual()<=anim.params[1]){	
+			anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
+			anim.params[0].incrementGrados();
+			anim.params[0]["animado"]=true;
+			anim.params[0]["req_anim"]=requestAnimationFrame(mostrarEvent.bind(this,anim));
+		}else{
+			delete anim.params[0]["animado"];
+			//this.pila_objetos_animaciones[arguments.params[0].get().id]["animaciones"][arguments.params[2]]=undefined;						
+		};		
+	}
+
+function ocultarEvent(anim){
+		if(anim.params[0].getGradosActual()>=0){
+	        anim.params[0].rotarY(THREE.Math.degToRad(anim.params[0].getGradosActual()));
+	        anim.params[0].decrementGrados();
+			anim.params[0]["animado"]=true;
+			anim.params[0]["req_anim"]=requestAnimationFrame(ocultarEvent.bind(this,anim));			
+	    }else{	    	   
+			delete anim.params[0]["animado"];
+	    }
+	}
+
+Animacion.prototype.mostrar=function(){
+	this.detectarCola(arguments,mostrarEvent);
+	this.run();
+}
+
+
+Animacion.prototype.ocultar=function(){		
+	this.detectarCola(arguments,ocultarEvent);
+	this.run();
 }
 module.exports=Animacion;
-
-
 },{}],13:[function(require,module,exports){
 function Mensajes(juego){
 	this.juego=juego;
@@ -937,8 +963,11 @@ Mensajes.prototype.alerta=function(datos){
 }
 module.exports=Mensajes;
 },{}],14:[function(require,module,exports){
+
 function Memorama(){
   this.bloqueado=false;  
+  var Animacion=require('./libs/animacion.js');
+  this.animacion=new Animacion();
 }
 
 Memorama.prototype.bloquear=function(){
@@ -954,8 +983,7 @@ Memorama.prototype.config=function(configuracion){
 
 
 Memorama.prototype.init=function(stage){ 
-  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
-
+  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento    
   stage.tipo_memorama="animales";
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al ejercicio Memorama<br>";
@@ -1041,20 +1069,20 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
       }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
           clasificarOpcion("acierto");
           extras["stage"].indicador_acierto.easein();         
-          objeto_actual.voltear();  
+          objeto_actual.voltear(this.animacion);  
           extras["manejador"].baja("colision",objeto_actual);
           extras["manejador"].baja("colision",extras["detectados"][0]);
           document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
           extras["detectados"]=[];  
       }else if(extras["detectados"].length==0){     
-          objeto_actual.voltear();
+          objeto_actual.voltear(this.animacion);
           extras["detectados"].push(objeto_actual);
       }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
           clasificarOpcion("fallo");
           //mensajes.alerta({texto:"Bloqueando por problemas de fallo",tiempo:3000});
            extras["stage"].indicador_error.easein();
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
-          extras["detectados"][0].voltear();
+          extras["detectados"][0].voltear(this.animacion);
           extras["detectados"].pop();
       }
       detectados=extras["detectados"];
@@ -1070,7 +1098,7 @@ Memorama.prototype.fnAfter=function(stage){
   }
 
 module.exports=Memorama;
-},{"./class/labels":10}],15:[function(require,module,exports){
+},{"./class/labels":10,"./libs/animacion.js":12}],15:[function(require,module,exports){
 function ColorStage(){
 	this.colors;
 	this.codesColors=[];

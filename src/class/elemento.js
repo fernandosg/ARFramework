@@ -1,9 +1,7 @@
-var Animacion=require('../libs/animacion.js');
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
-    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();   
-    this.animacion=new Animacion();
+    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();       
 }
 
 
@@ -223,12 +221,12 @@ Elemento.prototype.easein=function(){
     this.animacion.easein.mostrar(this.get(),-800,-2500,this.animacion);
 }
 
-Elemento.prototype.voltear=function(){
+Elemento.prototype.voltear=function(animacion){
     this.estado=(this.estado) ? false : true;
     if(this.estado){
-        this.animacion.ocultar(this);//this.ocultar(this);
+        animacion.ocultar(this);//this.ocultar(this);
     }else{
-        this.animacion.mostrar(this,180);
+        animacion.mostrar(this,180);
     }
 }
 

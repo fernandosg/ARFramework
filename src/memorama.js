@@ -1,5 +1,8 @@
+
 function Memorama(){
   this.bloqueado=false;  
+  var Animacion=require('./libs/animacion.js');
+  this.animacion=new Animacion();
 }
 
 Memorama.prototype.bloquear=function(){
@@ -15,8 +18,7 @@ Memorama.prototype.config=function(configuracion){
 
 
 Memorama.prototype.init=function(stage){ 
-  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento  
-
+  // IMPORTO LAS CLASES Detector,Labels,DetectorAR,Elemento    
   stage.tipo_memorama="animales";
   stage.cantidad_cartas=4;
   mensaje="Bienvenido al ejercicio Memorama<br>";
@@ -102,20 +104,20 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
       }else if(extras["detectados"].length==1 && extras["detectados"][0].esParDe(objeto_actual)){        
           clasificarOpcion("acierto");
           extras["stage"].indicador_acierto.easein();         
-          objeto_actual.voltear();  
+          objeto_actual.voltear(this.animacion);  
           extras["manejador"].baja("colision",objeto_actual);
           extras["manejador"].baja("colision",extras["detectados"][0]);
           document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
           extras["detectados"]=[];  
       }else if(extras["detectados"].length==0){     
-          objeto_actual.voltear();
+          objeto_actual.voltear(this.animacion);
           extras["detectados"].push(objeto_actual);
       }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
           clasificarOpcion("fallo");
           //mensajes.alerta({texto:"Bloqueando por problemas de fallo",tiempo:3000});
            extras["stage"].indicador_error.easein();
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
-          extras["detectados"][0].voltear();
+          extras["detectados"][0].voltear(this.animacion);
           extras["detectados"].pop();
       }
       detectados=extras["detectados"];
