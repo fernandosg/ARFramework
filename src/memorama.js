@@ -114,8 +114,8 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
           clasificarOpcion("acierto");
           extras["stage"].indicador_acierto.easein(extras["stage"].animacion);         
           objeto_actual.voltear(extras["stage"].animacion);  
-          extras["manejador"].baja("colision",objeto_actual);
-          extras["manejador"].baja("colision",extras["detectados"][0]);
+          extras["observador"].baja("colision",objeto_actual);
+          extras["observador"].baja("colision",extras["detectados"][0]);
           document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
           extras["detectados"]=[];  
       }else if(extras["detectados"].length==0){  

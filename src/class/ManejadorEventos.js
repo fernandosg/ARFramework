@@ -13,7 +13,7 @@ Manejador.prototype.suscribir=function(evento,objeto){
 
 Manejador.prototype.disparar=function(evento,objeto,callback,extras){
 	if(!this.lista_eventos[evento]) return;			
-	extras["manejador"]=this;
+	extras["observador"]=this;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];		
 		callback(objeto_action.dispatch(objeto),objeto_action,extras);
