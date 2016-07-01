@@ -69,6 +69,7 @@ ARWeb.prototype.anadirMarcador=function(marcador){
 }
 
 ARWeb.prototype.addStage=function(fn){
+	fn.observador=this.observador;
 	this.etapas.push(fn);
 }
 
@@ -94,7 +95,7 @@ ARWeb.prototype.loop=function(){
 	this.webcam.update();	
 	if(this.etapas.length>0){
 		if(this.detect)
-			this.detector_ar.detectMarker(this);	
+			this.detector_ar.detectMarker(this.etapas[0]);	
 		this.etapas[0].loop.call(this,this.etapas[0]);					
 		requestAnimationFrame(this.loop.bind(this));
 	}else{
@@ -110,6 +111,7 @@ ARWeb.prototype.run=function(){
 ARWeb.prototype.finishStage=function(){
 	this.etapas.shift();
 	this.planoEscena.limpiar();
+  	this.realidadEscena.limpiar();
 	if(this.etapas.length>0)
 		this.etapas[0].init.call(this,this.etapas[0]);
 }

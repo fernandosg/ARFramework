@@ -15,13 +15,13 @@ Manejador.prototype.disparar=function(evento,objeto,callback,extras){
 	if(!this.lista_eventos[evento]) return;			
 	extras["manejador"]=this;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
-		//this.lista_eventos[evento][i].dispatch(objeto);
 		objeto_action=this.lista_eventos[evento][i];		
 		callback(objeto_action.dispatch(objeto),objeto_action,extras);
 	}
 }
 
 Manejador.prototype.dispararParticular=function(evento,objeto,compara,callback){
+	if(!this.lista_eventos[evento]) return;		
 	pos=this.lista_eventos[evento].indexOf(objeto);
 	if(pos==-1) return;
 	extras={};

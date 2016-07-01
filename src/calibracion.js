@@ -44,15 +44,14 @@ Calibrar.prototype.init=function(stage){
   mano_obj.init();
   mano_obj.etiqueta("Detector");
   mano_obj.definir("../../assets/img/mano_escala.png",mano_obj);
-  var objeto=new THREE.Object3D();
-  objeto.add(mano_obj.get());
-  objeto.position.z=-1;
-  objeto.matrixAutoUpdate = false;
-  this.puntero=objeto;
-  this.puntero.visible=false;
-  this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:this.puntero});
-  this.anadirMarcador({id:1,callback:stage.ayuda,puntero:this.puntero});
-  this.anadirMarcador({id:2,callback:stage.config,puntero:this.puntero});
+  stage.puntero=new THREE.Object3D();
+  stage.puntero.add(mano_obj.get());
+  stage.puntero.position.z=-1;
+  stage.puntero.matrixAutoUpdate = false;
+  stage.puntero.visible=false;
+  this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero});
+  this.anadirMarcador({id:1,callback:stage.ayuda,puntero:stage.puntero});
+  this.anadirMarcador({id:2,callback:stage.config,puntero:stage.puntero});
 }
 
 Calibrar.prototype.ayuda=function(stage){
@@ -69,7 +68,7 @@ Calibrar.prototype.loop=function(stage){
       threshold_conteo=0;
       for(var i=0;i<300;i++){
         this.detector_ar.cambiarThreshold(i);
-        if(this.detector_ar.detectMarker(this)){
+        if(this.detector_ar.detectMarker(stage)){
           threshold_total+=i;
           threshold_conteo++;
         }
@@ -113,17 +112,19 @@ Calibrar.prototype.Siguiente=function(parent,stage){
 
 }
 
-Calibrar.prototype.fnAfter=function(stage){    
-    if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500){  
-      this.mano_obj.actualizarPosicionesYescala(this.puntero.getWorldPosition(),this.puntero.getWorldScale());        
-      this.observador.dispararParticular("colision",stage.objetos[stage.pos_elegido],this.puntero,function(esColision,extras){
-        if(esColision){        
-          stage.pos_elegido++;
-          document.getElementById("colorSelect").style.backgroundColor=stage.colores[stage.pos_elegido];
-          if(stage.pos_elegido==stage.cantidad_cartas)
-            stage.puntos_encontrados=true;
+Calibrar.prototype.fnAfter=function(puntero){  
+    //LE ESTOY ENVIANDO EL 3DOBJECT, DEBO DE ENVIARLE 
+    if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){ 
+      puntero.visible=true;
+      this.observador.dispararParticular("colision",this.objetos[this.pos_elegido],puntero,function(esColision,extras){
+        if(esColision){      
+          extras["observador"].baja("colision",this.objetos[this.pos_elegido]);  
+          this.pos_elegido++;
+          document.getElementById("colorSelect").style.backgroundColor=this.colores[this.pos_elegido];
+          if(this.pos_elegido==this.cantidad_cartas)
+            this.puntos_encontrados=true;
         }
-      });
+      }.bind(this));//*/
     }
   }
 

@@ -217,8 +217,8 @@ Elemento.prototype.decrementGrados=function(){
     this.cont--;
 }
 
-Elemento.prototype.easein=function(){
-    this.animacion.easein.mostrar(this.get(),-800,-2500,this.animacion);
+Elemento.prototype.easein=function(animacion){
+    animacion.easein.mostrar(this.get(),-800,-2500,animacion);
 }
 
 Elemento.prototype.voltear=function(animacion){

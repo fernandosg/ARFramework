@@ -66,7 +66,7 @@ module.exports=function(canvas_element){
             return matriz_encontrada;
         }    
 
-        var detectMarker=function(armarker){
+        var detectMarker=function(stage){
             var markerCount = detector.detectMarkerLite(JSARRaster, threshold); 
             if(markerCount>0){ 
                 for(var i=0,marcador_id=-1;i<markerCount;i++){
@@ -76,7 +76,8 @@ module.exports=function(canvas_element){
                             markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
                             markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
                         }
-                        markers[marcador_id].detected().call(armarker,marcador_id);
+                        //console.log("encontro un marcador");
+                        markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);
                     }
                 }
                 return true;            
