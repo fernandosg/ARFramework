@@ -117,18 +117,17 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
           extras["observador"].baja("colision",objeto_actual);
           extras["observador"].baja("colision",extras["detectados"][0]);
           document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x";
-          extras["detectados"]=[];  
+          extras["stage"]["detectados"]=[];  
       }else if(extras["detectados"].length==0){  
           objeto_actual.voltear(extras["stage"].animacion);
-          extras["detectados"].push(objeto_actual);
+          extras["stage"]["detectados"].push(objeto_actual);
       }else if(extras["detectados"][0].get().id!=objeto_actual.get().id){     
           clasificarOpcion("fallo");
            extras["stage"].indicador_error.easein(extras["stage"].animacion);
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
-          extras["detectados"][0].voltear(extras["stage"].animacion);
-          extras["detectados"].pop();
+          extras["stage"]["detectados"][0].voltear(extras["stage"].animacion);
+          extras["stage"]["detectados"].pop();
       }
-      detectados=extras["detectados"];
     }
     //*/
 }
@@ -136,7 +135,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual,extras){
 Memorama.prototype.fnAfter=function(puntero){  
     if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){
       puntero.visible=true;  
-      this.observador.disparar("colision",puntero,this.logicaMemorama,{detectados:this.detectados,stage:this,manejador:this.observador});   
+      this.observador.disparar("colision",puntero,this.logicaMemorama,{detectados:this.detectados,stage:this});   
     }
 }
 

@@ -16,21 +16,22 @@ Manejador.prototype.disparar=function(evento,objeto,callback,extras){
 	extras["observador"]=this;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];		
-		callback(objeto_action.dispatch(objeto),objeto_action,extras);
+		callback.call(extras.stage,objeto_action.dispatch(objeto),objeto_action,extras);
 	}
 }
 
 Manejador.prototype.dispararParticular=function(evento,objeto,compara,callback){
 	if(!this.lista_eventos[evento]) return;		
-	pos=this.lista_eventos[evento].indexOf(objeto);
+	var pos=this.lista_eventos[evento].indexOf(objeto);
 	if(pos==-1) return;
-	extras={};
+	var extras={};
 	extras["observador"]=this;
 	callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
 Manejador.prototype.baja=function(evento,objeto){
 	if(this.lista_eventos[evento].indexOf(objeto)==-1) return;
-	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);	
+	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);
+	console.log("di de baja y ahora en el evento "+evento+" hay "+this.lista_eventos[evento].length+" objetos");
 }
 module.exports=Manejador;
