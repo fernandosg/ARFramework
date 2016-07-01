@@ -8,7 +8,6 @@ Manejador.prototype.suscribir=function(evento,objeto){
 		this.lista_eventos[evento].push(objeto);
 	}		
 	console.log("Suscribiendo");
-	console.dir(this.lista_eventos);
 }
 
 Manejador.prototype.disparar=function(evento,objeto,callback,extras){
@@ -31,6 +30,5 @@ Manejador.prototype.dispararParticular=function(evento,objeto,compara,callback){
 Manejador.prototype.baja=function(evento,objeto){
 	if(this.lista_eventos[evento].indexOf(objeto)==-1) return;
 	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);
-	console.log("di de baja y ahora en el evento "+evento+" hay "+this.lista_eventos[evento].length+" objetos");
 }
 module.exports=Manejador;
