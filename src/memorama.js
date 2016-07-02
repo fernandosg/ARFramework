@@ -97,6 +97,8 @@ Memorama.prototype.init=function(stage){
   //stage.label.position.set(-1.5,-6.6,-20);
    
   iniciarKathia(texto);
+  clasificarOpcion("bienvenida");
+  clasificarOpcion("instrucciones");
 }
 
 Memorama.prototype.loop=function(stage){
