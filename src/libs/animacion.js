@@ -32,7 +32,7 @@ Animacion.prototype.easein={
 }
 Animacion.prototype.run=function(id){
 	for(var i=0,length=this.pila_objetos.length;i<length;i++){		
-		if(typeof this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]==="undefined")
+		if(this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]===false)
 			this.pila_objetos_animaciones[this.pila_objetos[i]]["animacion"](this.pila_objetos_animaciones[this.pila_objetos[i]]);		
 	}
 		
@@ -47,6 +47,7 @@ Animacion.prototype.detectarCola=function(arguments,callback){
 		this.pila_objetos_animaciones[arguments[0].get().id]={};
 	}
 	this.pila_objetos_animaciones[arguments[0].get().id]["params"]=arguments;
+	this.pila_objetos_animaciones[arguments[0].get().id].params[0]["animado"]=false;
 	this.pila_objetos_animaciones[arguments[0].get().id]["animacion"]=callback;
 }
 

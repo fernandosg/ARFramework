@@ -880,7 +880,7 @@ Animacion.prototype.easein={
 }
 Animacion.prototype.run=function(id){
 	for(var i=0,length=this.pila_objetos.length;i<length;i++){		
-		if(typeof this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]==="undefined")
+		if(this.pila_objetos_animaciones[this.pila_objetos[i]].params[0]["animado"]===false)
 			this.pila_objetos_animaciones[this.pila_objetos[i]]["animacion"](this.pila_objetos_animaciones[this.pila_objetos[i]]);		
 	}
 		
@@ -895,6 +895,7 @@ Animacion.prototype.detectarCola=function(arguments,callback){
 		this.pila_objetos_animaciones[arguments[0].get().id]={};
 	}
 	this.pila_objetos_animaciones[arguments[0].get().id]["params"]=arguments;
+	this.pila_objetos_animaciones[arguments[0].get().id].params[0]["animado"]=false;
 	this.pila_objetos_animaciones[arguments[0].get().id]["animacion"]=callback;
 }
 
@@ -1083,7 +1084,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
           this.detectados.push(objeto_actual);
       }else if(this.detectados[0].get().id!=objeto_actual.get().id){     
           clasificarOpcion("fallo");
-           this.indicador_error.easein(this.animacion);
+          this.indicador_error.easein(this.animacion);
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
           this.detectados[0].voltear(this.animacion);
           this.detectados.pop();

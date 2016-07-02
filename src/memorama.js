@@ -123,7 +123,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
           this.detectados.push(objeto_actual);
       }else if(this.detectados[0].get().id!=objeto_actual.get().id){     
           clasificarOpcion("fallo");
-           this.indicador_error.easein(this.animacion);
+          this.indicador_error.easein(this.animacion);
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
           this.detectados[0].voltear(this.animacion);
           this.detectados.pop();
