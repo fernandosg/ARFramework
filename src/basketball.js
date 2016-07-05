@@ -12,9 +12,11 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta=new this.Elemento(80,80,new THREE.PlaneGeometry(80,80));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
-	stage.canasta.position({x:160,y:-160,z:-600});
+	stage.canasta.position({x:160,y:-90,z:-600});
 	stage.total_canastas=10;
 	stage.canastas=0;
+	stage.bajar=false;
+	stage.altura_concluida=false;
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
@@ -30,16 +32,30 @@ Basketball.prototype.fnAfter = function(puntero) {
 	
 };
 
+Basketball.prototype.logicaBasket=function(puntero){
+	this.canastas+=1;
+	if(this.canastas<=this.total_canastas){
+		console.log("Enceste");
+		this.bajar=true;
+	}else{
+		console.log("Has encestado el total de canastas");	 	
+		this.altura_concluida=true;
+	}
+}
+
 Basketball.prototype.logica=function(puntero){	
-   this.observador.dispararParticular("colision",this.canasta,puntero,function(esColision,extras){
-   	if(esColision){
-   		this.canastas+=1;
-   		if(this.canastas<=this.total_canastas)
-   			console.log("Enceste");
-   		else
-   			console.log("Has encestado el total de canastas");
-   	}
-   });
+	if(!this.altura_concluida)
+	   this.observador.dispararParticular("colision",this.canasta,puntero,function(esColision,extras){
+	   	if(esColision && !this.bajar)
+	   		this.logicaBasket(puntero);
+	   	else if(this.bajar)
+			if(this.canasta.getDistancia(puntero)>=60){
+				console.log("Bien, ahora vuelve a subir")
+				this.bajar=false;	
+			}		   	
+	   }.bind(this));
+	else
+		console.log("ALTURA CONCLUIDA");	
 }
 
 Basketball.prototype.loop = function(stage) {

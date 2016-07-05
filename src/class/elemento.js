@@ -48,7 +48,9 @@ Elemento.prototype.definirBackground=function(color){
     color_t=new THREE.Color(color);
     this.material_frente=new THREE.MeshBasicMaterial({color: color_t,side: THREE.DoubleSide}); 
     this.mesh=new THREE.Mesh(this.geometry,this.material_frente);
-    this.elemento_raiz.add(this.mesh);  
+    this.elemento_raiz.add(this.mesh);      
+    this.defineBox();
+    this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
 Elemento.prototype.definir=function(ruta,objeto){
@@ -72,7 +74,8 @@ Elemento.prototype.actualizarMaterialAtras=function(texture2){
 
     this.geometria_atras.applyMatrix( new THREE.Matrix4().makeRotationY( Math.PI ) );
     this.mesh2=new THREE.Mesh(this.geometria_atras,this.material_atras);
-    this.elemento_raiz.add(this.mesh2);  
+    this.elemento_raiz.add(this.mesh2);      
+    this.defineBox();
     this.textura_atras.needsUpdate = true;
 }
 
@@ -83,7 +86,8 @@ Elemento.prototype.actualizarMaterialFrente=function(texture1){
     this.material_frente=new THREE.MeshBasicMaterial({map:this.textura_frente,side: THREE.DoubleSide});  
     this.material_frente.transparent=true;
     this.mesh=new THREE.Mesh(this.geometry,this.material_frente);
-    this.elemento_raiz.add(this.mesh);  
+    this.elemento_raiz.add(this.mesh);      
+    this.defineBox();
     this.textura_frente.needsUpdate = true;
 }
 
@@ -142,6 +146,7 @@ Elemento.prototype.position=function(pos){
     this.x=pos.x;
     this.y=pos.y;
     this.posiciones=this.elemento_raiz.position;
+    this.defineBox();
 }
 
 
@@ -182,17 +187,22 @@ Elemento.prototype.dispatch=function(mano){
 
 }
 
-Elemento.prototype.colisiona=function(mano){   
-    box_mano=new THREE.Box3().setFromObject(mano);
-    box_carta=new THREE.Box3().setFromObject(this.get());
-    //medidas=box_mano.center().clone();//box_mano.center().clone();
-    //medidas.z=(medidas.z*-1);
-    //distancia=box_carta.center().distanceTo(medidas);      
+Elemento.prototype.defineBox=function(){    
+    this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
+}
+
+Elemento.prototype.getDistancia=function(mano){
+    box_mano=new THREE.Box3().setFromObject(mano);    
     pos1=box_mano.center().clone();
     pos1.z=0;
-    pos2=box_carta.center().clone();
+    pos2=this.box.center().clone();
     pos2.z=0;
-    distancia=Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+    return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+}
+
+
+Elemento.prototype.colisiona=function(mano){   
+    distancia=this.getDistancia(mano);
     return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2); 
 
 }
