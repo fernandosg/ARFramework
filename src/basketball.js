@@ -23,7 +23,6 @@ Basketball.prototype.init = function(stage) {
 
 Basketball.prototype.fnAfter = function(puntero) {
 	puntero.visible=true;
-	console.log("encontro algo");
 	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500)
 		this.logica.call(this,puntero);	
 	
