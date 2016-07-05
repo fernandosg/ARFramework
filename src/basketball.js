@@ -13,6 +13,8 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
 	stage.canasta.position({x:160,y:-160,z:-600});
+	stage.total_canastas=10;
+	stage.canastas=0;
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
@@ -31,7 +33,11 @@ Basketball.prototype.fnAfter = function(puntero) {
 Basketball.prototype.logica=function(puntero){	
    this.observador.dispararParticular("colision",this.canasta,puntero,function(esColision,extras){
    	if(esColision){
-   		console.log("Enceste");
+   		this.canastas+=1;
+   		if(this.canastas<=this.total_canastas)
+   			console.log("Enceste");
+   		else
+   			console.log("Has encestado el total de canastas");
    	}
    });
 }
