@@ -50,17 +50,11 @@ Calibrar.prototype.init=function(stage){
   stage.puntero.matrixAutoUpdate = false;
   stage.puntero.visible=false;
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero});
-  this.anadirMarcador({id:1,callback:stage.ayuda,puntero:stage.puntero});
-  this.anadirMarcador({id:2,callback:stage.config,puntero:stage.puntero});
+  //this.anadirMarcador({id:1,callback:stage.ayuda,puntero:stage.puntero});
+  //this.anadirMarcador({id:2,callback:stage.config,puntero:stage.puntero});
 }
 
-Calibrar.prototype.ayuda=function(stage){
-  console.log("Marker for help");
-}
 
-Calibrar.prototype.config=function(){
-  console.log("Marker for config");
-}
 
 Calibrar.prototype.loop=function(stage){    
     if(calibrar){

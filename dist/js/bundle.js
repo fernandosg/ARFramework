@@ -36,11 +36,27 @@ Basketball.prototype.init = function(stage) {
 	stage.canastas=0;
 	stage.bajar=false;
 	stage.altura_concluida=false;
+	stage.posicion_canasta_anterior=undefined;
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
 	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
+	this.anadirMarcador({id:2,callback:stage.ayuda});
 };
+
+Basketball.prototype.ayuda=function(){
+	document.getElementById("informacion_nivel").innerHTML="<p>Deseas reducir la altura de la canasta</p><p><button id='bajar_nivel'>Bajar nivel</button></p>";
+	document.getElementById("bajar_nivel").addEventListener("click",function(){
+		if(this.posicion_canasta_anterior!=undefined){
+			console.log("La posicion de la canasta actual "+this.canasta.get().position.y+" la posicion anterior de la canasta "+this.posicion_canasta_anterior.y);
+			var new_y=this.posicion_canasta_anterior.y-((this.canasta.get().position.y+(Math.abs(this.posicion_canasta_anterior.y)))/2)
+			console.log("wow este es el nuevo posicion en "+new_y);
+			this.canasta.position({y:new_y});
+		}else{
+			console.log("Necesitas primero hacer que la canasta se eleve");
+		}			
+	}.bind(this));
+}
 
 
 
@@ -68,12 +84,13 @@ Basketball.prototype.logica=function(puntero){
 	   	if(esColision && !this.bajar)
 	   		this.logicaBasket(puntero);
 	   	else if(this.bajar)
-			if(this.canasta.getDistancia(puntero)>=60){
+			if(this.canasta.getDistancia(puntero)>=60 && this.canasta.get().position.y<puntero.position.y){
 				console.log("Bien, ahora vuelve a subir")
 				this.bajar=false;	
 			}		   	
 	   }.bind(this));
 	else{
+		this.posicion_canasta_anterior=this.canasta.get().position.clone();
 		this.canasta.incrementar({y:30});
 		this.altura_concluida=false;
 		this.canastas=0;
@@ -139,17 +156,11 @@ Calibrar.prototype.init=function(stage){
   stage.puntero.matrixAutoUpdate = false;
   stage.puntero.visible=false;
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero});
-  this.anadirMarcador({id:1,callback:stage.ayuda,puntero:stage.puntero});
-  this.anadirMarcador({id:2,callback:stage.config,puntero:stage.puntero});
+  //this.anadirMarcador({id:1,callback:stage.ayuda,puntero:stage.puntero});
+  //this.anadirMarcador({id:2,callback:stage.config,puntero:stage.puntero});
 }
 
-Calibrar.prototype.ayuda=function(stage){
-  console.log("Marker for help");
-}
 
-Calibrar.prototype.config=function(){
-  console.log("Marker for config");
-}
 
 Calibrar.prototype.loop=function(stage){    
     if(calibrar){
