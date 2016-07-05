@@ -2,10 +2,10 @@
 //DEBUG=true;
 Calibrar=require("../src/calibracion.js");
 Memorama=require("../src/memorama.js");
-//Basketball=require("../src/basketball.js");
+Basketball=require("../src/basketball.js");
 calibracion=new Calibrar();
 memorama=new Memorama();
-//basketball=new Basketball();
+basketball=new Basketball();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
@@ -13,40 +13,43 @@ arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
 arweb.addStage(calibracion);
-arweb.addStage(memorama);
-//arweb.addStage(basketball);
+//arweb.addStage(memorama);
+arweb.addStage(basketball);
 arweb.run();
-},{"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":14}],2:[function(require,module,exports){
+},{"../src/basketball.js":2,"../src/calibracion.js":3,"../src/class/arweb.js":5,"../src/memorama.js":14}],2:[function(require,module,exports){
 function Basketball(){
 
 }
 
 Basketball.prototype.init = function(stage) {	
-	stage.balon=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
-	stage.balon.init();
-	stage.balon.definir("./assets/img/basket/balon.png",stage.balon);
-	stage.balon.visible(false);
-	this.setPuntero(stage.balon.get());
-	stage.canasta=new this.Elemento(120,134,new THREE.PlaneGeometry(120,134));	
+	stage.puntero=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
+	stage.puntero.init();
+	stage.puntero.definir("./assets/img/basket/balon.png",stage.puntero);	
+	stage.puntero.get().position.z=-1;
+	stage.puntero.get().matrixAutoUpdate = false;
+  	stage.puntero.get().visible=false;
+	stage.canasta=new this.Elemento(80,80,new THREE.PlaneGeometry(80,80));	
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
-	stage.canasta.position({x:30,y:30,z:-600});
+	stage.canasta.position({x:160,y:-160,z:-600});
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);
-	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.balon.get()});
+	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
 };
 
 
 
-Basketball.prototype.fnAfter = function(stage) {
-	if(this.puntero.getWorldPosition().z>300 && this.puntero.getWorldPosition().z<=500)
-		stage.logica(this,stage);
+Basketball.prototype.fnAfter = function(puntero) {
+	puntero.visible=true;
+	console.log("encontro algo");
+	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500)
+		this.logica.call(this,puntero);	
 	
 };
 
-Basketball.prototype.logica=function(that,stage){	
-   that.observador.dispararParticular("colision",stage.canasta,that.puntero,function(esColision,extras){
+Basketball.prototype.logica=function(puntero){	
+   this.observador.dispararParticular("colision",this.canasta,puntero,function(esColision,extras){
    	if(esColision){
    		console.log("Enceste");
    	}
@@ -54,7 +57,7 @@ Basketball.prototype.logica=function(that,stage){
 }
 
 Basketball.prototype.loop = function(stage) {
-	stage.balon.actualizar();
+	stage.puntero.actualizar();
 	stage.canasta.actualizar();
 };
 module.exports=Basketball;
