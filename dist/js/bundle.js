@@ -65,17 +65,19 @@ Basketball.prototype.logicaBasket=function(puntero){
 Basketball.prototype.logica=function(puntero){	
 	if(!this.altura_concluida)
 	   this.observador.dispararParticular("colision",this.canasta,puntero,function(esColision,extras){
-	   	if(esColision && !this.bajar){  
+	   	if(esColision && !this.bajar)
 	   		this.logicaBasket(puntero);
-	   	}else if(this.bajar){
+	   	else if(this.bajar)
 			if(this.canasta.getDistancia(puntero)>=60){
 				console.log("Bien, ahora vuelve a subir")
 				this.bajar=false;	
-			}	
-	   	}
+			}		   	
 	   }.bind(this));
 	else{
-		console.log("ALTURA CONCLUIDA");
+		this.canasta.incrementar({y:30});
+		this.altura_concluida=false;
+		this.canastas=0;
+		console.log("ALTURA CONCLUIDA");	
 	}
 }
 
@@ -633,6 +635,15 @@ Elemento.prototype.scale=function(x,y){
 Elemento.prototype.position=function(pos){
     for(var prop in pos){
         this.elemento_raiz.position[prop]=pos[prop]
+    }
+    this.x=pos.x;
+    this.y=pos.y;
+    this.posiciones=this.elemento_raiz.position;
+    this.defineBox();
+}
+Elemento.prototype.incrementar=function(pos){
+    for(var prop in pos){
+        this.elemento_raiz.position[prop]+=pos[prop]
     }
     this.x=pos.x;
     this.y=pos.y;

@@ -148,6 +148,15 @@ Elemento.prototype.position=function(pos){
     this.posiciones=this.elemento_raiz.position;
     this.defineBox();
 }
+Elemento.prototype.incrementar=function(pos){
+    for(var prop in pos){
+        this.elemento_raiz.position[prop]+=pos[prop]
+    }
+    this.x=pos.x;
+    this.y=pos.y;
+    this.posiciones=this.elemento_raiz.position;
+    this.defineBox();
+}
 
 
 Elemento.prototype.visible=function(){

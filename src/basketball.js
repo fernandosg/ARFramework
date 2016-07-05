@@ -54,8 +54,12 @@ Basketball.prototype.logica=function(puntero){
 				this.bajar=false;	
 			}		   	
 	   }.bind(this));
-	else
+	else{
+		this.canasta.incrementar({y:30});
+		this.altura_concluida=false;
+		this.canastas=0;
 		console.log("ALTURA CONCLUIDA");	
+	}
 }
 
 Basketball.prototype.loop = function(stage) {
