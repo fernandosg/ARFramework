@@ -89,6 +89,10 @@ module.exports=function(canvas_element){
             markers[marker.id]=marker;
         }
 
+        var cleanMarkers=function(){
+            markers={};
+        }
+
         var cambiarThreshold=function (threshold_nuevo){
             threshold=threshold_nuevo;
         }
@@ -97,6 +101,7 @@ module.exports=function(canvas_element){
             setCameraMatrix,setCameraMatrix,
             detectMarker:detectMarker,
             addMarker:addMarker,
-            cambiarThreshold:cambiarThreshold
+            cambiarThreshold:cambiarThreshold,
+            cleanMarkers:cleanMarkers
         }
 }

@@ -390,6 +390,7 @@ ARWeb.prototype.finishStage=function(){
 	this.etapas.shift();
 	this.planoEscena.limpiar();
   	this.realidadEscena.limpiar();
+  	this.detector_ar.cleanMarkers();
 	if(this.etapas.length>0)
 		this.etapas[0].init.call(this,this.etapas[0]);
 }
@@ -488,6 +489,10 @@ module.exports=function(canvas_element){
             markers[marker.id]=marker;
         }
 
+        var cleanMarkers=function(){
+            markers={};
+        }
+
         var cambiarThreshold=function (threshold_nuevo){
             threshold=threshold_nuevo;
         }
@@ -496,7 +501,8 @@ module.exports=function(canvas_element){
             setCameraMatrix,setCameraMatrix,
             detectMarker:detectMarker,
             addMarker:addMarker,
-            cambiarThreshold:cambiarThreshold
+            cambiarThreshold:cambiarThreshold,
+            cleanMarkers:cleanMarkers
         }
 }
 },{}],7:[function(require,module,exports){

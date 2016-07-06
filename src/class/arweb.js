@@ -112,6 +112,7 @@ ARWeb.prototype.finishStage=function(){
 	this.etapas.shift();
 	this.planoEscena.limpiar();
   	this.realidadEscena.limpiar();
+  	this.detector_ar.cleanMarkers();
 	if(this.etapas.length>0)
 		this.etapas[0].init.call(this,this.etapas[0]);
 }
