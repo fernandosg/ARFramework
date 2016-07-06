@@ -13,6 +13,13 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png",stage.canasta);
 	stage.canasta.position({x:160,y:-90,z:-600});
+	stage.canasta.get().visible=false;
+	stage.hombro=new this.Elemento(80,80,new THREE.PlaneGeometry(80,80));	
+	stage.hombro.init();
+	stage.hombro.definir("./assets/img/basket/canasta.png",stage.hombro);		
+	stage.hombro.position({x:0,y:0,z:0});
+	stage.hombro.get().matrixAutoUpdate = false;
+  	stage.hombro.get().visible=false;
 	stage.total_canastas=10;
 	stage.canastas=0;
 	stage.bajar=false;
@@ -20,9 +27,9 @@ Basketball.prototype.init = function(stage) {
 	stage.posicion_canasta_anterior=undefined;
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
-	this.allowDetect(true);
+	this.allowDetect(true);	
 	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
-	this.anadirMarcador({id:2,callback:stage.ayuda});
+	this.anadirMarcador({id:2,callback:function(){},puntero:stage.hombro.get()});
 };
 
 Basketball.prototype.ayuda=function(){
@@ -44,7 +51,10 @@ Basketball.prototype.ayuda=function(){
 Basketball.prototype.fnAfter = function(puntero) {
 	puntero.visible=true;
 	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500)
-		this.logica.call(this,puntero);	
+		this.logica.call(this,puntero);
+/*	Checking the distance between the shoulder and hand
+	if(this.hombro!=undefined)
+		console.log("Distance between the shoulder and hand "+this.hombro.getDistancia(puntero));	*/	
 	
 };
 
