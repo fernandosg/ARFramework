@@ -1,7 +1,7 @@
 //DEBUG=true;
-Calibrar=require("../src/calibracion.js");
-Memorama=require("../src/memorama.js");
-Basketball=require("../src/basketball.js");
+Calibrar=require("./stages/calibracion.js");
+Memorama=require("./stages/memorama.js");
+Basketball=require("./stages/basketball.js");
 calibracion=new Calibrar();
 memorama=new Memorama();
 basketball=new Basketball();
