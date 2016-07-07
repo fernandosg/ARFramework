@@ -148,6 +148,18 @@ Elemento.prototype.position=function(pos){
     this.posiciones=this.elemento_raiz.position;
     this.defineBox();
 }
+
+Elemento.prototype.rotation=function(pos){
+    for(var prop in pos){
+        this.elemento_raiz.rotation[prop]=pos[prop]
+    }
+}
+
+Elemento.prototype.quaternion=function(pos){
+    for(var prop in pos){
+        this.elemento_raiz.rotation[prop]=pos[prop]
+    }    
+}
 Elemento.prototype.incrementar=function(pos){
     for(var prop in pos){
         this.elemento_raiz.position[prop]+=pos[prop]
