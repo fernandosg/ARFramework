@@ -1,22 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //DEBUG=true;
 Calibrar=require("./stages/calibracion.js");
-Memorama=require("./stages/memorama.js");
-Basketball=require("./stages/basketball.js");
+Tienda=require("./stages/tienda.js");
 calibracion=new Calibrar();
-memorama=new Memorama();
-basketball=new Basketball();
+//memorama=new Memorama();
+//basketball=new Basketball();
+tienda=new Tienda();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
 ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
+arweb.addStage(tienda);
 //arweb.addStage(memorama);
-arweb.addStage(basketball);
+//arweb.addStage(basketball);
 arweb.run();
-},{"../src/class/arweb.js":8,"./stages/basketball.js":2,"./stages/calibracion.js":3,"./stages/memorama.js":4}],2:[function(require,module,exports){
+},{"../src/class/arweb.js":9,"./stages/calibracion.js":3,"./stages/tienda.js":6}],2:[function(require,module,exports){
 function Basketball(){
 
 }
@@ -384,7 +385,7 @@ Memorama.prototype.fnAfter=function(puntero){
 }
 
 module.exports=Memorama;
-},{"../../src/class/labels":13,"../../src/libs/animacion.js":15}],5:[function(require,module,exports){
+},{"../../src/class/labels":14,"../../src/libs/animacion.js":16}],5:[function(require,module,exports){
 function Sequence(){
 
 }
@@ -536,7 +537,33 @@ Sequence.prototype.init=function(){
 }
 
 module.exports=Sequence;
-},{"../../src/class/detector":9,"../../src/class/elemento":11,"../../src/class/labels":13}],6:[function(require,module,exports){
+},{"../../src/class/detector":10,"../../src/class/elemento":12,"../../src/class/labels":14}],6:[function(require,module,exports){
+function Tienda(){
+	
+}
+
+Tienda.prototype.init=function(stage){
+	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));
+	stage.vaso.init();
+  	stage.vaso.etiqueta("Detector");
+  	stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
+  	stage.vaso.position({x:-150,y:-90,z:-600});
+  	stage.jarra=new this.Elemento(129,154,new THREE.PlaneGeometry(129,154));
+  	stage.jarra.init();
+  	stage.jarra.etiqueta("Jarra");
+  	stage.jarra.definir("../../assets/img/tienda/jarra.png",stage.jarra);
+  	stage.jarra.position({x:90,y:-90,z:-600});
+  	this.anadir(stage.vaso.get());
+  	this.anadir(stage.jarra.get());
+  	this.allowDetect(true);
+}
+
+Tienda.prototype.loop=function(stage){
+
+}
+
+module.exports=Tienda;
+},{}],7:[function(require,module,exports){
 function ColorStage(){
 	this.colors;
 	this.codesColors=[];
@@ -619,7 +646,7 @@ ColorStage.prototype.init=function(stage){
       });
 }
 module.exports=ColorStage;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function Manejador(){
 	this.lista_eventos={};
 };
@@ -654,7 +681,7 @@ Manejador.prototype.baja=function(evento,objeto){
 	this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);
 }
 module.exports=Manejador;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function ARWeb(configuracion){	
 	this.detect=false;
 	this.etapas=[];
@@ -776,7 +803,7 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"../libs/mensajes.js":16,"./ManejadorEventos":7,"./detector":9,"./detectormarker.js":10,"./elemento":11,"./escenario.js":12,"./webcamstream.js":14}],9:[function(require,module,exports){
+},{"../libs/mensajes.js":17,"./ManejadorEventos":8,"./detector":10,"./detectormarker.js":11,"./elemento":12,"./escenario.js":13,"./webcamstream.js":15}],10:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=120;
@@ -884,7 +911,7 @@ module.exports=function(canvas_element){
             cleanMarkers:cleanMarkers
         }
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function DetectorMarker(id,callback,puntero){
 	this.id=id;
 	this.callback=callback;
@@ -896,7 +923,7 @@ DetectorMarker.prototype.detected = function() {
 };
 
 module.exports=DetectorMarker;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
@@ -1175,7 +1202,7 @@ Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
     this.calculoOrigen();
 }
 module.exports=Elemento;
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 function Escenario(){
 	this.escena=new THREE.Scene();		
 }
@@ -1206,7 +1233,7 @@ Escenario.prototype.limpiar=function(){
 		this.escena.remove(this.escena.children[0]);
 }
 module.exports=Escenario;
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -1257,7 +1284,7 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 function WebcamStream(configuracion){
   this.canvas=document.createElement("canvas");
   this.canvas.width=configuracion["WIDTH"];
@@ -1289,7 +1316,7 @@ WebcamStream.prototype.getCanvas=function(){
 }
 
 module.exports=WebcamStream;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 function Animacion(){	
 	this.pila_objetos=[];
 	this.pila_objetos_animaciones={};
@@ -1377,7 +1404,7 @@ Animacion.prototype.ocultar=function(){
 	this.run();
 }
 module.exports=Animacion;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 function Mensajes(juego){
 	this.juego=juego;
 }
@@ -1402,4 +1429,4 @@ Mensajes.prototype.alerta=function(datos){
 	},datos.tiempo);
 }
 module.exports=Mensajes;
-},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14]);
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
