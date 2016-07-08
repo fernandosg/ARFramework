@@ -1217,7 +1217,6 @@ Elemento.prototype.getDistancia=function(mano){
 
 Elemento.prototype.abajoDe=function(puntero){
     var aument=(arguments.length>1) ? arguments[1] : 0;
-    //console.log("el aumento fue de "+aument);
      return ((this.box.max.x+aument>=puntero.getWorldPosition().x && (this.box.min.x)<=puntero.getWorldPosition().x)
         && (this.box.min.y<puntero.getWorldPosition().y))              
 }
