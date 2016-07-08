@@ -12,7 +12,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);
@@ -548,6 +548,13 @@ Tienda.prototype.init=function(stage){
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
   stage.vaso.position({x:-150,y:-90,z:-600});
+
+  stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
+  stage.mesa.init();
+  stage.mesa.etiqueta("Detector");
+  stage.mesa.definir("../../assets/img/tienda/mesa.png",stage.mesa);
+  stage.mesa.position({x:160,y:-200,z:-610});
+
   stage.holder=new this.Elemento(30,30,new THREE.PlaneGeometry(30,30));
   stage.holder.init();
   stage.holder.etiqueta("Detector");
@@ -568,6 +575,7 @@ Tienda.prototype.init=function(stage){
   this.anadir(stage.vaso.get());
   this.anadir(stage.jarra.get());
   this.anadir(stage.holder.get());
+  this.anadir(stage.mesa.get());
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
   this.allowDetect(true);
 }
