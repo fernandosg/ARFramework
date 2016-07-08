@@ -549,7 +549,7 @@ Tienda.prototype.init=function(stage){
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
-  stage.vaso.position({x:-150,y:-90,z:-600});
+  stage.vaso.position({x:-150,y:-90,z:-620});
 
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
   stage.mesa.init();
@@ -596,8 +596,8 @@ Tienda.prototype.actualizarJarra=function(puntero){
 
 Tienda.prototype.logica=function(puntero){
   if(this.recoger)    
-      this.actualizarJarra(puntero);
-  if(this.vaso.getDistancia(puntero)<=90 && this.lleno){
+      this.actualizarJarra(puntero); 
+  if(this.vaso.abajoDe(puntero,(this.jarra.width/2))){
     if(this.lleno)
       if(puntero.getWorldRotation().x<=0.47062448038075105  && puntero.getWorldRotation().z<=1.50){
         console.log("LLENANDO EL VASO")
@@ -629,7 +629,7 @@ Tienda.prototype.logica=function(puntero){
         console.log("Recoger la jarra");
       }.bind(this),5000);
     }    
-  }
+  }  
 }
 
 Tienda.prototype.fnAfter=function(puntero){
@@ -1213,6 +1213,13 @@ Elemento.prototype.getDistancia=function(mano){
     pos2=this.box.center().clone();
     pos2.z=0;
     return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+}
+
+Elemento.prototype.abajoDe=function(puntero){
+    var aument=(arguments.length>1) ? arguments[1] : 0;
+    //console.log("el aumento fue de "+aument);
+     return ((this.box.max.x+aument>=puntero.getWorldPosition().x && (this.box.min.x)<=puntero.getWorldPosition().x)
+        && (this.box.min.y<puntero.getWorldPosition().y))              
 }
 
 
