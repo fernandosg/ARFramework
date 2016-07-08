@@ -45,17 +45,30 @@ Tienda.prototype.actualizarJarra=function(puntero){
 }
 
 Tienda.prototype.logica=function(puntero){
-  if(this.holder.getDistancia(puntero)<=66.5){
-    this.actualizarJarra(this.holder.get());
-    this.recoger=false;
+  if(this.recoger)    
+      this.actualizarJarra(puntero);
+  if(this.vaso.getDistancia(puntero)<=90 && this.lleno){
+    if(this.lleno)
+      if(puntero.getWorldRotation().x<=0.47062448038075105  && puntero.getWorldRotation().z<=1.50){
+        this.lleno=false;
+        console.log("Listo, debo de llenarlo")
+      }
+  }else if(this.holder.getDistancia(puntero)<=66.5){
+    if(!this.lleno){
+      this.actualizarJarra(this.holder.get());
+      this.recoger=false;
+      setTimeout(function(){
+        this.recoger=true;
+        this.lleno=true;
+        console.log("Recoger la jarra");
+      }.bind(this),5000);
+    }    
   }
 }
 
 Tienda.prototype.fnAfter=function(puntero){
 	puntero.visible=true;	
-	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){    //this.logica.call(this,puntero); 
-    if(this.recoger)
-      this.actualizarJarra(puntero);
+	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){    //this.logica.call(this,puntero);     
     this.logica(puntero);
   }
 }
