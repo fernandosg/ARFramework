@@ -12,7 +12,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-//arweb.addStage(calibracion);
+arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);
@@ -543,6 +543,8 @@ function Tienda(){
 }
 
 Tienda.prototype.init=function(stage){
+  stage.conteo_segundos=0;
+  stage.conteo=undefined;
 	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
@@ -598,8 +600,24 @@ Tienda.prototype.logica=function(puntero){
   if(this.vaso.getDistancia(puntero)<=90 && this.lleno){
     if(this.lleno)
       if(puntero.getWorldRotation().x<=0.47062448038075105  && puntero.getWorldRotation().z<=1.50){
-        this.lleno=false;
-        console.log("Listo, debo de llenarlo")
+        console.log("LLENANDO EL VASO")
+        var that=this;
+        setTimeout(function(){
+          that.conteo_segundos++;
+          console.log("comenzando "+that.conteo_segundos)
+          if(that.conteo_segundos>=3){
+            clearInterval(that.conteo);
+            that.lleno=false;
+            that.conteo_segundos=0;
+            console.log("ESTA VACIA LA JARRA, DEBO LLENARLO");
+            that.conteo=undefined;
+          }
+        },1000);        
+      }else{
+        if(this.conteo!=undefined){
+          clearInterval(this.conteo); 
+          console.log("no estoy en posicion");
+        }       
       }
   }else if(this.holder.getDistancia(puntero)<=66.5){
     if(!this.lleno){
