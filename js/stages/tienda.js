@@ -5,7 +5,8 @@ function Tienda(){
 Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
-	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));
+	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
+  stage.mensajes=new this.Mensajes(stage,"container");
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
@@ -69,10 +70,10 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
-            console.log("ESTA VACIA LA JARRA, DEBO LLENARLO");
+            this.mensajes.aviso("Esta vacia la jarra, debo llenarlo");
             that.conteo=undefined;
           }
-        },1000);        
+        }.bind(this),1000);        
       }else{
         if(this.conteo!=undefined){
           clearInterval(this.conteo); 
@@ -86,7 +87,7 @@ Tienda.prototype.logica=function(puntero){
       setTimeout(function(){
         this.recoger=true;
         this.lleno=true;
-        console.log("Recoger la jarra");
+        this.mensajes.aviso("Esta llena la jarra, debo llenar el vaso");
       }.bind(this),5000);
     }    
   }  

@@ -130,7 +130,6 @@ Calibrar.prototype.desbloquear=function(){
 
 Calibrar.prototype.init=function(stage){ 
   stage.cantidad_cartas=4;
-  stage.mensajes=new this.Mensajes(stage,"container");
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
@@ -546,7 +545,8 @@ function Tienda(){
 Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
-	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));
+	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
+  stage.mensajes=new this.Mensajes(stage,"container");
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
@@ -610,10 +610,10 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
-            console.log("ESTA VACIA LA JARRA, DEBO LLENARLO");
+            this.mensajes.aviso("Esta vacia la jarra, debo llenarlo");
             that.conteo=undefined;
           }
-        },1000);        
+        }.bind(this),1000);        
       }else{
         if(this.conteo!=undefined){
           clearInterval(this.conteo); 
@@ -627,7 +627,7 @@ Tienda.prototype.logica=function(puntero){
       setTimeout(function(){
         this.recoger=true;
         this.lleno=true;
-        console.log("Recoger la jarra");
+        this.mensajes.aviso("Esta llena la jarra, debo llenar el vaso");
       }.bind(this),5000);
     }    
   }  
