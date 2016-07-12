@@ -6,7 +6,8 @@ Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
 	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
-  stage.mensajes=new this.Mensajes(stage,"container");
+  stage.mensajes_texto=new this.Mensajes(stage,"container");
+  stage.mensajes_lateral=new this.Mensajes(stage,"container").position({top:"150px"});  
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
@@ -70,7 +71,7 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
-            this.mensajes.aviso("Esta vacia la jarra, debo llenarlo");
+            this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
             that.conteo=undefined;
           }
         }.bind(this),1000);        
@@ -87,7 +88,7 @@ Tienda.prototype.logica=function(puntero){
       setTimeout(function(){
         this.recoger=true;
         this.lleno=true;
-        this.mensajes.aviso("Esta llena la jarra, debo llenar el vaso");
+        this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
     }    
   }  
