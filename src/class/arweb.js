@@ -7,6 +7,8 @@ function ARWeb(configuracion){
   	this.HEIGHT_CANVAS=configuracion["height"];
   	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
   	this.DetectorMarker=require("./detectormarker.js");
+  	this.Mensajes=require("../libs/mensajes.js");
+  	this.raiz=configuracion["elemento"];
   	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
   	 THREE.Matrix4.prototype.setFromArray = function(m) {
           return this.set(

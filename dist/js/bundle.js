@@ -130,6 +130,7 @@ Calibrar.prototype.desbloquear=function(){
 
 Calibrar.prototype.init=function(stage){ 
   stage.cantidad_cartas=4;
+  stage.mensajes=new this.Mensajes(stage,"container");
   mensaje="Bienvenido al proceso de calibración.<br>";
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
@@ -768,6 +769,8 @@ function ARWeb(configuracion){
   	this.HEIGHT_CANVAS=configuracion["height"];
   	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
   	this.DetectorMarker=require("./detectormarker.js");
+  	this.Mensajes=require("../libs/mensajes.js");
+  	this.raiz=configuracion["elemento"];
   	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
   	 THREE.Matrix4.prototype.setFromArray = function(m) {
           return this.set(
@@ -1500,8 +1503,24 @@ Animacion.prototype.ocultar=function(){
 }
 module.exports=Animacion;
 },{}],17:[function(require,module,exports){
-function Mensajes(juego){
+function Mensajes(juego,capa){
 	this.juego=juego;
+	this.elemento=capa;
+	this.capa==null;
+}
+
+Mensajes.prototype.aviso=function(texto){	
+	if(this.capa==null){
+		this.capa=document.createElement("div");
+		this.capa.id="mensajes";
+		document.getElementById(this.elemento).appendChild(this.capa);
+		this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px";
+	}
+	this.capa.innerHTML=texto;
+	this.capa.style.display="block";		
+	setTimeout(function(){
+		this.capa.style.display="none";
+	}.bind(this),3000);	
 }
 
 Mensajes.prototype.precaucion=function(datos){
