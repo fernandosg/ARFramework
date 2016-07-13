@@ -130,9 +130,7 @@ Calibrar.prototype.desbloquear=function(){
 
 Calibrar.prototype.init=function(stage){ 
   stage.cantidad_cartas=4;
-  mensaje="Bienvenido al proceso de calibración.<br>";  
-  stage.mensajes_texto=new this.Mensajes(stage,"container");
-  stage.mensajes_lateral=new this.Mensajes(stage,"container").position({top:"150px"});    
+  mensaje="Bienvenido al proceso de calibración.<br>";    
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
   document.getElementById("informacion_nivel").innerHTML=mensaje+""+descripcion;  
@@ -548,8 +546,9 @@ Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
 	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
-  stage.mensajes_texto=new this.Mensajes(stage,"container");
-  stage.mensajes_lateral=new this.Mensajes(stage,"container").position({top:"150px"});  
+  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
+  //stage.mensajes_lateral=new this.Mensajes({game:stage,div:"container",type:"text"}).position({top:"150px"});  
+  stage.mensaje_imagen=new this.Mensajes({game:stage,div:"container",type:"image"}).srcImage("../../assets/img/tienda/exito.png");
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
@@ -613,6 +612,9 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
+
+            this.mensaje_imagen.position({left:""+(this.vaso.get().position.x+500)+"px",top:""+(400-this.vaso.get().position.y)+"px"}).mostrar();
+            //this.mensaje_imagen.position({top:this.vaso.get().position.x+500,left:400-this.vaso.get().position.y}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
             that.conteo=undefined;
           }
@@ -629,7 +631,8 @@ Tienda.prototype.logica=function(puntero){
       this.recoger=false;
       setTimeout(function(){
         this.recoger=true;
-        this.lleno=true;
+        this.lleno=true;        
+        this.mensaje_imagen.position({left:""+(this.jarra.get().position.x+500)+"px",top:""+(400-this.jarra.get().position.y)+"px"}).mostrar();
         this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
     }    
@@ -1506,30 +1509,45 @@ Animacion.prototype.ocultar=function(){
 }
 module.exports=Animacion;
 },{}],17:[function(require,module,exports){
-function Mensajes(juego,capa){
-	this.juego=juego;
-	this.elemento=capa;
+function Mensajes(config){
+	this.juego=config.game;
+	this.elemento=config.div;
 	this.capa==null;
+	this.tipo=config.type;
+	this.imagen=null;
+	return this;	
+}
+
+Mensajes.prototype.srcImage=function(src){
+	if(this.tipo=="image" && this.imagen==null){
+		this.imagen=new Image();		
+		this.crearCapa();
+		this.capa.style.width="0px";
+		this.capa.style.height="0px";
+		this.capa.appendChild(this.imagen);
+	}
+	this.imagen.src=src;
+	return this;
 }
 
 Mensajes.prototype.crearCapa=function(){
-	this.capa=document.createElement("div");
-	this.capa.id="mensajes";
-	document.getElementById(this.elemento).appendChild(this.capa);
-	this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px";
+	if(this.capa==null){
+		this.capa=document.createElement("div");
+		this.capa.id="mensajes";
+		document.getElementById(this.elemento).appendChild(this.capa);
+		this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px;display:none;";
+	}
 }
 
 Mensajes.prototype.aviso=function(texto){	
-	if(this.capa==null){
-		this.crearCapa();
-	}
-	this.capa.innerHTML=texto;
+	this.crearCapa()
+	if(this.tipo!="image")
+		this.capa.innerHTML=texto;
 	return this;
 }
 
 Mensajes.prototype.position=function(pos){
-	if(this.capa==null);
-		this.crearCapa();	
+	this.crearCapa();
 	for(var attr in pos)
 		this.capa.style[attr]=pos[attr];
 	return this;

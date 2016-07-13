@@ -1,27 +1,42 @@
-function Mensajes(juego,capa){
-	this.juego=juego;
-	this.elemento=capa;
+function Mensajes(config){
+	this.juego=config.game;
+	this.elemento=config.div;
 	this.capa==null;
+	this.tipo=config.type;
+	this.imagen=null;
+	return this;	
+}
+
+Mensajes.prototype.srcImage=function(src){
+	if(this.tipo=="image" && this.imagen==null){
+		this.imagen=new Image();		
+		this.crearCapa();
+		this.capa.style.width="0px";
+		this.capa.style.height="0px";
+		this.capa.appendChild(this.imagen);
+	}
+	this.imagen.src=src;
+	return this;
 }
 
 Mensajes.prototype.crearCapa=function(){
-	this.capa=document.createElement("div");
-	this.capa.id="mensajes";
-	document.getElementById(this.elemento).appendChild(this.capa);
-	this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px";
+	if(this.capa==null){
+		this.capa=document.createElement("div");
+		this.capa.id="mensajes";
+		document.getElementById(this.elemento).appendChild(this.capa);
+		this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px;display:none;";
+	}
 }
 
 Mensajes.prototype.aviso=function(texto){	
-	if(this.capa==null){
-		this.crearCapa();
-	}
-	this.capa.innerHTML=texto;
+	this.crearCapa()
+	if(this.tipo!="image")
+		this.capa.innerHTML=texto;
 	return this;
 }
 
 Mensajes.prototype.position=function(pos){
-	if(this.capa==null);
-		this.crearCapa();	
+	this.crearCapa();
 	for(var attr in pos)
 		this.capa.style[attr]=pos[attr];
 	return this;

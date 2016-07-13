@@ -6,8 +6,9 @@ Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
 	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
-  stage.mensajes_texto=new this.Mensajes(stage,"container");
-  stage.mensajes_lateral=new this.Mensajes(stage,"container").position({top:"150px"});  
+  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
+  //stage.mensajes_lateral=new this.Mensajes({game:stage,div:"container",type:"text"}).position({top:"150px"});  
+  stage.mensaje_imagen=new this.Mensajes({game:stage,div:"container",type:"image"}).srcImage("../../assets/img/tienda/exito.png");
 	stage.vaso.init();
   stage.vaso.etiqueta("Detector");
   stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
@@ -71,6 +72,9 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
+
+            this.mensaje_imagen.position({left:""+(this.vaso.get().position.x+500)+"px",top:""+(400-this.vaso.get().position.y)+"px"}).mostrar();
+            //this.mensaje_imagen.position({top:this.vaso.get().position.x+500,left:400-this.vaso.get().position.y}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
             that.conteo=undefined;
           }
@@ -87,7 +91,8 @@ Tienda.prototype.logica=function(puntero){
       this.recoger=false;
       setTimeout(function(){
         this.recoger=true;
-        this.lleno=true;
+        this.lleno=true;        
+        this.mensaje_imagen.position({left:""+(this.jarra.get().position.x+500)+"px",top:""+(400-this.jarra.get().position.y)+"px"}).mostrar();
         this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
     }    
