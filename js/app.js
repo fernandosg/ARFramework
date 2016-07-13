@@ -11,7 +11,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);

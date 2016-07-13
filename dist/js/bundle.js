@@ -12,7 +12,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);
@@ -612,7 +612,6 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
-
             this.mensaje_imagen.position({left:""+(this.vaso.get().position.x+500)+"px",top:""+(400-this.vaso.get().position.y)+"px"}).mostrar();
             //this.mensaje_imagen.position({top:this.vaso.get().position.x+500,left:400-this.vaso.get().position.y}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
@@ -631,7 +630,7 @@ Tienda.prototype.logica=function(puntero){
       this.recoger=false;
       setTimeout(function(){
         this.recoger=true;
-        this.lleno=true;        
+        this.lleno=true;     
         this.mensaje_imagen.position({left:""+(this.jarra.get().position.x+500)+"px",top:""+(400-this.jarra.get().position.y)+"px"}).mostrar();
         this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
@@ -810,6 +809,7 @@ ARWeb.prototype.init=function(){
   	var DetectorAR=require("./detector");
   	var Observador=require("./ManejadorEventos");
   	var Mensajes=require("../libs/mensajes.js");
+  	var PositionUtils=require("../libs/position_utils.js");
   	this.observador=new Observador();
   	this.mensajes=new Mensajes(this);
   	this.Elemento=require("./elemento");
@@ -829,7 +829,8 @@ ARWeb.prototype.init=function(){
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
-  	this.canvas_video=this.webcam.getCanvas();
+  	this.canvas_video=this.webcam.getCanvas();  	
+  	this.position_utils=new PositionUtils({width:this.WIDTH_CANVAS,height:this.HEIGHT_CANVAS,escena:this.planoEscena});
 }
 
 ARWeb.prototype.anadirMarcador=function(marcador){
@@ -889,7 +890,7 @@ ARWeb.prototype.finishStage=function(){
 
 
 module.exports=ARWeb;
-},{"../libs/mensajes.js":17,"./ManejadorEventos":8,"./detector":10,"./detectormarker.js":11,"./elemento":12,"./escenario.js":13,"./webcamstream.js":15}],10:[function(require,module,exports){
+},{"../libs/mensajes.js":17,"../libs/position_utils.js":18,"./ManejadorEventos":8,"./detector":10,"./detectormarker.js":11,"./elemento":12,"./escenario.js":13,"./webcamstream.js":15}],10:[function(require,module,exports){
 module.exports=function(canvas_element){
         var JSARRaster,JSARParameters,detector,result;
         var threshold=120;
@@ -1581,4 +1582,23 @@ Mensajes.prototype.alerta=function(datos){
 	},datos.tiempo);
 }
 module.exports=Mensajes;
+},{}],18:[function(require,module,exports){
+function PositionUtils(config){
+	this.width=config.width;
+	this.height=config.height;	
+    this.escena=config.escena;
+}
+
+PositionUtils.prototype.getScreenPosition=function(obj){
+	var vector = new THREE.Vector3();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(this.escena.camara);
+    var widthHalf = this.width / 2, heightHalf = this.height / 2;
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = -( vector.y * heightHalf ) + heightHalf;
+    return vector;
+}
+
+module.exports=PositionUtils;
+
 },{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);

@@ -42,6 +42,7 @@ ARWeb.prototype.init=function(){
   	var DetectorAR=require("./detector");
   	var Observador=require("./ManejadorEventos");
   	var Mensajes=require("../libs/mensajes.js");
+  	var PositionUtils=require("../libs/position_utils.js");
   	this.observador=new Observador();
   	this.mensajes=new Mensajes(this);
   	this.Elemento=require("./elemento");
@@ -61,7 +62,8 @@ ARWeb.prototype.init=function(){
   	this.detector_ar=DetectorAR(this.webcam.getCanvas());
   	this.detector_ar.init();
   	this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
-  	this.canvas_video=this.webcam.getCanvas();
+  	this.canvas_video=this.webcam.getCanvas();  	
+  	this.position_utils=new PositionUtils({width:this.WIDTH_CANVAS,height:this.HEIGHT_CANVAS,escena:this.planoEscena});
 }
 
 ARWeb.prototype.anadirMarcador=function(marcador){
