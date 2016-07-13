@@ -14,4 +14,24 @@ PositionUtils.prototype.getScreenPosition=function(obj){
     return vector;
 }
 
+PositionUtils.prototype.getPointView=function(dist){
+    var vFOV = this.escena.camara.fov * Math.PI / 180;        // convert vertical fov to radians
+    var height = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
+
+    var aspect = this.width / this.height;
+    var width = height * aspect; 
+    return {
+        width:width,
+        height:height
+    }
+}
+
+PositionUtils.prototype.getRealSize=function(size,z){
+    var real_size=this.getPointView(Math.abs(z));
+    return {
+        width:(size.x*real_size.width)/1000,
+        height:(size.y*real_size.height)/800
+    }
+}
+
 module.exports=PositionUtils;

@@ -73,7 +73,8 @@ Tienda.prototype.logica=function(puntero){
             that.lleno=false;
             that.conteo_segundos=0;
             var pos=this.position_utils.getScreenPosition(this.vaso.get().children[0]);
-            this.mensaje_imagen.position({left:pos.x+"px",top:pos.y+"px"}).mostrar();
+            var size=this.position_utils.getRealSize(this.vaso.box.size(),this.vaso.get().position.z);
+            this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
             that.conteo=undefined;
           }
@@ -92,7 +93,8 @@ Tienda.prototype.logica=function(puntero){
         this.recoger=true;
         this.lleno=true;     
         var pos=this.position_utils.getScreenPosition(this.jarra.get().children[0]);
-        this.mensaje_imagen.position({left:pos.x+"px",top:pos.y+"px"}).mostrar();
+        var size=this.position_utils.getRealSize(this.jarra.box.size(),this.jarra.get().position.z);
+        this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
         this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
     }    

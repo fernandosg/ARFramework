@@ -613,7 +613,8 @@ Tienda.prototype.logica=function(puntero){
             that.lleno=false;
             that.conteo_segundos=0;
             var pos=this.position_utils.getScreenPosition(this.vaso.get().children[0]);
-            this.mensaje_imagen.position({left:pos.x+"px",top:pos.y+"px"}).mostrar();
+            var size=this.position_utils.getRealSize(this.vaso.box.size(),this.vaso.get().position.z);
+            this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
             that.conteo=undefined;
           }
@@ -632,7 +633,8 @@ Tienda.prototype.logica=function(puntero){
         this.recoger=true;
         this.lleno=true;     
         var pos=this.position_utils.getScreenPosition(this.jarra.get().children[0]);
-        this.mensaje_imagen.position({left:pos.x+"px",top:pos.y+"px"}).mostrar();
+        var size=this.position_utils.getRealSize(this.jarra.box.size(),this.jarra.get().position.z);
+        this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
         this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
       }.bind(this),5000);
     }    
@@ -1599,6 +1601,26 @@ PositionUtils.prototype.getScreenPosition=function(obj){
     vector.x = ( vector.x * widthHalf ) + widthHalf;
     vector.y = -( vector.y * heightHalf ) + heightHalf;
     return vector;
+}
+
+PositionUtils.prototype.getPointView=function(dist){
+    var vFOV = this.escena.camara.fov * Math.PI / 180;        // convert vertical fov to radians
+    var height = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
+
+    var aspect = this.width / this.height;
+    var width = height * aspect; 
+    return {
+        width:width,
+        height:height
+    }
+}
+
+PositionUtils.prototype.getRealSize=function(size,z){
+    var real_size=this.getPointView(Math.abs(z));
+    return {
+        width:(size.x*real_size.width)/1000,
+        height:(size.y*real_size.height)/800
+    }
 }
 
 module.exports=PositionUtils;
