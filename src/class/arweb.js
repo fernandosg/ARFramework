@@ -74,6 +74,7 @@ ARWeb.prototype.anadirMarcador=function(marcador){
 
 ARWeb.prototype.addStage=function(fn){
 	fn.observador=this.observador;
+	fn.position_utils=this.position_utils;
 	this.etapas.push(fn);
 }
 
