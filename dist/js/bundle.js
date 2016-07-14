@@ -539,20 +539,26 @@ Sequence.prototype.init=function(){
 module.exports=Sequence;
 },{"../../src/class/detector":10,"../../src/class/elemento":12,"../../src/class/labels":14}],6:[function(require,module,exports){
 function Tienda(){
-	
+	this.turno=0;
+  this.callback_fn=false;
 }
 
 Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
-	stage.vaso=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
+  stage.vasos=[];
+  for(var i=0,increment=0;i<2;i++,increment=100){
+  	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
+  	stage.vasos[i].init();
+    stage.vasos[i].etiqueta("Detector");
+    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);
+    stage.vasos[i].position({x:(-150+increment),y:-90,z:-620});
+    this.anadir(stage.vasos[i].get());
+  }
+
+
   stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
-  //stage.mensajes_lateral=new this.Mensajes({game:stage,div:"container",type:"text"}).position({top:"150px"});  
   stage.mensaje_imagen=new this.Mensajes({game:stage,div:"container",type:"image"}).srcImage("../../assets/img/tienda/exito.png");
-	stage.vaso.init();
-  stage.vaso.etiqueta("Detector");
-  stage.vaso.definir("../../assets/img/tienda/vaso.png",stage.vaso);
-  stage.vaso.position({x:-150,y:-90,z:-620});
 
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
   stage.mesa.init();
@@ -576,8 +582,7 @@ Tienda.prototype.init=function(stage){
 	stage.puntero.definir("./assets/img/mano_escala.png",stage.puntero);	
 	stage.puntero.get().position.z=-1;
 	stage.puntero.get().matrixAutoUpdate = false;
-  stage.puntero.get().visible=false;
-  this.anadir(stage.vaso.get());
+  stage.puntero.get().visible=false;  
   this.anadir(stage.jarra.get());
   this.anadir(stage.holder.get());
   this.anadir(stage.mesa.get());
@@ -600,7 +605,7 @@ Tienda.prototype.actualizarJarra=function(puntero){
 Tienda.prototype.logica=function(puntero){
   if(this.recoger)    
       this.actualizarJarra(puntero); 
-  if(this.vaso.abajoDe(puntero,(this.jarra.width/2))){
+  if(this.vasos[this.turno].abajoDe(puntero,(this.jarra.width/2))){
     if(this.lleno)
       if(puntero.getWorldRotation().x<=0.47062448038075105  && puntero.getWorldRotation().z<=1.50){
         console.log("LLENANDO EL VASO")
@@ -612,13 +617,13 @@ Tienda.prototype.logica=function(puntero){
             clearInterval(that.conteo);
             that.lleno=false;
             that.conteo_segundos=0;
-            var pos=this.position_utils.getScreenPosition(this.vaso.get().children[0]);
-            var size=this.position_utils.getRealSize(this.vaso.box.size(),this.vaso.get().position.z);
+            var pos=this.position_utils.getScreenPosition(this.vasos[this.turno].get().children[0]);
+            var size=this.position_utils.getRealSize(this.vasos[this.turno].box.size(),this.vasos[this.turno].get().position.z);
             this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
-            this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo").mostrar();
+            this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo "+this.turno).mostrar();                       
             that.conteo=undefined;
           }
-        }.bind(this),1000);        
+        }.bind(this),1000);     
       }else{
         if(this.conteo!=undefined){
           clearInterval(this.conteo); 
@@ -627,16 +632,20 @@ Tienda.prototype.logica=function(puntero){
       }
   }else if(this.holder.getDistancia(puntero)<=66.5){
     if(!this.lleno){
-      this.actualizarJarra(this.holder.get());
-      this.recoger=false;
-      setTimeout(function(){
-        this.recoger=true;
-        this.lleno=true;     
-        var pos=this.position_utils.getScreenPosition(this.jarra.get().children[0]);
-        var size=this.position_utils.getRealSize(this.jarra.box.size(),this.jarra.get().position.z);
-        this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
-        this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso").mostrar();
-      }.bind(this),5000);
+      this.actualizarJarra(this.holder.get()); 
+      if(!this.callback_fn){ //Prevent that this block executed more that one time
+        setTimeout(function(){
+          this.recoger=true; 
+          this.lleno=true;
+          this.callback_fn=false;
+          var pos=this.position_utils.getScreenPosition(this.jarra.get().children[0]);
+          var size=this.position_utils.getRealSize(this.jarra.box.size(),this.jarra.get().position.z);
+          this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
+          this.turno=(this.turno==1) ? 0 : 1;
+          this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso "+this.turno).mostrar();          
+        }.bind(this),5000); 
+        this.callback_fn=true;
+      }    
     }    
   }  
 }
