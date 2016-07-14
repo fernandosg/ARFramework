@@ -5,6 +5,7 @@ function Mensajes(config){
 	this.tipo=config.type;
 	this.imagen=null;
 	this.clase=config.clase || null;
+	this.ocultar=config.ocultar==undefined ? true : config.ocultar;
 	return this;		
 }
 
@@ -48,10 +49,11 @@ Mensajes.prototype.position=function(pos){
 }
 
 Mensajes.prototype.mostrar=function(){
-	this.capa.style.display="block";			
-	setTimeout(function(){
-		this.capa.style.display="none";
-	}.bind(this),3000);
+	this.capa.style.display="block";
+	if(this.ocultar==true)			
+		setTimeout(function(){
+			this.capa.style.display="none";
+		}.bind(this),3000);
 
 	return this;
 }

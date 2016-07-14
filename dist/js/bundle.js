@@ -130,7 +130,7 @@ Calibrar.prototype.desbloquear=function(){
 
 Calibrar.prototype.init=function(stage){ 
   stage.cantidad_cartas=4;    
-  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit"});  
+  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
   stage.mensajes_texto.aviso("Hi").mostrar();
   mensaje="Bienvenido al proceso de calibración.<br>";    
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
@@ -1532,6 +1532,7 @@ function Mensajes(config){
 	this.tipo=config.type;
 	this.imagen=null;
 	this.clase=config.clase || null;
+	this.ocultar=config.ocultar==undefined ? true : config.ocultar;
 	return this;		
 }
 
@@ -1575,10 +1576,11 @@ Mensajes.prototype.position=function(pos){
 }
 
 Mensajes.prototype.mostrar=function(){
-	this.capa.style.display="block";			
-	setTimeout(function(){
-		this.capa.style.display="none";
-	}.bind(this),3000);
+	this.capa.style.display="block";
+	if(this.ocultar==true)			
+		setTimeout(function(){
+			this.capa.style.display="none";
+		}.bind(this),3000);
 
 	return this;
 }
