@@ -4,8 +4,10 @@ function Mensajes(config){
 	this.capa==null;
 	this.tipo=config.type;
 	this.imagen=null;
+	this.clase=config.clase || null;
 	return this;		
 }
+
 
 Mensajes.prototype.srcImage=function(src){
 	if(this.tipo=="image" && this.imagen==null){
@@ -23,7 +25,8 @@ Mensajes.prototype.crearCapa=function(){
 	if(this.capa==null){
 		this.capa=document.createElement("div");
 		this.capa.classList.add("mensajes");
-    	this.capa.setAttribute("class", "mensajes");
+		if(this.clase!=null)		
+			this.capa.classList.add(this.clase);
 		document.getElementById(this.elemento).appendChild(this.capa);
 	}
 }
@@ -32,6 +35,8 @@ Mensajes.prototype.aviso=function(texto){
 	this.crearCapa()
 	if(this.tipo!="image")
 		this.capa.innerHTML=texto;
+	if(this.clase==null)
+		this.capa.className="mensajes aviso";
 	return this;
 }
 

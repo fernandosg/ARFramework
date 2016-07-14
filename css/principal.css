@@ -1,5 +1,25 @@
-div.mensajes{
-	width: 500px;color: rgb(44, 43, 43);position: absolute;top: 0px;display: block;background-color: white;font-size: 22px;padding: 15px;border-radius: 5px; border-left:10px solid #2ecc71;
+.mensajes{
+	width: 500px;padding: 15px;border-radius: 5px;
+	position: absolute;top: 0px;display: block;
+}
+
+.aviso{	 
+	color: rgb(44, 43, 43);
+	background-color: white;font-size: 22px;
+	border-left:10px solid #2ecc71;
+}
+
+.postit{
+  background: url("../assets/img/tienda/nota.png");
+  width: 90px;
+  padding: 20px;
+  padding-left: 40px;  
+  background-size: cover;
+  height: 50px;
+}
+
+.responsive{	
+  background-size: cover;
 }
 
 .oculto{
