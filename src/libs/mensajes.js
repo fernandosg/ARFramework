@@ -4,7 +4,6 @@ function Mensajes(config){
 	this.capa==null;
 	this.tipo=config.type;
 	this.imagen=null;
-	this.styleDiv="width: 500px;color: rgb(44, 43, 43);position: absolute;top: 0px;display: block;background-color: white;font-size: 22px;padding: 15px;border-radius: 5px; border-left:10px solid #2ecc71";	
 	return this;		
 }
 
@@ -23,9 +22,9 @@ Mensajes.prototype.srcImage=function(src){
 Mensajes.prototype.crearCapa=function(){
 	if(this.capa==null){
 		this.capa=document.createElement("div");
-		this.capa.id="mensajes";
+		this.capa.classList.add("mensajes");
+    	this.capa.setAttribute("class", "mensajes");
 		document.getElementById(this.elemento).appendChild(this.capa);
-		this.capa.style.cssText=this.styleDiv;
 	}
 }
 
@@ -44,11 +43,11 @@ Mensajes.prototype.position=function(pos){
 }
 
 Mensajes.prototype.mostrar=function(){
-	this.capa.style.display="block";
-	/*		
+	this.capa.style.display="block";			
 	setTimeout(function(){
 		this.capa.style.display="none";
-	}.bind(this),3000);	*/
+	}.bind(this),3000);
+
 	return this;
 }
 
