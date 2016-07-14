@@ -12,7 +12,7 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  stage.cantidad_cartas=4;
+  stage.cantidad_cartas=4;  
   mensaje="Bienvenido al proceso de calibración.<br>";    
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";

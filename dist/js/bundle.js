@@ -129,7 +129,7 @@ Calibrar.prototype.desbloquear=function(){
 }
 
 Calibrar.prototype.init=function(stage){ 
-  stage.cantidad_cartas=4;
+  stage.cantidad_cartas=4;  
   mensaje="Bienvenido al proceso de calibración.<br>";    
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
@@ -1529,7 +1529,8 @@ function Mensajes(config){
 	this.capa==null;
 	this.tipo=config.type;
 	this.imagen=null;
-	return this;	
+	this.styleDiv="width: 500px;color: rgb(44, 43, 43);position: absolute;top: 0px;display: block;background-color: white;font-size: 22px;padding: 15px;border-radius: 5px; border-left:10px solid #2ecc71";	
+	return this;		
 }
 
 Mensajes.prototype.srcImage=function(src){
@@ -1549,7 +1550,7 @@ Mensajes.prototype.crearCapa=function(){
 		this.capa=document.createElement("div");
 		this.capa.id="mensajes";
 		document.getElementById(this.elemento).appendChild(this.capa);
-		this.capa.style.cssText="width:300px;background-color:white;color:black;position:absolute;top:0px;display:none;";
+		this.capa.style.cssText=this.styleDiv;
 	}
 }
 
@@ -1568,10 +1569,11 @@ Mensajes.prototype.position=function(pos){
 }
 
 Mensajes.prototype.mostrar=function(){
-	this.capa.style.display="block";		
+	this.capa.style.display="block";
+	/*		
 	setTimeout(function(){
 		this.capa.style.display="none";
-	}.bind(this),3000);	
+	}.bind(this),3000);	*/
 	return this;
 }
 
