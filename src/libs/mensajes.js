@@ -28,6 +28,7 @@ Mensajes.prototype.crearCapa=function(){
 		this.capa.classList.add("mensajes");
 		if(this.clase!=null)		
 			this.capa.classList.add(this.clase);
+		this.capa.style.display="none";
 		document.getElementById(this.elemento).appendChild(this.capa);
 	}
 }

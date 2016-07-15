@@ -7,17 +7,22 @@ Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
   stage.vasos=[];
+  stage.mensajes=[];
   for(var i=0,increment=0;i<2;i++,increment=100){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
     stage.vasos[i].etiqueta("Detector");
-    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);
+    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);    
     stage.vasos[i].position({x:(-150+increment),y:-90,z:-620});
-    this.anadir(stage.vasos[i].get());
+    stage.mensajes[i]=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
+    stage.vasos[i].next(function(stage,i){
+      var pos=this.position_utils.getScreenPosition(stage.vasos[i].get().children[0]);
+      var size=this.position_utils.getRealSize(stage.vasos[i].box.size(),stage.vasos[i].get().position.z);      
+      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+stage.turno).mostrar(); 
+    }.bind(this,stage,i));
+    this.anadir(stage.vasos[i].get());          
   }
 
-
-  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
   stage.mensaje_imagen=new this.Mensajes({game:stage,div:"container",type:"image"}).srcImage("../../assets/img/tienda/exito.png");
 
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));

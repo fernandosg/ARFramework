@@ -2,18 +2,35 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
     this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();       
+    this.callbacks=[];
 }
-
-
     
 Elemento.prototype.cambiarUmbral=function(escala){     
     this.umbral_colision=this.width/4;
-}            
+}  
+
+Elemento.prototype.next=function(callback){
+    this.callbacks.push(callback);
+}
 Elemento.prototype.init=function(){
     this.elemento_raiz=new THREE.Object3D();
     this.geometria_atras=this.geometry.clone();
     this.textureLoader = new THREE.TextureLoader();
-    this.cambiarUmbral(1);    
+    this.cambiarUmbral(1);        
+    this.checkingcalls=setInterval(this.iterateCalls.bind(this),1500);
+    // ^ CHECK - This method for treat events when something need to be execute and used the mesh object, it's not so clean, check later
+}
+
+Elemento.prototype.iterateCalls=function(){
+    if(this.elemento_raiz!=undefined){
+        if(this.elemento_raiz.children.length>0){
+            while(this.callbacks.length>0){
+                this.callbacks[0]();
+                this.callbacks.pop();
+            }
+            clearInterval(this.checkingcalls);
+        }
+    }
 }
 
 

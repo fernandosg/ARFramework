@@ -12,7 +12,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-arweb.addStage(calibracion);
+//arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);
@@ -130,8 +130,6 @@ Calibrar.prototype.desbloquear=function(){
 
 Calibrar.prototype.init=function(stage){ 
   stage.cantidad_cartas=4;    
-  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
-  stage.mensajes_texto.aviso("Hi").mostrar();
   mensaje="Bienvenido al proceso de calibración.<br>";    
   descripcion="Para mayor eficacia en el uso del rehabilitador, es necesario asegurar que puedas hacer los ejercicios de manera adecuada. Te pedimos, te coloques a no más de 90cm con el brazo extendido, una vez en posición, pide a alguien que de clic en la opción Calibrar.<br>";
   descripcion+="Una vez calibrado, aparecerán 4 cuadros, selecciona cada uno, conforme al orden que aparece abajo de este mensaje. Una vez seleccionado todos, iniciara el primer nivel de Memorama";
@@ -549,17 +547,22 @@ Tienda.prototype.init=function(stage){
   stage.conteo_segundos=0;
   stage.conteo=undefined;
   stage.vasos=[];
+  stage.mensajes=[];
   for(var i=0,increment=0;i<2;i++,increment=100){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
     stage.vasos[i].etiqueta("Detector");
-    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);
+    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);    
     stage.vasos[i].position({x:(-150+increment),y:-90,z:-620});
-    this.anadir(stage.vasos[i].get());
+    stage.mensajes[i]=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
+    stage.vasos[i].next(function(stage,i){
+      var pos=this.position_utils.getScreenPosition(stage.vasos[i].get().children[0]);
+      var size=this.position_utils.getRealSize(stage.vasos[i].box.size(),stage.vasos[i].get().position.z);      
+      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+stage.turno).mostrar(); 
+    }.bind(this,stage,i));
+    this.anadir(stage.vasos[i].get());          
   }
 
-
-  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
   stage.mensaje_imagen=new this.Mensajes({game:stage,div:"container",type:"image"}).srcImage("../../assets/img/tienda/exito.png");
 
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
@@ -1030,18 +1033,35 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
     this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();       
+    this.callbacks=[];
 }
-
-
     
 Elemento.prototype.cambiarUmbral=function(escala){     
     this.umbral_colision=this.width/4;
-}            
+}  
+
+Elemento.prototype.next=function(callback){
+    this.callbacks.push(callback);
+}
 Elemento.prototype.init=function(){
     this.elemento_raiz=new THREE.Object3D();
     this.geometria_atras=this.geometry.clone();
     this.textureLoader = new THREE.TextureLoader();
-    this.cambiarUmbral(1);    
+    this.cambiarUmbral(1);        
+    this.checkingcalls=setInterval(this.iterateCalls.bind(this),1500);
+    // ^ CHECK - This method for treat events when something need to be execute and used the mesh object, it's not so clean, check later
+}
+
+Elemento.prototype.iterateCalls=function(){
+    if(this.elemento_raiz!=undefined){
+        if(this.elemento_raiz.children.length>0){
+            while(this.callbacks.length>0){
+                this.callbacks[0]();
+                this.callbacks.pop();
+            }
+            clearInterval(this.checkingcalls);
+        }
+    }
 }
 
 
@@ -1555,6 +1575,7 @@ Mensajes.prototype.crearCapa=function(){
 		this.capa.classList.add("mensajes");
 		if(this.clase!=null)		
 			this.capa.classList.add(this.clase);
+		this.capa.style.display="none";
 		document.getElementById(this.elemento).appendChild(this.capa);
 	}
 }
