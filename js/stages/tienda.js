@@ -9,6 +9,7 @@ Tienda.prototype.init=function(stage){
   stage.vasos=[];
   stage.mensajes=[];
   stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
+  stage.mensaje_ordenjarra=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});
   for(var i=0,increment=0;i<2;i++,increment=100){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
@@ -109,6 +110,7 @@ Tienda.prototype.logica=function(puntero){
           this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
           this.turno=(this.turno==1) ? 0 : 1;
           this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso "+this.turno).mostrar();          
+          this.mensaje_ordenjarra.position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height/2))+"px"}).aviso("Entregar a orden "+this.turno).mostrar();
         }.bind(this),5000); 
         this.callback_fn=true;
       }    
