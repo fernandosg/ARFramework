@@ -12,7 +12,7 @@ ARWeb=require("../src/class/arweb.js");
 arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
-//arweb.addStage(calibracion);
+arweb.addStage(calibracion);
 arweb.addStage(tienda);
 //arweb.addStage(memorama);
 //arweb.addStage(basketball);
@@ -548,6 +548,7 @@ Tienda.prototype.init=function(stage){
   stage.conteo=undefined;
   stage.vasos=[];
   stage.mensajes=[];
+  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
   for(var i=0,increment=0;i<2;i++,increment=100){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
@@ -558,7 +559,7 @@ Tienda.prototype.init=function(stage){
     stage.vasos[i].next(function(stage,i){
       var pos=this.position_utils.getScreenPosition(stage.vasos[i].get().children[0]);
       var size=this.position_utils.getRealSize(stage.vasos[i].box.size(),stage.vasos[i].get().position.z);      
-      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+stage.turno).mostrar(); 
+      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+i).mostrar(); 
     }.bind(this,stage,i));
     this.anadir(stage.vasos[i].get());          
   }
@@ -626,13 +627,13 @@ Tienda.prototype.logica=function(puntero){
             var size=this.position_utils.getRealSize(this.vasos[this.turno].box.size(),this.vasos[this.turno].get().position.z);
             this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo "+this.turno).mostrar();                       
+            this.mensajes[this.turno].ocultar();
             that.conteo=undefined;
           }
         }.bind(this),1000);     
       }else{
         if(this.conteo!=undefined){
           clearInterval(this.conteo); 
-          console.log("no estoy en posicion");
         }       
       }
   }else if(this.holder.getDistancia(puntero)<=66.5){
@@ -1552,7 +1553,7 @@ function Mensajes(config){
 	this.tipo=config.type;
 	this.imagen=null;
 	this.clase=config.clase || null;
-	this.ocultar=config.ocultar==undefined ? true : config.ocultar;
+	this.cambiarVisibilidad=config.ocultar==undefined ? true : config.ocultar;
 	return this;		
 }
 
@@ -1598,12 +1599,16 @@ Mensajes.prototype.position=function(pos){
 
 Mensajes.prototype.mostrar=function(){
 	this.capa.style.display="block";
-	if(this.ocultar==true)			
+	if(this.cambiarVisibilidad==true)			
 		setTimeout(function(){
 			this.capa.style.display="none";
 		}.bind(this),3000);
 
 	return this;
+}
+
+Mensajes.prototype.ocultar=function(){
+	this.capa.style.display="none";
 }
 
 Mensajes.prototype.precaucion=function(datos){

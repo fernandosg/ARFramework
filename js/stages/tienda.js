@@ -8,6 +8,7 @@ Tienda.prototype.init=function(stage){
   stage.conteo=undefined;
   stage.vasos=[];
   stage.mensajes=[];
+  stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
   for(var i=0,increment=0;i<2;i++,increment=100){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
@@ -18,7 +19,7 @@ Tienda.prototype.init=function(stage){
     stage.vasos[i].next(function(stage,i){
       var pos=this.position_utils.getScreenPosition(stage.vasos[i].get().children[0]);
       var size=this.position_utils.getRealSize(stage.vasos[i].box.size(),stage.vasos[i].get().position.z);      
-      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+stage.turno).mostrar(); 
+      stage.mensajes[i].position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height))+"px"}).aviso("Orden "+i).mostrar(); 
     }.bind(this,stage,i));
     this.anadir(stage.vasos[i].get());          
   }
@@ -86,13 +87,13 @@ Tienda.prototype.logica=function(puntero){
             var size=this.position_utils.getRealSize(this.vasos[this.turno].box.size(),this.vasos[this.turno].get().position.z);
             this.mensaje_imagen.position({left:(pos.x-(size.width/2))+"px",top:(pos.y-(size.height/2))+"px"}).mostrar();
             this.mensajes_texto.aviso("Esta vacia la jarra, debo llenarlo "+this.turno).mostrar();                       
+            this.mensajes[this.turno].ocultar();
             that.conteo=undefined;
           }
         }.bind(this),1000);     
       }else{
         if(this.conteo!=undefined){
           clearInterval(this.conteo); 
-          console.log("no estoy en posicion");
         }       
       }
   }else if(this.holder.getDistancia(puntero)<=66.5){

@@ -5,7 +5,7 @@ function Mensajes(config){
 	this.tipo=config.type;
 	this.imagen=null;
 	this.clase=config.clase || null;
-	this.ocultar=config.ocultar==undefined ? true : config.ocultar;
+	this.cambiarVisibilidad=config.ocultar==undefined ? true : config.ocultar;
 	return this;		
 }
 
@@ -51,12 +51,16 @@ Mensajes.prototype.position=function(pos){
 
 Mensajes.prototype.mostrar=function(){
 	this.capa.style.display="block";
-	if(this.ocultar==true)			
+	if(this.cambiarVisibilidad==true)			
 		setTimeout(function(){
 			this.capa.style.display="none";
 		}.bind(this),3000);
 
 	return this;
+}
+
+Mensajes.prototype.ocultar=function(){
+	this.capa.style.display="none";
 }
 
 Mensajes.prototype.precaucion=function(datos){
