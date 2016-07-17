@@ -2,6 +2,7 @@ function Tienda(){
 	this.turno=0;
   this.callback_fn=false;
   this.firstTime=true;
+  this.numOrden=0;
 }
 
 Tienda.prototype.init=function(stage){
@@ -105,6 +106,7 @@ Tienda.prototype.logica=function(puntero){
     if(!this.lleno[this.turno]){
       this.actualizarJarra(this.holders[this.turno].get()); 
       if(!this.callback_fn){ //Prevent that this block executed more that one time
+        this.numOrden++; 
         setTimeout(function(turno){
           this.callback_fn=false;
           var pos=this.position_utils.getScreenPosition(this.jarras[turno].get().children[0]);
@@ -113,9 +115,10 @@ Tienda.prototype.logica=function(puntero){
           this.recoger[turno]=true; 
           this.lleno[turno]=true;
           this.mensajes_texto.aviso("Esta llena la jarra, debo llenar el vaso "+turno).mostrar();          
-          this.mensaje_ordenjarra.position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height/2))+"px"}).aviso("Entregar a orden "+turno).mostrar();
+          this.mensaje_ordenjarra.position({left:(pos.x-(size.width/2))+"px",top:(pos.y+(size.height/2))+"px"}).aviso("Entregar a orden "+this.numOrden).mostrar();          
         }.bind(this,this.turno),5000);         
-        this.turno=(this.turno==1) ? 0 : 1;            
+        this.mensajes[this.turno].aviso("Orden "+this.numOrden).mostrar();
+        this.turno=(this.turno==1) ? 0 : 1;                   
         this.callback_fn=true;
       }    
     }    
