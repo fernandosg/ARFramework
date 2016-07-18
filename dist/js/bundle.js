@@ -1111,15 +1111,14 @@ Elemento.prototype.definirBackground=function(color){
     this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
-Elemento.prototype.definir=function(ruta,objeto){
-    parent=this;
+Elemento.prototype.definir=function(ruta,objeto){  
     this.textureLoader.load( ruta, function(texture) {
             //texture = THREE.ImageUtils.loadTexture(ruta, undefined, function() {
 
                 // the rest of your code here...
-        objeto.actualizarMaterialFrente(texture);
+        this.actualizarMaterialFrente(texture);
 
-    });
+    }.bind(this));
 }
 
 
@@ -1149,15 +1148,13 @@ Elemento.prototype.actualizarMaterialFrente=function(texture1){
     this.textura_frente.needsUpdate = true;
 }
 
-Elemento.prototype.definirCaras=function(frontal,trasera,objeto){ 
-    parent=this;
-    console.dir(this.textureLoader); 
+Elemento.prototype.definirCaras=function(frontal,trasera,objeto){    
     this.textureLoader.load( frontal, function(texture1) {
-        objeto.actualizarMaterialFrente(texture1);
-        parent.textureLoader.load(trasera, function(texture2) {                    
-            objeto.actualizarMaterialAtras(texture2);                                       
-        });  
-    });
+        this.actualizarMaterialFrente(texture1);
+        this.textureLoader.load(trasera, function(texture2) {                    
+            this.actualizarMaterialAtras(texture2);                                       
+        }.bind(this));  
+    }.bind(this));
             
 }
 
@@ -1340,7 +1337,6 @@ Elemento.prototype.getUmbral=function(){
 
 
 Elemento.prototype.actualizarPosicionesYescala=function(posicion,escala){
-
     this.posiciones.x=posicion.x;
     this.posiciones.y=posicion.y;
     this.posiciones.z=posicion.z;
