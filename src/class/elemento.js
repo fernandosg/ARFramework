@@ -70,13 +70,9 @@ Elemento.prototype.definirBackground=function(color){
     this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
-Elemento.prototype.definir=function(ruta,objeto){  
+Elemento.prototype.definir=function(ruta){  
     this.textureLoader.load( ruta, function(texture) {
-            //texture = THREE.ImageUtils.loadTexture(ruta, undefined, function() {
-
-                // the rest of your code here...
         this.actualizarMaterialFrente(texture);
-
     }.bind(this));
 }
 

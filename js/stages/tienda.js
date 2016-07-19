@@ -16,7 +16,7 @@ Tienda.prototype.init=function(stage){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
     stage.vasos[i].etiqueta("Detector");
-    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);    
+    stage.vasos[i].definir("../../assets/img/tienda/vaso.png");    
     stage.vasos[i].position({x:(-150+increment),y:-90,z:-650});
     stage.mensajes[i]=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
     stage.vasos[i].next(function(stage,i){
@@ -29,7 +29,7 @@ Tienda.prototype.init=function(stage){
     stage.jarras[i]=new this.Elemento(129,154,new THREE.PlaneGeometry(129,154));
     stage.jarras[i].init();
     stage.jarras[i].etiqueta("Jarra");
-    stage.jarras[i].definir("../../assets/img/tienda/jarra.png",stage.jarras[i]);
+    stage.jarras[i].definir("../../assets/img/tienda/jarra.png");
     stage.jarras[i].position({x:(160+increment),y:-70,z:-600});   
     this.anadir(stage.jarras[i].get());  
 
@@ -46,20 +46,21 @@ Tienda.prototype.init=function(stage){
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
   stage.mesa.init();
   stage.mesa.etiqueta("Detector");
-  stage.mesa.definir("../../assets/img/tienda/mesa.png",stage.mesa);
+  stage.mesa.definir("../../assets/img/tienda/mesa.png");
   stage.mesa.position({x:160,y:-200,z:-610});
 
 
  
   stage.puntero=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.puntero.init();
-	stage.puntero.definir("./assets/img/mano_escala.png",stage.puntero);	
+	stage.puntero.definir("./assets/img/mano_escala.png");	
 	stage.puntero.get().position.z=-1;
 	stage.puntero.get().matrixAutoUpdate = false;
   stage.puntero.get().visible=false;  
   this.anadir(stage.mesa.get());
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
   this.allowDetect(true);
+  seleccionarAudio("tienda","bienvenida");
 }
 
 Tienda.prototype.loop=function(stage){

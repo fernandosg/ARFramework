@@ -19,7 +19,7 @@
  * También recibe tres cadenas que muestran un msg de acierto o de fallo
  * a la hora de jugar al memorama.
  */
-function clasificarOpcion(opcion) {
+function clasificarOpcion(stage,opcion) {
     //salidaTexto.value = '\n    Yo: ' + entradaTexto.value + '\n' + salidaTexto.value;
     var dialogoKathia = "...";
     var dialogo = "";
@@ -124,7 +124,7 @@ function clasificarOpcion(opcion) {
     }
 
     if (dialogo != "") {
-        seleccionarAudio(tipoAudio);
+        seleccionarAudio(stage,tipoAudio);
     } 
     
     expresionCognitiva(tipoEntrada);

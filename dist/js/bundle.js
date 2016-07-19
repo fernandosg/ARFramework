@@ -340,8 +340,8 @@ Memorama.prototype.init=function(stage){
   //stage.label.position.set(-1.5,-6.6,-20);
    
   iniciarKathia(texto);
-  clasificarOpcion("bienvenida");
-  clasificarOpcion("instrucciones");
+  clasificarOpcion("memorama","bienvenida");
+  clasificarOpcion("memorama","instrucciones");
 }
 
 Memorama.prototype.loop=function(stage){
@@ -356,7 +356,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
       if(this.detectados.length==1 && this.detectados[0].igualA(objeto_actual)){
 
       }else if(this.detectados.length==1 && this.detectados[0].esParDe(objeto_actual)){        
-          clasificarOpcion("acierto");
+          clasificarOpcion("memorama","acierto");
           this.indicador_acierto.easein(this.animacion);         
           objeto_actual.voltear(this.animacion);  
           this.observador.baja("colision",objeto_actual);
@@ -367,7 +367,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
           objeto_actual.voltear(this.animacion);
           this.detectados.push(objeto_actual);
       }else if(this.detectados[0].get().id!=objeto_actual.get().id){     
-          clasificarOpcion("fallo");
+          clasificarOpcion("memorama","fallo");
           this.indicador_error.easein(this.animacion);
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
           this.detectados[0].voltear(this.animacion);
@@ -556,7 +556,7 @@ Tienda.prototype.init=function(stage){
   	stage.vasos[i]=new this.Elemento(52,122,new THREE.PlaneGeometry(52,122));  
   	stage.vasos[i].init();
     stage.vasos[i].etiqueta("Detector");
-    stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);    
+    stage.vasos[i].definir("../../assets/img/tienda/vaso.png");    
     stage.vasos[i].position({x:(-150+increment),y:-90,z:-650});
     stage.mensajes[i]=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
     stage.vasos[i].next(function(stage,i){
@@ -569,7 +569,7 @@ Tienda.prototype.init=function(stage){
     stage.jarras[i]=new this.Elemento(129,154,new THREE.PlaneGeometry(129,154));
     stage.jarras[i].init();
     stage.jarras[i].etiqueta("Jarra");
-    stage.jarras[i].definir("../../assets/img/tienda/jarra.png",stage.jarras[i]);
+    stage.jarras[i].definir("../../assets/img/tienda/jarra.png");
     stage.jarras[i].position({x:(160+increment),y:-70,z:-600});   
     this.anadir(stage.jarras[i].get());  
 
@@ -586,20 +586,21 @@ Tienda.prototype.init=function(stage){
   stage.mesa=new this.Elemento(292,285,new THREE.PlaneGeometry(292,285));
   stage.mesa.init();
   stage.mesa.etiqueta("Detector");
-  stage.mesa.definir("../../assets/img/tienda/mesa.png",stage.mesa);
+  stage.mesa.definir("../../assets/img/tienda/mesa.png");
   stage.mesa.position({x:160,y:-200,z:-610});
 
 
  
   stage.puntero=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.puntero.init();
-	stage.puntero.definir("./assets/img/mano_escala.png",stage.puntero);	
+	stage.puntero.definir("./assets/img/mano_escala.png");	
 	stage.puntero.get().position.z=-1;
 	stage.puntero.get().matrixAutoUpdate = false;
   stage.puntero.get().visible=false;  
   this.anadir(stage.mesa.get());
   this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
   this.allowDetect(true);
+  seleccionarAudio("tienda","bienvenida");
 }
 
 Tienda.prototype.loop=function(stage){
@@ -1114,13 +1115,9 @@ Elemento.prototype.definirBackground=function(color){
     this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
-Elemento.prototype.definir=function(ruta,objeto){  
+Elemento.prototype.definir=function(ruta){  
     this.textureLoader.load( ruta, function(texture) {
-            //texture = THREE.ImageUtils.loadTexture(ruta, undefined, function() {
-
-                // the rest of your code here...
         this.actualizarMaterialFrente(texture);
-
     }.bind(this));
 }
 

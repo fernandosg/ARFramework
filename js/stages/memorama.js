@@ -97,8 +97,8 @@ Memorama.prototype.init=function(stage){
   //stage.label.position.set(-1.5,-6.6,-20);
    
   iniciarKathia(texto);
-  clasificarOpcion("bienvenida");
-  clasificarOpcion("instrucciones");
+  clasificarOpcion("memorama","bienvenida");
+  clasificarOpcion("memorama","instrucciones");
 }
 
 Memorama.prototype.loop=function(stage){
@@ -113,7 +113,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
       if(this.detectados.length==1 && this.detectados[0].igualA(objeto_actual)){
 
       }else if(this.detectados.length==1 && this.detectados[0].esParDe(objeto_actual)){        
-          clasificarOpcion("acierto");
+          clasificarOpcion("memorama","acierto");
           this.indicador_acierto.easein(this.animacion);         
           objeto_actual.voltear(this.animacion);  
           this.observador.baja("colision",objeto_actual);
@@ -124,7 +124,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
           objeto_actual.voltear(this.animacion);
           this.detectados.push(objeto_actual);
       }else if(this.detectados[0].get().id!=objeto_actual.get().id){     
-          clasificarOpcion("fallo");
+          clasificarOpcion("memorama","fallo");
           this.indicador_error.easein(this.animacion);
           document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x";
           this.detectados[0].voltear(this.animacion);

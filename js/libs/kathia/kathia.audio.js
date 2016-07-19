@@ -5,6 +5,7 @@
  */
 
 var sonidoBienvenida = new Audio("./assets/sounds/bienvenida.wav");
+var sonidoBienvenidaTienda = new Audio("./assets/sounds/tiendaorden.mp3");
 var sonidoInstrucciones = new Audio("./assets/sounds/instrucciones.wav");
 var sonidoAcierto01 = new Audio("./assets/sounds/acierto01.wav"); 
 var sonidoAcierto02 = new Audio("./assets/sounds/acierto02.wav"); 
@@ -17,7 +18,10 @@ var sonidoError = new Audio("./assets/sounds/error.wav");
 var banderaAcierto = true;
 var banderaFallo = true;
 
-sonidos={"bienvenida":sonidoBienvenida,"instrucciones":sonidoInstrucciones,"acierto":sonidoAcierto01,"fallo":sonidoFallo01,"finalizar":sonidoFinalizar,"saludo":sonidoSaludo,"error":sonidoError};
+sonidos={
+    "memorama":{"bienvenida":sonidoBienvenida,"instrucciones":sonidoInstrucciones,"acierto":sonidoAcierto01,"fallo":sonidoFallo01,"finalizar":sonidoFinalizar,"saludo":sonidoSaludo,"error":sonidoError},
+    "tienda":{"bienvenida":sonidoBienvenidaTienda}
+}
 sonidosEspera=[];
 // Definición de eventos de sonidos.
 sonidoBienvenida.onended = function () {
@@ -32,14 +36,16 @@ for(var sonido in sonidos){
     }
 }
 
-function reproducir(opcion){
-    sonidosEspera.push(sonidos[opcion]);
-    sonidosEspera[0].play();
+function reproducir(stage,opcion){
+    if(sonidos[stage]!=undefined){
+        sonidosEspera.push(sonidos[stage][opcion]);
+        sonidosEspera[0].play();
+    }
 }
 
 
-function seleccionarAudio(opcion) {
-    reproducir(opcion);
+function seleccionarAudio(stage,opcion) {
+    reproducir(stage,opcion);
     /*
     switch(opcion) {
         case "bienvenida":
