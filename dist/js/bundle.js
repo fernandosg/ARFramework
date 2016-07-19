@@ -669,7 +669,10 @@ Tienda.prototype.fnAfter=function(puntero){
 	puntero.visible=true;	
 	if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){    //this.logica.call(this,puntero);     
     this.logica(puntero);
-  }
+  }else if(puntero.getWorldPosition().z>500)
+    this.mensajes_texto.aviso("Estas muy lejos").mostrar();
+  else if(puntero.getWorldPosition().z<300)
+    this.mensajes_texto.aviso("Estas cercas").mostrar();
 }
 
 module.exports=Tienda;
