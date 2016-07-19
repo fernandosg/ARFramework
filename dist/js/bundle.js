@@ -557,7 +557,7 @@ Tienda.prototype.init=function(stage){
   	stage.vasos[i].init();
     stage.vasos[i].etiqueta("Detector");
     stage.vasos[i].definir("../../assets/img/tienda/vaso.png",stage.vasos[i]);    
-    stage.vasos[i].position({x:(-150+increment),y:-90,z:-620});
+    stage.vasos[i].position({x:(-150+increment),y:-90,z:-650});
     stage.mensajes[i]=new this.Mensajes({game:stage,div:"container",type:"text",clase:"postit",ocultar:false});  
     stage.vasos[i].next(function(stage,i){
       var pos=this.position_utils.getScreenPosition(stage.vasos[i].get().children[0]);
@@ -577,7 +577,7 @@ Tienda.prototype.init=function(stage){
     stage.holders[i].init();
     stage.holders[i].etiqueta("Detector");
     stage.holders[i].definirBackground(0xff0000);
-    stage.holders[i].position({x:(160+increment),y:-70,z:-600});
+    stage.holders[i].position({x:(160+increment),y:-70,z:-650});
     this.anadir(stage.holders[i].get());      
   }
 
