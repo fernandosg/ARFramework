@@ -1012,19 +1012,15 @@ module.exports=function(canvas_element){
             if(markerCount>0){ 
                 for(var i=0,marcador_id=-1;i<markerCount;i++){
                     var marcador_id=getMarkerNumber(i);                    
-                    if(markers[marcador_id]!=undefined){                                          
-                        if(!isAttached(marcador_id)){
-                            if(markers[marcador_id].puntero!=undefined){
-                                markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
-                                markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
-                            } 
+                    if(markers[marcador_id]!=undefined){ 
+                        if(markers[marcador_id].puntero!=undefined){
+                            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
+                            markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
+                        }                                          
+                        if(!isAttached(marcador_id))                           
                             markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);                            
-                        }else{
-                            if(marcador_id==rootMarker.id){          
-                                markermatrix=obtenerMarcador((i+1));  
-                            }
-                            markers_attach[marcador_id]=1;
-                        }        
+                        else                            
+                            markers_attach[marcador_id]=1;                            
                     }
                 }
                 if(Object.keys(markers_attach).length>0){
@@ -1033,11 +1029,8 @@ module.exports=function(canvas_element){
                         count+=markers_attach[id];
                         markers_attach[id]=0;
                     }
-                    if(count==Object.keys(markers_attach).length){//If all the markers attached are not detected, then the event is not executed
-                        rootMarker.puntero.transformFromArray(markermatrix);
-                        rootMarker.puntero.matrixWorldNeedsUpdate=true;
-                        rootMarker.detected().call(stage,rootMarker.puntero);  
-                    }
+                    if(count==Object.keys(markers_attach).length)//If all the markers attached are not detected, then the event is not executed                        
+                        rootMarker.detected().call(stage,rootMarker.puntero);                      
                 }              
                 return true;            
             }
