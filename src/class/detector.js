@@ -1,9 +1,13 @@
 module.exports=function(canvas_element){
-        var JSARRaster,JSARParameters,detector,result;
+        var JSARRaster,JSARParameters,detector,result;        
+        var markers_attach={};
         var threshold=120;
         var markers={};
+        var DetectorMarker;
+        var rootMarker,markermatrix;
         function init(){
             JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
+            DetectorMarker=require("./detectormarker.js");
             JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
             detector = new FLARMultiIdMarkerDetector(JSARParameters, 40);
             result = new Float32Array(16);
@@ -66,27 +70,63 @@ module.exports=function(canvas_element){
             return matriz_encontrada;
         }    
 
+        function isAttached(id){
+            return markers_attach[id]!=undefined;
+        }
+
         var detectMarker=function(stage){
             var markerCount = detector.detectMarkerLite(JSARRaster, threshold); 
+            var marker;
             if(markerCount>0){ 
                 for(var i=0,marcador_id=-1;i<markerCount;i++){
-                    marcador_id=getMarkerNumber(i);
-                    if(markers[marcador_id]!=undefined){
-                        if(markers[marcador_id].puntero!=undefined){
-                            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
-                            markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
-                        }
-                        //console.log("encontro un marcador");
-                        markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);
+                    var marcador_id=getMarkerNumber(i);                    
+                    if(markers[marcador_id]!=undefined){                                          
+                        if(!isAttached(marcador_id)){
+                            if(markers[marcador_id].puntero!=undefined){
+                                markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
+                                markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
+                            } 
+                            markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);                            
+                        }else{
+                            if(marcador_id==rootMarker.id){          
+                                markermatrix=obtenerMarcador((i+1));  
+                            }
+                            markers_attach[marcador_id]=1;
+                        }        
                     }
                 }
+                if(Object.keys(markers_attach).length>0){
+                    var count=0;
+                    for(var id in markers_attach){
+                        count+=markers_attach[id];
+                        markers_attach[id]=0;
+                    }
+                    if(count==Object.keys(markers_attach).length){//If all the markers attached are not detected, then the event is not executed
+                        rootMarker.puntero.transformFromArray(markermatrix);
+                        rootMarker.puntero.matrixWorldNeedsUpdate=true;
+                        rootMarker.detected().call(stage,rootMarker.puntero);  
+                    }
+                }              
                 return true;            
             }
             return false;
         }
 
+        //Attached two or more markers with the last marker added
+        var attach=function(markers_to_attach){
+            var marker_list=Object.keys(markers);
+            if(marker_list.length>0)
+                rootMarker=markers[marker_list.pop()];        
+            markers_attach[rootMarker.id]=0;
+            for(var i=0,length=markers_to_attach.length;i<length;i++){
+                this.addMarker(markers_to_attach[i]);
+                markers_attach[markers_to_attach[i].id]=0;
+            }
+        }
+
         var addMarker=function(marker){
-            markers[marker.id]=marker;
+            markers[marker.id]=new DetectorMarker(marker.id,marker.callback,marker.puntero);
+            return this;
         }
 
         var cleanMarkers=function(){
@@ -96,11 +136,14 @@ module.exports=function(canvas_element){
         var cambiarThreshold=function (threshold_nuevo){
             threshold=threshold_nuevo;
         }
+
         return{
             init:init,
+            attach:attach,
             setCameraMatrix,setCameraMatrix,
             detectMarker:detectMarker,
             addMarker:addMarker,
+            markermatrix:markermatrix,
             cambiarThreshold:cambiarThreshold,
             cleanMarkers:cleanMarkers
         }

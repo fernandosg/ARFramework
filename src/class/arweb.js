@@ -5,8 +5,7 @@ function ARWeb(configuracion){
   	this.renderer.autoClear = false;
   	this.WIDTH_CANVAS=configuracion["width"];
   	this.HEIGHT_CANVAS=configuracion["height"];
-  	this.renderer.setSize(configuracion["width"],configuracion["height"]);  	
-  	this.DetectorMarker=require("./detectormarker.js");
+  	this.renderer.setSize(configuracion["width"],configuracion["height"]);  
   	this.Mensajes=require("../libs/mensajes.js");
   	this.raiz=configuracion["elemento"];
   	document.getElementById(configuracion["elemento"]).appendChild(this.renderer.domElement);
@@ -67,9 +66,17 @@ ARWeb.prototype.init=function(){
 }
 
 ARWeb.prototype.anadirMarcador=function(marcador){
-	this.detector_ar.addMarker(new this.DetectorMarker(marcador.id,marcador.callback,marcador.puntero));
+	this.detector_ar.addMarker.call(this,marcador);
 	if(marcador.puntero!=undefined)
   		this.realidadEscena.anadir(marcador.puntero);
+  	return this;
+}
+
+ARWeb.prototype.adjuntarMarcadores=function(){
+	this.detector_ar.attach(arguments);
+	for(var marker in arguments)
+		if(marker.puntero!=undefined)
+  			this.realidadEscena.anadir(marker.puntero);	
 }
 
 ARWeb.prototype.addStage=function(fn){
