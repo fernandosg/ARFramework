@@ -222,6 +222,14 @@ Elemento.prototype.getDistancia=function(mano){
     return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
 }
 
+Elemento.prototype.calculateDistance=function(obj,obj2){
+    box=new THREE.Box3().setFromObject(obj);    
+    box2=new THREE.Box3().setFromObject(obj2); 
+    pos1=box.center().clone();
+    pos2=box2.center().clone();
+    return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+}
+
 Elemento.prototype.abajoDe=function(puntero){
     var aument=(arguments.length>1) ? arguments[1] : 0;
      return ((this.box.max.x+aument>=puntero.getWorldPosition().x && (this.box.min.x)<=puntero.getWorldPosition().x)
