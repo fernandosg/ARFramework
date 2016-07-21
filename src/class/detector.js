@@ -24,17 +24,17 @@ module.exports=function(canvas_element){
         }
        
         function getMarkerNumber(idx) {
-        	var data = detector.getIdMarkerData(idx);
-        	if (data.packetLength > 4) {
-            	return -1;
-        	} 
+            var data = detector.getIdMarkerData(idx);
+            if (data.packetLength > 4) {
+                return -1;
+            } 
                     
-        	var result=0;
-        	for (var i = 0; i < data.packetLength; i++ ) {
-            	result = (result << 8) | data.getPacketData(i);
-        	}
+            var result=0;
+            for (var i = 0; i < data.packetLength; i++ ) {
+                result = (result << 8) | data.getPacketData(i);
+            }
 
-        	return result;
+            return result;
         }
 
         function getTransformMatrix(idx) {
@@ -62,10 +62,13 @@ module.exports=function(canvas_element){
             return cm;
         }
 
-        function obtenerMarcador(markerCount){
+        function obtenerMarcador(markerCount,pos){
             var matriz_encontrada
             for(var i=0;i<markerCount;i++){
-                matriz_encontrada=getTransformMatrix(i);
+                if(i==pos){
+                    matriz_encontrada=getTransformMatrix(i);
+                    break;
+                }
             }   
             return matriz_encontrada;
         }    
@@ -82,15 +85,15 @@ module.exports=function(canvas_element){
                     var marcador_id=getMarkerNumber(i);                    
                     if(markers[marcador_id]!=undefined){ 
                         if(markers[marcador_id].puntero!=undefined){
-                            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount));
+                            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount,i));
                             markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
-                        }                                          
+                        }    
                         if(!isAttached(marcador_id))                           
                             markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);                            
                         else                            
-                            markers_attach[marcador_id]=1;                            
+                            markers_attach[marcador_id]=1;                                                
                     }
-                }
+                }                
                 if(Object.keys(markers_attach).length>0){
                     var count=0;
                     for(var id in markers_attach){
@@ -99,7 +102,7 @@ module.exports=function(canvas_element){
                     }
                     if(count==Object.keys(markers_attach).length)//If all the markers attached are not detected, then the event is not executed                        
                         rootMarker.detected().call(stage,rootMarker.puntero);                      
-                }              
+                }   
                 return true;            
             }
             return false;
