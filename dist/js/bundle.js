@@ -2,9 +2,10 @@
 //DEBUG=true;
 Calibrar=require("./stages/calibracion.js");
 Tienda=require("./stages/tienda.js");
+Basketball=require("./stages/basketball.js");
 calibracion=new Calibrar();
 //memorama=new Memorama();
-//basketball=new Basketball();
+basketball=new Basketball();
 tienda=new Tienda();
 //ColorStage=require("../src/trackingcolor.js");
 //var tracking=new ColorStage();
@@ -13,16 +14,17 @@ arweb=new ARWeb({"width":1000,"height":800,"elemento":"ra"});
 arweb.init();
 //arweb.addStage(tracking);
 arweb.addStage(calibracion);
-arweb.addStage(tienda);
+//arweb.addStage(tienda);
 //arweb.addStage(memorama);
-//arweb.addStage(basketball);
+arweb.addStage(basketball);
 arweb.run();
-},{"../src/class/arweb.js":9,"./stages/calibracion.js":3,"./stages/tienda.js":6}],2:[function(require,module,exports){
+},{"../src/class/arweb.js":9,"./stages/basketball.js":2,"./stages/calibracion.js":3,"./stages/tienda.js":6}],2:[function(require,module,exports){
 function Basketball(){
 
 }
 
 Basketball.prototype.init = function(stage) {	
+
 	stage.puntero=new this.Elemento(61,60,new THREE.PlaneGeometry(61,60));
 	stage.puntero.init();
 	stage.puntero.definir("./assets/img/basket/balon.png");	
@@ -33,8 +35,9 @@ Basketball.prototype.init = function(stage) {
 	stage.canasta.init();
 	stage.canasta.definir("./assets/img/basket/canasta.png");
 	stage.canasta.position({x:160,y:-90,z:-600});
-	stage.canasta.get().visible=false;
+	stage.canasta.get().visible=true;
 	
+  	stage.mensajes_texto=new this.Mensajes({game:stage,div:"container",type:"text"});
 	stage.hombro=new this.Elemento(80,80,new THREE.PlaneGeometry(80,80));	
 	stage.hombro.init();
 	stage.hombro.definirBackground(0xff0000);		
@@ -56,8 +59,10 @@ Basketball.prototype.init = function(stage) {
     this.observador.suscribir("colision",stage.canasta);
 	this.anadir(stage.canasta.get());
 	this.allowDetect(true);	
+
 	this.anadirMarcador({id:16,callback:stage.fnAfter,puntero:stage.puntero.get()});
 	this.anadirMarcador({id:1,callback:function(){},puntero:stage.hombro.get()});
+	this.anadirMarcador({id:2,callback:stage.ayuda});
 	this.anadir(stage.cuerpo.get());
 };
 
@@ -67,10 +72,12 @@ Basketball.prototype.ayuda=function(){
 		if(this.posicion_canasta_anterior!=undefined){
 			console.log("La posicion de la canasta actual "+this.canasta.get().position.y+" la posicion anterior de la canasta "+this.posicion_canasta_anterior.y);
 			var new_y=this.posicion_canasta_anterior.y-((this.canasta.get().position.y+(Math.abs(this.posicion_canasta_anterior.y)))/2)
-			console.log("wow este es el nuevo posicion en "+new_y);
+			console.log("Esta es la nuevo posicion en "+new_y);
+			document.getElementById("informacion_nivel").innerHTML="";
 			this.canasta.position({y:new_y});
 		}else{
-			console.log("Necesitas primero hacer que la canasta se eleve");
+			console.log("Necesitas primero hacer que la canasta se eleve");			
+			document.getElementById("informacion_nivel").innerHTML="Necesitas primero hacer que la canasta se eleve";
 		}			
 	}.bind(this));
 }
@@ -100,12 +107,14 @@ Basketball.prototype.logicaBasket=function(puntero){
 	this.cuerpo.position({x:this.hombro.get().getWorldPosition().x,y:(-1*this.hombro.get().getWorldPosition().y-distancia)});
 	var lado_c=this.hombro.calculateDistance(this.cuerpo.get(),puntero);
 	var lado_b=this.hombro.getDistancia(this.cuerpo.get());
-	var grados=calcularGrados(lado_a,lado_b,lado_c);
+	var grados=calcularGrados(lado_a,lado_b,lado_c);	
 	if(this.canastas<=this.total_canastas){
-		console.log("Enceste");
+        this.mensajes_texto.aviso("Enceste").mostrar(); 
+        console.log("Los grados al encestar "+grados);
 		this.bajar=true;
 	}else{
-		console.log("Has encestado el total de canastas");	 	
+        this.mensajes_texto.aviso("Has encestado el total de canastas").mostrar();                        	 
+        console.log("Los grados al iniciar el intento de encestar "+grados);
 		this.altura_concluida=true;
 	}
 }
@@ -118,6 +127,7 @@ Basketball.prototype.logica=function(puntero){
 	   	else if(this.bajar)
 			if(this.canasta.getDistancia(puntero)>=60 && this.canasta.get().position.y<puntero.position.y){
 				console.log("Bien, ahora vuelve a subir")
+        		this.mensajes_texto.aviso("Bien, ahora vuelve a subir").mostrar();  
 				this.bajar=false;	
 			}		   	
 	   }.bind(this));
@@ -127,6 +137,7 @@ Basketball.prototype.logica=function(puntero){
 		this.altura_concluida=false;
 		this.canastas=0;
 		console.log("ALTURA CONCLUIDA");	
+        this.mensajes_texto.aviso("ALTURA CONCLUIDA").mostrar();  
 	}
 }
 
