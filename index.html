@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
 	<meta charset="utf8">
-	<title>Memorama con JSArtoolkit</title>	
+	<title>Memorama con JSArtoolkit</title>
 	<link rel="stylesheet" type="text/css" href="./assets/css/principal.css">
 </head>
-<body>	
+<body>
 	<section id="container" style="width:1400px; height:600px;">
 		<div id="ra" style="display:inline-block;"></div>
 		<aside id="informacion" style="display:inline-block; vertical-align:top; width:300px;">
@@ -18,25 +18,7 @@
 					<b>Indicaciones</b><br>
 					<span>Selecciona el color </span><div id="colorSelect"></div>
 				</div>
-				<div id="debugging" style="display:none">
-					<div id="mano">
-						<span>Posicion de la mano</span><br>
-						<span style="color:red;">Posicion X </span><span id="pos_x_mano"></span><br>					
-						<span style="color:red;">Posicion Y </span><span id="pos_y_mano"></span><br>				
-						<span style="color:red;">Posicion Z </span><span id="pos_z_mano"></span><br>
-					</div>
-					<div id="objetivo">
-						<h2>Posicion del objetivo</h2>
-						<b style="color:red;">Posicion X </b><span id="x"></span><br>					
-						<b style="color:red;">Posicion Y </b><span id="y"></span><br>				
-						<b style="color:red;">Posicion Z </b><span id="z"></span><br>
-					</div>
-					<div>
-						<h2>La distancia entre el objetivo y la mano es de </h2>
-						<b style="color:red" id="distancia_text"></b>
-					</div>
-				</div>
-		</aside>		
+		</aside>
 	</section>
 	<div id="debug" style="width:300px; height:200px;">
 		<input type="range" id="threshold" min="0" max="200" value="0"/>
@@ -44,7 +26,7 @@
 	<script type="text/javascript" src="./js/libs/JSARToolKit.min.js"></script>
 	<script type="text/javascript" src="./js/libs/three.min.js"></script>
 	<script type="text/javascript" src="./js/libs/webcam.js"></script>
-	<script type="text/javascript" src="./js/libs/pixi.min.js"></script>	
+	<script type="text/javascript" src="./js/libs/pixi.min.js"></script>
 	<script type="text/javascript" src="./js/libs/kathia.js"></script>
 	<script type="text/javascript" src="./js/libs/kathia/kathia.audio.js"></script>
 	<script type="text/javascript" src="./js/libs/kathia/main.js"></script>

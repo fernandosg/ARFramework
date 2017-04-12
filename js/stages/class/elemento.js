@@ -1,13 +1,13 @@
 function Elemento(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
-    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();       
+    this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();
     this.callbacks=[];
 }
-    
-Elemento.prototype.cambiarUmbral=function(escala){     
+
+Elemento.prototype.cambiarUmbral=function(escala){
     this.umbral_colision=this.width/4;
-}  
+}
 
 Elemento.prototype.next=function(callback){
     this.callbacks.push(callback);
@@ -16,7 +16,7 @@ Elemento.prototype.init=function(){
     this.elemento_raiz=new THREE.Object3D();
     this.geometria_atras=this.geometry.clone();
     this.textureLoader = new THREE.TextureLoader();
-    this.cambiarUmbral(1);        
+    this.cambiarUmbral(1);
     this.checkingcalls=setInterval(this.iterateCalls.bind(this),1500);
     // ^ CHECK - This method for treat events when something need to be execute and used the mesh object, it's not so clean, check later
 }
@@ -39,7 +39,7 @@ Elemento.prototype.etiqueta=function(etiqueta){
 }
 
 Elemento.prototype.dimensiones=function(){
-    return " "+width+" "+height;        
+    return " "+width+" "+height;
 }
 
 Elemento.prototype.calculoOrigen=function(){
@@ -59,18 +59,18 @@ Elemento.prototype.cambiarVisible=function(){
             fraction = height_test / height;
         }*/
 
-        
+
 
 Elemento.prototype.definirBackground=function(color){
     color_t=new THREE.Color(color);
-    this.material_frente=new THREE.MeshBasicMaterial({color: color_t,side: THREE.DoubleSide}); 
+    this.material_frente=new THREE.MeshBasicMaterial({color: color_t,side: THREE.DoubleSide});
     this.mesh=new THREE.Mesh(this.geometry,this.material_frente);
-    this.elemento_raiz.add(this.mesh);      
+    this.elemento_raiz.add(this.mesh);
     this.defineBox();
     this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
-Elemento.prototype.definir=function(ruta){  
+Elemento.prototype.definir=function(ruta){
     this.textureLoader.load( ruta, function(texture) {
         this.actualizarMaterialFrente(texture);
     }.bind(this));
@@ -81,12 +81,12 @@ Elemento.prototype.actualizarMaterialAtras=function(texture2){
     this.textura_atras = texture2.clone();
     this.textura_atras.minFilter = THREE.LinearFilter;
     this.textura_atras.magFilter = THREE.LinearFilter;
-    this.material_atras=new THREE.MeshBasicMaterial({map:this.textura_atras});  
+    this.material_atras=new THREE.MeshBasicMaterial({map:this.textura_atras});
     this.material_atras.transparent=true;
 
     this.geometria_atras.applyMatrix( new THREE.Matrix4().makeRotationY( Math.PI ) );
     this.mesh2=new THREE.Mesh(this.geometria_atras,this.material_atras);
-    this.elemento_raiz.add(this.mesh2);      
+    this.elemento_raiz.add(this.mesh2);
     this.defineBox();
     this.textura_atras.needsUpdate = true;
 }
@@ -95,22 +95,22 @@ Elemento.prototype.actualizarMaterialFrente=function(texture1){
     this.textura_frente = texture1.clone();
     this.textura_frente.minFilter = THREE.LinearFilter;
     this.textura_frente.magFilter = THREE.LinearFilter;
-    this.material_frente=new THREE.MeshBasicMaterial({map:this.textura_frente,side: THREE.DoubleSide});  
+    this.material_frente=new THREE.MeshBasicMaterial({map:this.textura_frente,side: THREE.DoubleSide});
     this.material_frente.transparent=true;
     this.mesh=new THREE.Mesh(this.geometry,this.material_frente);
-    this.elemento_raiz.add(this.mesh);      
+    this.elemento_raiz.add(this.mesh);
     this.defineBox();
     this.textura_frente.needsUpdate = true;
 }
 
-Elemento.prototype.definirCaras=function(frontal,trasera,objeto){    
+Elemento.prototype.definirCaras=function(frontal,trasera,objeto){
     this.textureLoader.load( frontal, function(texture1) {
         this.actualizarMaterialFrente(texture1);
-        this.textureLoader.load(trasera, function(texture2) {                    
-            this.actualizarMaterialAtras(texture2);                                       
-        }.bind(this));  
+        this.textureLoader.load(trasera, function(texture2) {
+            this.actualizarMaterialAtras(texture2);
+        }.bind(this));
     }.bind(this));
-            
+
 }
 
 Elemento.prototype.getTexturaAtras=function(){
@@ -145,7 +145,7 @@ Elemento.prototype.actualizarMedidas=function(){
 
 Elemento.prototype.scale=function(x,y){
     this.elemento_raiz.scale.x=x;
-    this.elemento_raiz.scale.y=y;        
+    this.elemento_raiz.scale.y=y;
     this.actualizarMedidas();
 }
 
@@ -168,7 +168,7 @@ Elemento.prototype.rotation=function(pos){
 Elemento.prototype.quaternion=function(pos){
     for(var prop in pos){
         this.elemento_raiz.rotation[prop]=pos[prop]
-    }    
+    }
 }
 Elemento.prototype.incrementar=function(pos){
     for(var prop in pos){
@@ -191,7 +191,7 @@ Elemento.prototype.actualizar=function(){
         if(this.elemento_raiz.children[i].material.map)
             this.elemento_raiz.children[i].material.map.needsUpdate=true;
     }
-    if(this.x!=this.elemento_raiz.position.x ||this.y!=this.elemento_raiz.position.y){           
+    if(this.x!=this.elemento_raiz.position.x ||this.y!=this.elemento_raiz.position.y){
         this.x=this.elemento_raiz.position.x;
         this.y=this.elemento_raiz.position.y;
         this.posiciones.x=this.elemento_raiz.position.x;
@@ -201,20 +201,20 @@ Elemento.prototype.actualizar=function(){
     }
 }
 
-       
 
-Elemento.prototype.dispatch=function(mano){       
+
+Elemento.prototype.dispatch=function(mano){
     distancia=this.getDistancia(mano);
-    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2); 
+    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2);
 
 }
 
-Elemento.prototype.defineBox=function(){    
+Elemento.prototype.defineBox=function(){
     this.box=new THREE.Box3().setFromObject(this.elemento_raiz);
 }
 
 Elemento.prototype.getDistancia=function(mano){
-    box_mano=new THREE.Box3().setFromObject(mano);    
+    box_mano=new THREE.Box3().setFromObject(mano);
     pos1=box_mano.center().clone();
     pos1.z=0;
     pos2=this.box.center().clone();
@@ -223,8 +223,8 @@ Elemento.prototype.getDistancia=function(mano){
 }
 
 Elemento.prototype.calculateDistance=function(obj,obj2){
-    box=new THREE.Box3().setFromObject(obj);    
-    box2=new THREE.Box3().setFromObject(obj2); 
+    box=new THREE.Box3().setFromObject(obj);
+    box2=new THREE.Box3().setFromObject(obj2);
     pos1=box.center().clone();
     pos2=box2.center().clone();
     return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
@@ -233,13 +233,13 @@ Elemento.prototype.calculateDistance=function(obj,obj2){
 Elemento.prototype.abajoDe=function(puntero){
     var aument=(arguments.length>1) ? arguments[1] : 0;
      return ((this.box.max.x+aument>=puntero.getWorldPosition().x && (this.box.min.x)<=puntero.getWorldPosition().x)
-        && (this.box.min.y<puntero.getWorldPosition().y))              
+        && (this.box.min.y<puntero.getWorldPosition().y))
 }
 
 
-Elemento.prototype.colisiona=function(mano){   
+Elemento.prototype.colisiona=function(mano){
     distancia=this.getDistancia(mano);
-    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2); 
+    return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2);
 
 }
 
@@ -281,7 +281,7 @@ Elemento.prototype.getNombre=function(){
     return this.nombre;
 }
 
-Elemento.prototype.esParDe=function(objeto){      
+Elemento.prototype.esParDe=function(objeto){
     return this.getNombre()==objeto.getNombre() && this.elemento_raiz.id!=objeto.get().id;
 }
 
