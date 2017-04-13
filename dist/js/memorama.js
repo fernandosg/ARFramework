@@ -256,4 +256,4 @@ Memorama.prototype.loop=function(){
   animate();
 }
 
-module.exports=Memorama;
+//module.exports=Memorama;
