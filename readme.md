@@ -1,12 +1,8 @@
-## Memorama RAFramework Standalone
+## ARFramework
 
-Este repositorio contiene el nivel de memorama por separado de mi proyecto RAFramework (un experimento para poder usar JSArtoolkit y ThreeJS para dinamicas con imagenes fiduciales).
+Framework for use the library JSArtoolkit, and apply concepts like collisions, and drawing elements in 2d and 3d with graphics engine like ThreeJS
+This project is maked for the purpose of applying AR concepts for simple dynamics, like exercises.
 
-El propósito por el cual cree este repositorio es para separar los niveles y refactorizar un poco el código original de RAFramework.
-
-La etapa de refactorización quedo concluida, solo faltan ciertos detalles con los cuales actualizare este archivo readme.md
-
-
-## Licencia
+## License
 
 LGPLv3.
