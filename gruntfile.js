@@ -13,18 +13,33 @@ module.exports = function (grunt) {
       }
     },
     jsdoc : {
-        dist : {
-            src: ['src/memorama.js','src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
-            options: {
-                destination: 'doc'
-            }
+      dist : {
+        src: ['src/memorama.js','src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
+        options: {
+          destination: 'doc'
         }
-    }
+      }
+    },
+    concat: {
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: [
+          'dist/js/libs/JSARToolKit.min.js',
+          'dist/js/libs/three.min.js',
+          'dist/js/libs/webcam.js',
+          'dist/js/bundle.js'
+        ],
+        dest: 'dist/js/arframework.js',
+      },
+    },
   });
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-jsdoc');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.registerTask("generating-doc",["jsdoc"])
   grunt.registerTask('default', ['watch']);
 };
