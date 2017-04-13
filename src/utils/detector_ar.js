@@ -221,7 +221,7 @@ function DetectorAR(canvas_element){
   return{
     init:init,
     attach:attach,
-    setCameraMatrix,setCameraMatrix,
+    setCameraMatrix:setCameraMatrix,
     detectMarker:detectMarker,
     addMarker:addMarker,
     markermatrix:markermatrix,
