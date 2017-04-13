@@ -1,4 +1,4 @@
-function ARFramework(configuration){
+function ARFramework(configuration){//
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
   var WebcamStream=require("./utils/webcamstream.js");
@@ -160,4 +160,5 @@ ARFramework.prototype.clean=function(){
 ARFramework.prototype.finish=function(){
   this.clean();
 }
-module.exports=ARFramework;
+
+window.ARFramework=ARFramework;
