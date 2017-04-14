@@ -308,17 +308,17 @@ Elemento.prototype.decrementGrados=function(){
     this.cont--;
 }
 
-Elemento.prototype.easein=function(animacion){
-    animacion.easein.mostrar(this.get(),-800,-2500,animacion);
+
+Elemento.prototype.turnState=function(){
+    this.estado=(this.estado) ? false : true;
 }
 
-Elemento.prototype.voltear=function(animacion){
-    this.estado=(this.estado) ? false : true;
-    if(this.estado){
-        animacion.ocultar(this);//this.ocultar(this);
-    }else{
-        animacion.mostrar(this,180);
-    }
+Elemento.prototype.setState=function(state){
+  this.estado=state;
+}
+
+Elemento.prototype.getState=function(){//Checking if the object is visible or not
+  return this.estado;
 }
 
 Elemento.prototype.getNombre=function(){
