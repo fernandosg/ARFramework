@@ -488,6 +488,18 @@ Elemento.prototype.voltear=function(animacion){
     }
 }
 
+Elemento.prototype.turnState=function(){
+    this.estado=(this.estado) ? false : true;
+}
+
+Elemento.prototype.setState=function(state){
+  this.estado=state;
+}
+
+Elemento.prototype.getState=function(){//Checking if the object is visible or not
+  return this.estado;
+}
+
 Elemento.prototype.getNombre=function(){
     return this.nombre;
 }
@@ -703,33 +715,70 @@ module.exports=Mediador;
 
 },{}],6:[function(require,module,exports){
 function Animacion(){
+	this.easein_configuration={
+		limit_z:-800,
+		limit_z_out:-2500
+	}
+}
+Animacion.prototype.showIn=function(object){
+		object.position.z+=100
+		object.setState(true);
 }
 
+Animacion.prototype.showAndHide=function(object){
+	if(object.position.z<=this.limit_z){
+		this.showIn(object);
+		window.requestAnimationFrame(function(){
+					this.showAndHide(object);
+				}.bind(this));
+	}else if(object.getState()){
+		this.hideOut(object);
+		window.requestAnimationFrame(function(){
+					this.showAndHide(object);
+				}.bind(this));
+	}
+}
+
+Animacion.prototype.hideOut=function(object){
+	if(object.position.z>this.limit_z_out){
+		object.position.z-=100;
+	}else
+		object.setState(false);
+}
+/*
 Animacion.prototype.easein={
 	mostrado:false,
-	mostrar:function(objeto,limit_z,limit_z_fuera,animation){
+	mostrar:function(objeto){
 		window.requestAnimationFrame(function(){
-        	animation.easein.mostrar(objeto,limit_z,limit_z_fuera,animation);
-        });
-		if(objeto.position.z<=limit_z){
+        	this.easein.mostrar(objeto);
+        }.bind(this));//
+		if(objeto.position.z<=this.limit_z){
 			objeto.position.z+=100
-			animation.easein.mostrado=true;
-		}else if(animation.easein.mostrado){
-			limit_z_ocultar=limit_z_fuera;
+			this.easein.mostrado=true;
+		}else if(this.easein.mostrado){
 			setTimeout(function(){
-				animation.easein.ocultar(objeto,limit_z,limit_z_ocultar,animation);
-				animation.easein.mostrado=false;
-			},3000)
+				this.easein.ocultar(objeto);
+				this.easein.mostrado=false;
+			}.bind(this),3000)
 		}
 	},
-	ocultar:function(objeto,limit_z,limit_z_oculta,animation){
-		if(objeto.position.z>limit_z_ocultar){
+	ocultar:function(objeto){
+		if(objeto.position.z>this.limit_z_out){
 			objeto.position.z-=100;
 			window.requestAnimationFrame(function(){
-				animation.easein.ocultar(objeto,limit_z,limit_z_ocultar,animation);
-	        });
+				animation.easein.ocultar(objeto);
+			}.bind(this));
 		}else
 			animation.easein.mostrado=false;
+	}
+}
+*/
+Animacion.prototype.turnout=function(object){
+	object.turnState();
+	if(object.getState()){
+			this.ocultar(object);
+	}else{
+			this.mostrar(object,180);
 	}
 }
 
