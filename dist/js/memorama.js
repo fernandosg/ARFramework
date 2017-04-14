@@ -113,20 +113,25 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
 
     }else if(this.detectados.length==1 && this.detectados[0].esParDe(objeto_actual)){
       clasificarOpcion("memorama","acierto");
-      this.indicador_acierto.easein(this.AR.getAnimation());//this.indicador_acierto.easein(this.animacion);
-      objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
+      //this.indicador_acierto.easein(this.AR.getAnimation());//this.indicador_acierto.easein(this.animacion);
+      this.AR.getAnimation().showAndHide(this.indicador_acierto);
+      //objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
+      this.AR.getAnimation().turnout(objeto_actual);
       this.AR.removeWatch("colision",objeto_actual);//this.mediador.baja("colision",objeto_actual);
       this.AR.removeWatch("colision",this.detectados[0]);//this.mediador.baja("colision",this.detectados[0]);
       document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x"; // ELIMINAR
       this.detectados=[];
     }else if(this.detectados.length==0){
-      objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
+      //objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
+      this.AR.getAnimation().turnout(objeto_actual);
       this.detectados.push(objeto_actual);
     }else if(!this.detectados[0].esParDe(objeto_actual)){
       clasificarOpcion("memorama","fallo");
-      this.indicador_error.easein(this.AR.getAnimation());//this.indicador_error.easein(this.animacion);
+      //this.indicador_error.easein(this.AR.getAnimation());//this.indicador_error.easein(this.animacion);
+      this.AR.getAnimation().showAndHide(this.indicador_error);
       document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x"; // ELIMINAR
-      this.detectados[0].voltear(this.AR.getAnimation());//this.detectados[0].voltear(this.animacion);
+      //this.detectados[0].voltear(this.AR.getAnimation());//this.detectados[0].voltear(this.animacion);
+      this.AR.getAnimation().turnout(this.detectados[0]);
       this.detectados.pop();
     }
   }
@@ -241,7 +246,7 @@ Memorama.prototype.calibracion=function(){
   this.puntero.position.z=-1;
   this.puntero.matrixAutoUpdate = false;
   this.puntero.visible=false;
-  this.AR.addMarker({id:16,callback:this.callbackMemorama,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.logicaCalibracion,puntero:this.puntero});
+  this.AR.addMarker({id:16,callback:this.logicaCalibracion,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.logicaCalibracion,puntero:this.puntero});
   //this.loop();
 }
 
