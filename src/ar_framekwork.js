@@ -52,7 +52,7 @@ ARFramework.prototype.getHeight=function(){
 
 ARFramework.prototype.init=function(){
   this.planoEscena.initCamara(function(){
-    this.camara=new THREE.PerspectiveCamera();//THREE.Camera();
+    this.camara=new THREE.PerspectiveCamera();
     this.camara.near=0.1;
     this.camara.far=2000;
     this.camara.updateProjectionMatrix();
@@ -118,7 +118,7 @@ ARFramework.prototype.loop=function(){
   this.realidadEscena.update.call(this,this.realidadEscena);
   this.webcam.update();
   if(this.detecting_marker)
-  this.detector_ar.detectMarker(this);
+  this.detector_ar.detectMarker(this.stages[0]);
   for(var i=0;i<this.objetos.length;i++)
   this.objetos[i].actualizar();
   this.stages[0].loop();
@@ -139,8 +139,6 @@ ARFramework.prototype.dispatch=function(action,object,callback,extras){
 
 ARFramework.prototype.individualDispatch=function(action,object,pointer,callback,reference){
   this.mediador.comunicarParticular(action,object,pointer,callback.bind(reference))
-
-  //this.mediador.comunicarParticular("colision",this.objetos[this.pos_elegido],puntero,function(esColisionado,extras){
 }
 
 ARFramework.prototype.changeThreshold=function(i){
