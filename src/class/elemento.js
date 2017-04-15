@@ -253,7 +253,7 @@ Elemento.prototype.actualizar=function(){
 
 Elemento.prototype.dispatch=function(mano){
     distancia=this.getDistancia(mano);
-    console.log("distancia "+distancia);
+    //console.log("distancia "+distancia);
     return distancia>0 && distancia<=60;//return medidas1.distanceTo(medidas2);
 
 }
