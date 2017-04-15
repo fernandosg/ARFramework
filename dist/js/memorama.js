@@ -11,8 +11,7 @@
 * @param {integer} WIDTH - El ancho del canvas que se agregara al documento HTML
 * @param {integer} HEIGHT - El alto del canvas que se agregara al documento HTML
 */
-function Memorama(AR){//function Memorama(WIDTH,HEIGHT){
-  this.AR=AR;
+function Memorama(){//function Memorama(WIDTH,HEIGHT){
   calibrar=false;
   calibracion_correcta=false;
   puntos_encontrados=false;
@@ -45,19 +44,19 @@ Memorama.prototype.init=function(){
   //this.objetos=[];
   // CREACION DEL ELEMENTO ACIERTO (LA IMAGEN DE LA ESTRELLA)
   var geometry=new THREE.PlaneGeometry(500,500);
-  this.indicador_acierto=this.AR.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
+  this.indicador_acierto=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_acierto.init();
   this.indicador_acierto.definirSuperficiePorImagen("./assets/img/scale/star.png",this.indicador_acierto);
   this.indicador_acierto.position({x:0,y:0,z:-2500});
-  this.AR.addToScene(this.indicador_acierto);//this.anadir(this.indicador_acierto.get());
+  framework.addToScene(this.indicador_acierto);//this.anadir(this.indicador_acierto.get());
 
   // CREACION DEL ELEMENTO ERROR (LA IMAGEN DE LA X)
   var geometry=new THREE.PlaneGeometry(500,500);
-  this.indicador_error=this.AR.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
+  this.indicador_error=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_error.init();
   this.indicador_error.definirSuperficiePorImagen("./assets/img/scale/error.png",this.indicador_error);
   this.indicador_error.position({x:0,y:0,z:-2500});
-  this.AR.addToScene(this.indicador_error);//this.anadir(this.indicador_error.get());
+  framework.addToScene(this.indicador_error);//this.anadir(this.indicador_error.get());
 
   ///*
   // CREACION DE LAS CARTAS COMO ELEMENTOS
@@ -65,7 +64,7 @@ Memorama.prototype.init=function(){
   limite_renglon=Math.floor(this.cantidad_cartas/2)+1;
   for(var i=1,pos_y=-100,fila_pos=i,pos_x=-200;i<=this.cantidad_cartas;i++,pos_y=((i%2!=0) ? pos_y+130 : pos_y) ,fila_pos=((fila_pos>=limite_renglon-1) ? 1 : fila_pos+1),pos_x=(i%2==0 ? 200 : -200)){
     var geometry=new THREE.PlaneGeometry(120,120);
-    var elemento=this.AR.createElement({WIDTH:120,HEIGHT:120,GEOMETRY:geometry});
+    var elemento=framework.createElement({WIDTH:120,HEIGHT:120,GEOMETRY:geometry});
     elemento.init();
     elemento.etiqueta(cartas[this.tipo_memorama][fila_pos-1]);
     elemento.scale(.7,.7);
@@ -74,13 +73,13 @@ Memorama.prototype.init=function(){
     //this.objetos.push(elemento);
     elemento.definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg");
     //this.mediador.suscribir("colision",this.objetos[this.objetos.length-1]);
-    this.AR.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
+    framework.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
     capa_elemento=document.createElement("div");
   }
   //*/
 
   var geometry=new THREE.PlaneGeometry(60,60);
-  var mano_obj=this.AR.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
+  var mano_obj=framework.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
   mano_obj.init();
   mano_obj.definirSuperficiePorImagen("../../assets/img/mano_escala.png",mano_obj);
   this.puntero=new THREE.Object3D();
@@ -88,7 +87,7 @@ Memorama.prototype.init=function(){
   this.puntero.position.z=-1;
   this.puntero.matrixAutoUpdate = false;
   this.puntero.visible=false;
-  this.AR.addMarker({id:16,callback:this.callbackMemorama,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.callbackMemorama,puntero:this.puntero});
+  framework.addMarker({id:16,callback:this.callbackMemorama,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.callbackMemorama,puntero:this.puntero});
   //CREACION DE KATHIA, se utiliza la variable "kathia_renderer" de dist/js/libs/kathia/kathia.js
   document.getElementById("kathia").appendChild(kathia_renderer.view);
 
@@ -113,25 +112,25 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
 
     }else if(this.detectados.length==1 && this.detectados[0].esParDe(objeto_actual)){
       clasificarOpcion("memorama","acierto");
-      //this.indicador_acierto.easein(this.AR.getAnimation());//this.indicador_acierto.easein(this.animacion);
-      this.AR.getAnimation().showAndHide(this.indicador_acierto);
-      //objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
-      this.AR.getAnimation().turnout(objeto_actual);
-      this.AR.removeWatch("colision",objeto_actual);//this.mediador.baja("colision",objeto_actual);
-      this.AR.removeWatch("colision",this.detectados[0]);//this.mediador.baja("colision",this.detectados[0]);
+      //this.indicador_acierto.easein(framework.getAnimation());//this.indicador_acierto.easein(this.animacion);
+      framework.getAnimation().showAndHide(this.indicador_acierto);
+      //objeto_actual.voltear(framework.getAnimation());//objeto_actual.voltear(this.animacion);
+      framework.getAnimation().turnout(objeto_actual);
+      framework.removeWatch("colision",objeto_actual);//this.mediador.baja("colision",objeto_actual);
+      framework.removeWatch("colision",this.detectados[0]);//this.mediador.baja("colision",this.detectados[0]);
       document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x"; // ELIMINAR
       this.detectados=[];
     }else if(this.detectados.length==0){
-      //objeto_actual.voltear(this.AR.getAnimation());//objeto_actual.voltear(this.animacion);
-      this.AR.getAnimation().turnout(objeto_actual);
+      //objeto_actual.voltear(framework.getAnimation());//objeto_actual.voltear(this.animacion);
+      framework.getAnimation().turnout(objeto_actual);
       this.detectados.push(objeto_actual);
     }else if(!this.detectados[0].esParDe(objeto_actual)){
       clasificarOpcion("memorama","fallo");
-      //this.indicador_error.easein(this.AR.getAnimation());//this.indicador_error.easein(this.animacion);
-      this.AR.getAnimation().showAndHide(this.indicador_error);
+      //this.indicador_error.easein(framework.getAnimation());//this.indicador_error.easein(this.animacion);
+      framework.getAnimation().showAndHide(this.indicador_error);
       document.getElementById("avances_memorama").innerHTML="Al parecer te haz equivocado de par, no te preocupes, puedes seguir intentando con el par de x"; // ELIMINAR
-      //this.detectados[0].voltear(this.AR.getAnimation());//this.detectados[0].voltear(this.animacion);
-      this.AR.getAnimation().turnout(this.detectados[0]);
+      //this.detectados[0].voltear(framework.getAnimation());//this.detectados[0].voltear(this.animacion);
+      framework.getAnimation().turnout(this.detectados[0]);
       this.detectados.pop();
     }
   }
@@ -146,7 +145,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
 Memorama.prototype.callbackMemorama=function(puntero){
   if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){
     puntero.visible=true;
-    this.AR.dispatch("colision",puntero,this.logicaMemorama,{stage:this});//this.mediador.comunicar("colision",puntero,this.logicaMemorama,{stage:this});
+    framework.dispatch("colision",puntero,this.logicaMemorama,{stage:this});//this.mediador.comunicar("colision",puntero,this.logicaMemorama,{stage:this});
   }
 }
 
@@ -162,15 +161,15 @@ Memorama.prototype.logicaCalibracion=function(puntero){
   if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){
     puntero.visible=true;
     //this.mediador.comunicarParticular("colision",this.objetos[this.pos_elegido],puntero,function(esColisionado,extras){
-    this.AR.individualDispatch("colision",this.AR.getObject(this.pos_elegido),puntero,function(esColisionado,extras){
+    framework.individualDispatch("colision",framework.getObject(this.pos_elegido),puntero,function(esColisionado,extras){
       if(esColisionado){
-        extras["mediador"].baja("colision",this.AR.getObject(this.pos_elegido));
+        extras["mediador"].baja("colision",framework.getObject(this.pos_elegido));
         this.pos_elegido++;
         if(this.pos_elegido==this.cantidad_cartas){
           this.puntos_encontrados=true;
           this.detener_calibracion=true;
-          //this.AR.finish(); LLAMAR DESPUES DE PROBAR
-          this.AR.clean();
+          //framework.finish(); LLAMAR DESPUES DE PROBAR
+          framework.clean();
           this.init();//
           //this.limpiar();
           //this.init();
@@ -189,41 +188,38 @@ Memorama.prototype.inicioCalibracion=function(){
   var threshold_total=0;
   var threshold_conteo=0;
   for(var i=0;i<300;i++){
-    this.AR.changeThreshold(i);//this.detector_ar.cambiarThreshold(i);
-    if(this.AR.canDetectMarker(this)){//if(this.detector_ar.detectMarker(this)){
+    framework.changeThreshold(i);//this.detector_ar.cambiarThreshold(i);
+    if(framework.canDetectMarker(this)){//if(this.detector_ar.detectMarker(this)){
       threshold_total+=i;
       threshold_conteo++;
     }
   }
   if(threshold_conteo>0){
     threshold_total=threshold_total/threshold_conteo;
-    this.AR.changeThreshold(i);//this.detector_ar.cambiarThreshold(threshold_total);
+    framework.changeThreshold(threshold_total);//this.detector_ar.cambiarThreshold(threshold_total);
     calibracion_correcta=true;
     threshold_conteo=0;
     threshold_total=0;
   }
   calibrar=false;
   if(calibracion_correcta){
-    this.AR.allowDetect(true);//this.allowDetect(true);
+    framework.allowDetect(true);//this.allowDetect(true);
     this.colores=["rgb(34, 208, 6)","rgb(25, 11, 228)","rgb(244, 6, 6)","rgb(244, 232, 6)"];
     document.getElementById("colorSelect").style.backgroundColor=this.colores[this.pos_elegido];
     //CREACION DE OBJETOS A SELECCIONAR PARA CALIBRAR
     limite_renglon=Math.floor(this.cantidad_cartas/2)+1;
     tamano_elemento=80;
-    margenes_espacio=(this.AR.getWidth()-(tamano_elemento*limite_renglon))/limite_renglon;
+    margenes_espacio=(framework.getWidth()-(tamano_elemento*limite_renglon))/limite_renglon;
     for(var x=1,pos_y=-100,fila_pos=x,pos_x=-200;x<=this.cantidad_cartas;x++,pos_y=((fila_pos>=limite_renglon-1) ? pos_y+120+50 : pos_y) ,fila_pos=((fila_pos>=limite_renglon-1) ? 1 : fila_pos+1),pos_x=(fila_pos==1 ? -200 : (pos_x+margenes_espacio+tamano_elemento))){
       var geometry=new THREE.PlaneGeometry(tamano_elemento,tamano_elemento);
-      var elemento=this.AR.createElement({WIDTH:tamano_elemento,HEIGHT:tamano_elemento,GEOMETRY:geometry});
+      var elemento=framework.createElement({WIDTH:tamano_elemento,HEIGHT:tamano_elemento,GEOMETRY:geometry});
       elemento.init();
       elemento.etiqueta(this.colores[x-1]);
       elemento.position({x:pos_x,y:pos_y,z:-600});
       //elemento.calculoOrigen();
       //this.objetos.push(elemento);
       elemento.definirSuperficiePorColor(this.colores[x-1]);
-      //this.mediador.suscribir("colision",this.objetos[this.objetos.length-1]);
-
-      console.log("Añadido con exito "+(x-1)+" "+(this.AR==undefined)+" "+this.AR.checkLenghtObjects());
-      this.AR.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
+      framework.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
     }
   }
 }
@@ -238,7 +234,7 @@ Memorama.prototype.inicioCalibracion=function(){
 Memorama.prototype.calibracion=function(){
   //this.objetos=[];
   var geometry=new THREE.PlaneGeometry(60,60);
-  var mano_obj=this.AR.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
+  var mano_obj=framework.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
   mano_obj.init();
   mano_obj.definirSuperficiePorImagen("../../assets/img/mano_escala.png");
   this.puntero=new THREE.Object3D();
@@ -246,7 +242,7 @@ Memorama.prototype.calibracion=function(){
   this.puntero.position.z=-1;
   this.puntero.matrixAutoUpdate = false;
   this.puntero.visible=false;
-  this.AR.addMarker({id:16,callback:this.logicaCalibracion,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.logicaCalibracion,puntero:this.puntero});
+  framework.addMarker({id:16,callback:this.logicaCalibracion,puntero:this.puntero});//this.anadirMarcador({id:16,callback:this.logicaCalibracion,puntero:this.puntero});
   //this.loop();
 }
 
