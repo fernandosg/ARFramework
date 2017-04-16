@@ -73,8 +73,6 @@ ARFramework.prototype.addStage=function(stage){
 }
 
 ARFramework.prototype.start=function(){
-  //this.stages[0].start();
-  //this.stages[0].init()
   this.loop();
 }
 
@@ -160,10 +158,9 @@ ARFramework.prototype.clean=function(){
 
 ARFramework.prototype.finishStage=function(){
   this.clean();
-  this.stages.pop();
-  if(this.stages.length>0){
+  this.stages.shift();
+  if(this.stages.length>0)
     this.stages[0].start();
-  }
 }
 
 window.ARFramework=ARFramework;
