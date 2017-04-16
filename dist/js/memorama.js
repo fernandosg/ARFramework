@@ -46,7 +46,7 @@ Memorama.prototype.init=function(){
   var geometry=new THREE.PlaneGeometry(500,500);
   this.indicador_acierto=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_acierto.init();
-  this.indicador_acierto.definirSuperficiePorImagen("./assets/img/scale/star.png",this.indicador_acierto);
+  this.indicador_acierto.definirSuperficiePorImagen("./assets/img/scale/star.png");
   this.indicador_acierto.position({x:0,y:0,z:-2500});
   framework.addToScene(this.indicador_acierto);//this.anadir(this.indicador_acierto.get());
 
@@ -54,7 +54,7 @@ Memorama.prototype.init=function(){
   var geometry=new THREE.PlaneGeometry(500,500);
   this.indicador_error=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_error.init();
-  this.indicador_error.definirSuperficiePorImagen("./assets/img/scale/error.png",this.indicador_error);
+  this.indicador_error.definirSuperficiePorImagen("./assets/img/scale/error.png");
   this.indicador_error.position({x:0,y:0,z:-2500});
   framework.addToScene(this.indicador_error);//this.anadir(this.indicador_error.get());
 
