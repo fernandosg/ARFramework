@@ -1085,8 +1085,6 @@ ARFramework.prototype.addStage=function(stage){
 }
 
 ARFramework.prototype.start=function(){
-  //this.stages[0].start();
-  //this.stages[0].init()
   this.loop();
 }
 
@@ -1140,7 +1138,7 @@ ARFramework.prototype.loop=function(){
 }
 
 ARFramework.prototype.watch=function(action){
-  this.mediador.suscribir("colision",this.objetos[this.objetos.length-1]);
+  this.mediador.suscribir(action,this.objetos[this.objetos.length-1]);
 }
 
 ARFramework.prototype.removeWatch=function(action,object){
@@ -1172,10 +1170,9 @@ ARFramework.prototype.clean=function(){
 
 ARFramework.prototype.finishStage=function(){
   this.clean();
-  this.stages.pop();
-  if(this.stages.length>0){
+  this.stages.shift();
+  if(this.stages.length>0)
     this.stages[0].start();
-  }
 }
 
 window.ARFramework=ARFramework;
