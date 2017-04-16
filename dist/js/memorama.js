@@ -24,6 +24,8 @@ function Memorama(){//function Memorama(WIDTH,HEIGHT){
   }.bind(this))
   this.pos_elegido=0;
   this.cantidad_cartas=4;// cantidad cartas
+  this.cantidad_cartas_encontradas=0;
+  this.initMemorama=false;
 }
 
 
@@ -120,6 +122,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
       framework.removeWatch("colision",this.detectados[0]);//this.mediador.baja("colision",this.detectados[0]);
       document.getElementById("avances_memorama").innerHTML="Excelente, haz encontrado el par de la carta x"; // ELIMINAR
       this.detectados=[];
+      this.cantidad_cartas_encontradas++;
     }else if(this.detectados.length==0){
       //objeto_actual.voltear(framework.getAnimation());//objeto_actual.voltear(this.animacion);
       framework.getAnimation().turnout(objeto_actual);
@@ -221,6 +224,7 @@ Memorama.prototype.inicioCalibracion=function(){
       elemento.definirSuperficiePorColor(this.colores[x-1]);
       framework.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
     }
+    this.initMemorama=true;
   }
 }
 
@@ -255,6 +259,8 @@ Memorama.prototype.calibracion=function(){
 Memorama.prototype.loop=function(){
   if(!pausado_kathia)
   animate();
+  if(this.initMemorama && this.cantidad_cartas_encontradas==2)
+    framework.finishStage();
 }
 
 //module.exports=Memorama;
