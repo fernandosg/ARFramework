@@ -30,7 +30,7 @@ ARFramework.prototype.getAnimation=function(){
 ARFramework.prototype.addToScene=function(object,is_an_object_actionable){
   this.planoEscena.anadir(object.get());
   if(is_an_object_actionable)
-    this.objetos.push(object);
+  this.objetos.push(object);
   return this;
 }
 
@@ -121,8 +121,10 @@ ARFramework.prototype.loop=function(){
   this.detector_ar.detectMarker(this.stages[0]);
   for(var i=0;i<this.objetos.length;i++)
   this.objetos[i].actualizar();
-  this.stages[0].loop();
-  requestAnimationFrame(this.loop.bind(this));
+  if(this.stages.length>0){
+    this.stages[0].loop();
+    requestAnimationFrame(this.loop.bind(this));
+  }
 }
 
 ARFramework.prototype.watch=function(action){
@@ -153,10 +155,15 @@ ARFramework.prototype.clean=function(){
   this.planoEscena.limpiar();
   this.realidadEscena.limpiar();
   this.detector_ar.cleanMarkers();
+  this.objetos=[];
 }
 
-ARFramework.prototype.finish=function(){
+ARFramework.prototype.finishStage=function(){
   this.clean();
+  this.stages.pop();
+  if(this.stages.length>0){
+    this.stages[0].start();
+  }
 }
 
 window.ARFramework=ARFramework;
