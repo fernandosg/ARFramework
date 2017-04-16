@@ -1718,27 +1718,29 @@ function Animacion(){
 	}
 }
 Animacion.prototype.showIn=function(object){
-		object.position.z+=100
-		object.setState(true);
+		object.get().position.z+=100
 }
 
 Animacion.prototype.showAndHide=function(object){
-	if(object.position.z<=this.limit_z){
+	if(object.get().position.z<=this.easein_configuration.limit_z){
 		this.showIn(object);
 		window.requestAnimationFrame(function(){
 					this.showAndHide(object);
-				}.bind(this));
+				}.bind(this));				
+		object.setState(true);
 	}else if(object.getState()){
-		this.hideOut(object);
-		window.requestAnimationFrame(function(){
-					this.showAndHide(object);
-				}.bind(this));
+		setTimeout(function(){
+			this.hideOut(object);
+		}.bind(this),3000);
 	}
 }
 
 Animacion.prototype.hideOut=function(object){
-	if(object.position.z>this.limit_z_out){
-		object.position.z-=100;
+	if(object.get().position.z>this.easein_configuration.limit_z_out){
+		object.get().position.z-=100;
+		window.requestAnimationFrame(function(){
+					this.hideOut(object)
+				}.bind(this));
 	}else
 		object.setState(false);
 }
