@@ -128,7 +128,7 @@ ARFramework.prototype.loop=function(){
 }
 
 ARFramework.prototype.watch=function(action){
-  this.mediador.suscribir("colision",this.objetos[this.objetos.length-1]);
+  this.mediador.suscribir(action,this.objetos[this.objetos.length-1]);
 }
 
 ARFramework.prototype.removeWatch=function(action,object){
