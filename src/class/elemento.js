@@ -162,6 +162,18 @@ Elemento.prototype.definirCaras=function(frontal,trasera){
 }
 
 
+Elemento.prototype.defineSurfaceByResource=function(frontal,trasera){
+    this.textureLoader.load( frontal, function(texture1) {
+        this.actualizarMaterialFrente(texture1);
+        if(trasera!=undefined){
+          this.textureLoader.load(trasera, function(texture2) {
+              this.actualizarMaterialAtras(texture2);
+          }.bind(this));
+        }
+    }.bind(this));
+}
+
+
 /**
  * @function get
  * @summary Permite definir el objeto THREE.Object3D del elemento
