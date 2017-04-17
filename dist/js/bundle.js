@@ -74,6 +74,7 @@ ARFramework.prototype.addStage=function(stage){
 }
 
 ARFramework.prototype.start=function(){
+  this.stages[0].start();
   this.loop();
 }
 
