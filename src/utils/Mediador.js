@@ -36,11 +36,11 @@ Mediador.prototype.suscribir=function(evento,objeto){
  * @param {Function} callback
  * @param {extras} Object
 */
-Mediador.prototype.comunicar=function(evento,objeto,callback,extras){
+Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
 	if(!this.lista_eventos[evento]) return;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];
-		callback.call(extras.stage,objeto_action.dispatch(objeto),objeto_action);
+		callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
 	}
 }
 
@@ -67,7 +67,7 @@ Mediador.prototype.comunicarParticular=function(evento,objeto,compara,callback){
  * @function baja
  * @summary Evento comunicar
  * @param {String} evento
- * @param {Elemento} objeto 
+ * @param {Elemento} objeto
 */
 Mediador.prototype.baja=function(evento,objeto){
 	if(this.lista_eventos[evento].indexOf(objeto)==-1) return;
