@@ -152,7 +152,7 @@ Memorama.prototype.logicaMemorama=function(esColisionado,objeto_actual){
 Memorama.prototype.callbackMemorama=function(puntero){
   if(puntero.getWorldPosition().z>300 && puntero.getWorldPosition().z<=500){
     puntero.visible=true;
-    framework.dispatch("colision",puntero,this.logicaMemorama,{stage:this});//this.mediador.comunicar("colision",puntero,this.logicaMemorama,{stage:this});
+    framework.dispatch("colision",puntero,this.logicaMemorama);//this.mediador.comunicar("colision",puntero,this.logicaMemorama,{stage:this});
   }
 }
 
