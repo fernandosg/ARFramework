@@ -134,8 +134,8 @@ ARFramework.prototype.removeWatch=function(action,object){
   this.mediador.baja(action,object);
 }
 
-ARFramework.prototype.dispatch=function(action,object,callback,extras){
-  this.mediador.comunicar(action,object,callback,extras);
+ARFramework.prototype.dispatch=function(action,object,callback){
+  this.mediador.comunicar(action,object,callback,this.stages[0]);
 }
 
 ARFramework.prototype.individualDispatch=function(action,object,pointer,callback,reference){
