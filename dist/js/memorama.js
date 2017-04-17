@@ -12,6 +12,10 @@
 * @param {integer} HEIGHT - El alto del canvas que se agregara al documento HTML
 */
 function Memorama(){//function Memorama(WIDTH,HEIGHT){
+
+}
+
+Memorama.prototype.start=function(){
   calibrar=false;
   calibracion_correcta=false;
   puntos_encontrados=false;
