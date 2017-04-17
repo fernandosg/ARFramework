@@ -52,7 +52,7 @@ Memorama.prototype.init=function(){
   var geometry=new THREE.PlaneGeometry(500,500);
   this.indicador_acierto=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_acierto.init();
-  this.indicador_acierto.definirSuperficiePorImagen("./assets/img/scale/star.png");
+  this.indicador_acierto.defineSurfaceByResource("./assets/img/scale/star.png");
   this.indicador_acierto.position({x:0,y:0,z:-2500});
   framework.addToScene(this.indicador_acierto);//this.anadir(this.indicador_acierto.get());
 
@@ -60,7 +60,7 @@ Memorama.prototype.init=function(){
   var geometry=new THREE.PlaneGeometry(500,500);
   this.indicador_error=framework.createElement({WIDTH:500,HEIGHT:500,GEOMETRY:geometry});// new this.Elemento(500,500,new THREE.PlaneGeometry(500,500));
   this.indicador_error.init();
-  this.indicador_error.definirSuperficiePorImagen("./assets/img/scale/error.png");
+  this.indicador_error.defineSurfaceByResource("./assets/img/scale/error.png");
   this.indicador_error.position({x:0,y:0,z:-2500});
   framework.addToScene(this.indicador_error);//this.anadir(this.indicador_error.get());
 
@@ -77,7 +77,7 @@ Memorama.prototype.init=function(){
     elemento.position({x:pos_x,y:pos_y,z:-600});
     //elemento.calculoOrigen();
     //this.objetos.push(elemento);
-    elemento.definirCaras("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg");
+    elemento.defineSurfaceByResource("./assets/img/memorama/sin_voltear.jpg","./assets/img/memorama/"+this.tipo_memorama+"/cart"+fila_pos+"_"+cartas[this.tipo_memorama][fila_pos-1]+".jpg");
     //this.mediador.suscribir("colision",this.objetos[this.objetos.length-1]);
     framework.addToScene(elemento,true).watch("colision");//this.anadir(elemento.get());
     capa_elemento=document.createElement("div");
@@ -87,7 +87,7 @@ Memorama.prototype.init=function(){
   var geometry=new THREE.PlaneGeometry(60,60);
   var mano_obj=framework.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
   mano_obj.init();
-  mano_obj.definirSuperficiePorImagen("../../assets/img/mano_escala.png",mano_obj);
+  mano_obj.defineSurfaceByResource("../../assets/img/mano_escala.png");
   this.puntero=new THREE.Object3D();
   this.puntero.add(mano_obj.get());
   this.puntero.position.z=-1;
@@ -244,7 +244,7 @@ Memorama.prototype.calibracion=function(){
   var geometry=new THREE.PlaneGeometry(60,60);
   var mano_obj=framework.createElement({WIDTH:60,HEIGHT:60,GEOMETRY:geometry});
   mano_obj.init();
-  mano_obj.definirSuperficiePorImagen("../../assets/img/mano_escala.png");
+  mano_obj.defineSurfaceByResource("../../assets/img/mano_escala.png");
   this.puntero=new THREE.Object3D();
   this.puntero.add(mano_obj.get());
   this.puntero.position.z=-1;
