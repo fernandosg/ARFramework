@@ -86,10 +86,15 @@ ARFramework.prototype.start=function(){
 * 3) puntero (THREE.Object3D - es el objeto el cual tendra la posicion del marcador detectado)
 */
 ARFramework.prototype.addMarker=function(marcador){
-  this.detector_ar.addMarker.call(this,marcador);
   if(marcador.puntero!=undefined)
   this.realidadEscena.anadir(marcador.puntero);
-  return this;
+  return this.detector_ar.addMarker.call(this,marcador);
+}
+
+ARFramework.prototype.attach=function(marker){
+  this.detector_ar.getLastMarker().attach(marker);
+  if(marker.puntero!=undefined)
+  this.realidadEscena.anadir(marker.puntero);
 }
 
 
