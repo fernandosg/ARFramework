@@ -17,7 +17,7 @@ function DetectorAR(canvas_element){
   var markers={};
   var DetectorMarker;
   var rootMarker,markermatrix;
-
+  var lastMarker;
 
   /**
   * @function init
@@ -195,7 +195,12 @@ function DetectorAR(canvas_element){
   */
   var addMarker=function(marker){
     markers[marker.id]=new DetectorMarker(marker.id,marker.callback,marker.puntero);
-    return this;
+    lastMarker=markers[marker.id];
+    return markers[marker.id];
+  }
+
+  var getLastMarker=function(){
+    return lastMarker;
   }
 
 
