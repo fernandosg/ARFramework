@@ -17,7 +17,9 @@ function DetectorAR(canvas_element){
   var markers={};
   var DetectorMarker;
   var rootMarker,markermatrix;
-  var lastMarker;
+  var list_marker_id_detected=[];
+  var list_marker_id_with_attachment=[];
+  var in_process_detect=false;
 
   /**
   * @function init
@@ -150,21 +152,35 @@ function DetectorAR(canvas_element){
             markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount,i));
             markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
           }
-          if(!isAttached(marcador_id))
-          markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);
-          else
-          markers_attach[marcador_id]=1;
+          if(!markers[marcador_id].hasAttachments()){
+            if(markers[marcador_id].callback!=undefined)
+              markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);
+          }else{
+            if(list_marker_id_with_attachment.indexOf(marcador_id)==-1)
+              list_marker_id_with_attachment.push(marcador_id)
+          }
+          if(list_marker_id_detected.indexOf(marcador_id)==-1)
+            list_marker_id_detected.push(marcador_id)
         }
       }
-      if(Object.keys(markers_attach).length>0){
-        var count=0;
-        for(var id in markers_attach){
-          count+=markers_attach[id];
-          markers_attach[id]=0;
-        }
-        if(count==Object.keys(markers_attach).length)//If all the markers attached are not detected, then the event is not executed
-        rootMarker.detected().call(stage,rootMarker.puntero);
-      }
+      if(!in_process_detect && list_marker_id_with_attachment.length>0)
+        setTimeout(function(){
+          in_process_detect=true;
+          if(list_marker_id_with_attachment.length>0){
+            for(var i=0,total_attachments=[],count_attachments=0,length=list_marker_id_with_attachment.length;i<length;i++,count_attachments=0){
+              total_attachments=markers[list_marker_id_with_attachment[i]].getAttachmentsId();
+              total_attachments.forEach(function(attached_id){
+                if(list_marker_id_detected.indexOf(attached_id)>-1)
+                  count_attachments++;
+              });
+              if(total_attachments.length==count_attachments)
+                markers[list_marker_id_with_attachment[i]].detected().call(stage,markers[list_marker_id_with_attachment[i]].puntero);
+            }
+          }
+          list_marker_id_with_attachment.length=0;
+          list_marker_id_detected.length=0;
+          in_process_detect=false;
+        },350);
       return true;
     }
     return false;
@@ -203,6 +219,10 @@ function DetectorAR(canvas_element){
     return lastMarker;
   }
 
+  var getMarker=function(marker_id){
+    return markers[marker_id];
+  }
+
 
   /**
   * @function cleanMarkers
@@ -228,6 +248,7 @@ function DetectorAR(canvas_element){
     attach:attach,
     setCameraMatrix:setCameraMatrix,
     detectMarker:detectMarker,
+    getMarker:getMarker,
     addMarker:addMarker,
     markermatrix:markermatrix,
     cambiarThreshold:cambiarThreshold,
