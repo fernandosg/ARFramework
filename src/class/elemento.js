@@ -16,6 +16,8 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.height=height_canvas;
     this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();
     this.callbacks=[];
+    var PositionUtil=require("../utils/position_util.js");
+    this.position_util=new PositionUtil();
 }
 
 
@@ -262,28 +264,17 @@ Elemento.prototype.actualizar=function(){
 }
 
 
-
 Elemento.prototype.dispatch=function(mano){
-    distancia=this.getDistancia(mano);
-    //console.log("distancia "+distancia);
-    return distancia>0 && distancia<=60;//return medidas1.distanceTo(medidas2);
-
+    return this.position_util.estaColisionando(this.get().getWorldPosition(),mano.getWorldPosition());
 }
 
 
-Elemento.prototype.getDistancia=function(mano){
-    var pos1=mano.getWorldPosition();
-    pos1.z=0;
-    var pos2=this.get().getWorldPosition();
-    pos2.z=0;
-    return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
-}
 
 Elemento.prototype.calculateDistance=function(obj,obj2){
     box=new THREE.Box3().setFromObject(obj);
     box2=new THREE.Box3().setFromObject(obj2);
     pos1=box.center().clone();
-    pos2=box2.center().clone();
+    // pos2=box2.center().clone();
     return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
 }
 
@@ -295,7 +286,7 @@ Elemento.prototype.abajoDe=function(puntero){
 
 
 Elemento.prototype.colisiona=function(mano){
-    distancia=this.getDistancia(mano);
+    var distancia=this.position_util.getDistancia(mano.getWorldPosition(),this.get().getWorldPosition());
     return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2);
 
 }
