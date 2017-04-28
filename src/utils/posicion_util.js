@@ -1,10 +1,10 @@
-function PosicionThreeJS(config){
+function PositionUtil(config){
 	this.width=config.width;
 	this.height=config.height;
   this.escena=config.escena;
 }
 
-PosicionThreeJS.prototype.obtenerPosicionPantalla=function(obj){
+PositionUtil.prototype.obtenerPosicionPantalla=function(obj){
 	var vector = new THREE.Vector3();
     vector.setFromMatrixPosition(obj.matrixWorld);
     vector.project(this.escena.camara);
@@ -14,4 +14,6 @@ PosicionThreeJS.prototype.obtenerPosicionPantalla=function(obj){
     return vector;
 }
 
-module.exports=PosicionThreeJS;
+
+
+module.exports=PositionUtil;
