@@ -192,6 +192,8 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.height=height_canvas;
     this.geometry=geometry,this.origen=new THREE.Vector2(),this.cont=0,this.estado=true,this.escalas=new THREE.Vector3(),this.posiciones=new THREE.Vector3();
     this.callbacks=[];
+    var PositionUtil=require("../utils/position_util.js");
+    this.position_util=new PositionUtil();
 }
 
 
@@ -438,28 +440,17 @@ Elemento.prototype.actualizar=function(){
 }
 
 
-
 Elemento.prototype.dispatch=function(mano){
-    distancia=this.getDistancia(mano);
-    //console.log("distancia "+distancia);
-    return distancia>0 && distancia<=60;//return medidas1.distanceTo(medidas2);
-
+    return this.position_util.estaColisionando(this.get().getWorldPosition(),mano.getWorldPosition());
 }
 
 
-Elemento.prototype.getDistancia=function(mano){
-    var pos1=mano.getWorldPosition();
-    pos1.z=0;
-    var pos2=this.get().getWorldPosition();
-    pos2.z=0;
-    return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
-}
 
 Elemento.prototype.calculateDistance=function(obj,obj2){
     box=new THREE.Box3().setFromObject(obj);
     box2=new THREE.Box3().setFromObject(obj2);
     pos1=box.center().clone();
-    pos2=box2.center().clone();
+    // pos2=box2.center().clone();
     return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
 }
 
@@ -471,7 +462,7 @@ Elemento.prototype.abajoDe=function(puntero){
 
 
 Elemento.prototype.colisiona=function(mano){
-    distancia=this.getDistancia(mano);
+    var distancia=this.position_util.getDistancia(mano.getWorldPosition(),this.get().getWorldPosition());
     return distancia>0 && distancia<=43;//return medidas1.distanceTo(medidas2);
 
 }
@@ -523,7 +514,7 @@ Elemento.prototype.igualA=function(objeto){
 
 module.exports=Elemento;
 
-},{}],3:[function(require,module,exports){
+},{"../utils/position_util.js":9}],3:[function(require,module,exports){
 /**
  * @file Escenario
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -1103,23 +1094,38 @@ DetectorMarker.prototype.getAttachmentsId=function(){
 module.exports=DetectorMarker;
 
 },{}],9:[function(require,module,exports){
-function PosicionThreeJS(config){
-	this.width=config.width;
-	this.height=config.height;
-  this.escena=config.escena;
+function PositionUtil(config){
+	/*
+	this.width=config.WIDTH;
+	this.height=config.HEIGHT;
+	this.escena=config.SCENE;
+	this.distancia=config.DISTANCE;
+	*/
 }
 
-PosicionThreeJS.prototype.obtenerPosicionPantalla=function(obj){
+PositionUtil.prototype.obtenerPosicionPantalla=function(obj){
 	var vector = new THREE.Vector3();
-    vector.setFromMatrixPosition(obj.matrixWorld);
-    vector.project(this.escena.camara);
-    var mitadAncho = this.width / 2, mitadAlto = this.height / 2;
-    vector.x = ( vector.x * mitadAncho ) + mitadAlto;
-    vector.y = -( vector.y * mitadAlto ) + mitadAlto;
-    return vector;
+	vector.setFromMatrixPosition(obj.matrixWorld);
+	vector.project(this.escena.camara);
+	var mitadAncho = this.width / 2, mitadAlto = this.height / 2;
+	vector.x = ( vector.x * mitadAncho ) + mitadAlto;
+	vector.y = -( vector.y * mitadAlto ) + mitadAlto;
+	return vector;
 }
 
-module.exports=PosicionThreeJS;
+PositionUtil.prototype.getDistancia=function(pos1,pos2){
+	pos1.z=0;
+	pos2.z=0;
+	return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+}
+
+PositionUtil.prototype.estaColisionando=function(pos1,pos2){
+	var distancia=this.getDistancia(pos1,pos2);
+	return distancia>0 && distancia<=60;
+}
+
+
+module.exports=PositionUtil;
 
 },{}],10:[function(require,module,exports){
 function WebcamStream(configuracion){
