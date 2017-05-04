@@ -31,7 +31,7 @@ module.exports = function (grunt) {
           'dist/js/libs/webcam.js',
           'dist/js/bundle.js'
         ],
-        dest: 'dist/js/arframework.js',
+        dest: 'dist/js/arweb.js',
       },
     },
   });

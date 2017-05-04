@@ -59,7 +59,7 @@ Elemento.prototype.iterateCalls=function(){
  * @summary Permite definir una etiqueta al objeto (es un string que identifica este de otros objetos)
  * @param {String} etiqueta - String representando la etiqueta del objeto.
 */
-Elemento.prototype.etiqueta=function(etiqueta){
+Elemento.prototype.label=function(etiqueta){
     this.nombre=etiqueta
 }
 
@@ -88,11 +88,11 @@ Elemento.prototype.cambiarVisible=function(){
 
 
 /**
- * @function definirSuperficiePorColor
+ * @function defineSurfaceByColor
  * @summary Permite definir la superficie del objeto con un color.
  * @param {THREE.Color} color - Una instancia de THREE.Color
 */
-Elemento.prototype.definirSuperficiePorColor=function(color){
+Elemento.prototype.defineSurfaceByColor=function(color){
     color_t=new THREE.Color(color);
     this.material_frente=new THREE.MeshBasicMaterial({color: color_t,side: THREE.DoubleSide});
     this.mesh=new THREE.Mesh(this.geometry,this.material_frente);
@@ -291,7 +291,7 @@ Elemento.prototype.colisiona=function(mano){
 
 }
 
-Elemento.prototype.getEtiqueta=function(){
+Elemento.prototype.getLabel=function(){
     console.log(this.nombre);
 }
 

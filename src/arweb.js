@@ -1,4 +1,4 @@
-function ARFramework(configuration){//
+function ARWeb(configuration){//
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
   var WebcamStream=require("./utils/webcamstream.js");
@@ -21,36 +21,37 @@ function ARFramework(configuration){//
   this.realidadEscena=new Escenario();
   this.videoEscena=new Escenario();
   this.stages=[];
+  this.refresh_object=[];
 }
 
-ARFramework.prototype.getAnimation=function(){
+ARWeb.prototype.getAnimation=function(){
   return this.animacion;
 }
 
-ARFramework.prototype.addToScene=function(object,is_an_object_actionable){
+ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
   this.planoEscena.anadir(object.get());
-  if(is_an_object_actionable)
+  this.refresh_object.push(is_an_object_actionable);
   this.objetos.push(object);
   return this;
 }
 
-ARFramework.prototype.checkLenghtObjects=function(){
+ARWeb.prototype.checkLenghtObjects=function(){
   return this.objetos.length;
 }
 
-ARFramework.prototype.getObject=function(position){
+ARWeb.prototype.getObject=function(position){
   return this.objetos[position];
 }
 
-ARFramework.prototype.getWidth=function(){
+ARWeb.prototype.getWidth=function(){
   return this.configuration.WIDTH;
 }
 
-ARFramework.prototype.getHeight=function(){
+ARWeb.prototype.getHeight=function(){
   return this.configuration.HEIGHT;
 }
 
-ARFramework.prototype.init=function(){
+ARWeb.prototype.init=function(){
   this.planoEscena.initCamara(function(){
     this.camara=new THREE.PerspectiveCamera();
     this.camara.near=0.1;
@@ -64,15 +65,15 @@ ARFramework.prototype.init=function(){
   this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
 }
 
-ARFramework.prototype.createElement=function(configuration){
+ARWeb.prototype.createElement=function(configuration){
   return new this.Elemento(configuration.WIDTH,configuration.HEIGHT,configuration.GEOMETRY);
 }
 
-ARFramework.prototype.addStage=function(stage){
+ARWeb.prototype.addStage=function(stage){
   this.stages.push(stage);
 }
 
-ARFramework.prototype.start=function(){
+ARWeb.prototype.start=function(){
   this.stages[0].start();
   this.loop();
 }
@@ -85,14 +86,14 @@ ARFramework.prototype.start=function(){
 * 2) callback (function - es la función a ejecutar una vez que el marcador se haya detectado),
 * 3) puntero (THREE.Object3D - es el objeto el cual tendra la posicion del marcador detectado)
 */
-ARFramework.prototype.addMarker=function(marcador){
+ARWeb.prototype.addMarker=function(marcador){
   this.detector_ar.addMarker.call(this,marcador);
   if(marcador.puntero!=undefined)
   this.realidadEscena.anadir(marcador.puntero);
   return this;
 }
 
-ARFramework.prototype.attach=function(parent_id,marker){
+ARWeb.prototype.attach=function(parent_id,marker){
   this.detector_ar.getMarker(parent_id).attach(marker);
   this.addMarker(marker);
   return this;
@@ -103,11 +104,11 @@ ARFramework.prototype.attach=function(parent_id,marker){
 * @function allowDetect
 * @param {boolean} bool
 */
-ARFramework.prototype.allowDetect=function(boolean){
+ARWeb.prototype.allowDetect=function(boolean){
   this.detecting_marker=boolean;
 }
 
-ARFramework.prototype.allowedDetected=function(){
+ARWeb.prototype.allowedDetected=function(){
   return this.detecting_marker;
 }
 
@@ -116,7 +117,7 @@ ARFramework.prototype.allowedDetected=function(){
 * @summary Esta función se estara ejecutando finitamente hasta que se cierre la aplicación.
 * Se encargara del redibujo de todos los elementos agregados a escena y la actualización del canvas con la transmisión de la webcam.
 */
-ARFramework.prototype.loop=function(){
+ARWeb.prototype.loop=function(){
   this.renderer.clear();
   this.videoEscena.update.call(this,this.videoEscena);
   this.planoEscena.update.call(this,this.planoEscena);
@@ -125,49 +126,51 @@ ARFramework.prototype.loop=function(){
   if(this.detecting_marker)
   this.detector_ar.detectMarker(this.stages[0]);
   for(var i=0;i<this.objetos.length;i++)
-  this.objetos[i].actualizar();
+    if(this.refresh_object[i]==true)
+      this.objetos[i].actualizar();
   if(this.stages.length>0){
     this.stages[0].loop();
     requestAnimationFrame(this.loop.bind(this));
   }
 }
 
-ARFramework.prototype.watch=function(action){
+ARWeb.prototype.watch=function(action){
   this.mediador.suscribir(action,this.objetos[this.objetos.length-1]);
 }
 
-ARFramework.prototype.removeWatch=function(action,object){
+ARWeb.prototype.removeWatch=function(action,object){
   this.mediador.baja(action,object);
 }
 
-ARFramework.prototype.dispatch=function(action,object,callback){
+ARWeb.prototype.dispatch=function(action,object,callback){
   this.mediador.comunicar(action,object,callback,this.stages[0]);
 }
 
-ARFramework.prototype.individualDispatch=function(action,object,pointer,callback,reference){
-  this.mediador.comunicarParticular(action,object,pointer,callback.bind(reference))
+
+ARWeb.prototype.individualDispatch=function(action,object,pointer,callback){
+  this.mediador.comunicarParticular(action,object,pointer,callback.bind(this.stages[0]))
 }
 
-ARFramework.prototype.changeThreshold=function(i){
+ARWeb.prototype.changeThreshold=function(i){
   this.detector_ar.cambiarThreshold(i);
 }
 
-ARFramework.prototype.canDetectMarker=function(stage){
+ARWeb.prototype.canDetectMarker=function(stage){
   return this.detector_ar.detectMarker(stage);
 }
 
-ARFramework.prototype.clean=function(){
+ARWeb.prototype.clean=function(){
   this.planoEscena.limpiar();
   this.realidadEscena.limpiar();
   this.detector_ar.cleanMarkers();
   this.objetos=[];
 }
 
-ARFramework.prototype.finishStage=function(){
+ARWeb.prototype.finishStage=function(){
   this.clean();
   this.stages.shift();
   if(this.stages.length>0)
     this.stages[0].start();
 }
 
-window.ARFramework=ARFramework;
+window.ARWeb=ARWeb;
