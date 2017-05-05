@@ -4,7 +4,9 @@ function ARWeb(configuration){//
   var WebcamStream=require("./utils/webcamstream.js");
   var DetectorAR=require("./utils/detector_ar");
   var Mediador=require("./utils/Mediador.js");
+  var PositionUtil=require("./utils/position_util.js");
   this.Elemento=require("./class/elemento.js");
+  this.position_util=new PositionUtil();
   this.configuration=configuration;
   this.mediador=new Mediador();
   this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
@@ -134,21 +136,21 @@ ARWeb.prototype.loop=function(){
   }
 }
 
-ARWeb.prototype.watch=function(action){
-  this.mediador.suscribir(action,this.objetos[this.objetos.length-1]);
+ARWeb.prototype.watch=function(action,event_to_dispatch){
+  this.mediador.suscribir(action,this.objetos[this.objetos.length-1],event_to_dispatch);
 }
 
 ARWeb.prototype.removeWatch=function(action,object){
   this.mediador.baja(action,object);
 }
 
-ARWeb.prototype.dispatch=function(action,object,callback){
-  this.mediador.comunicar(action,object,callback,this.stages[0]);
+ARWeb.prototype.dispatch=function(action,params_for_event_to_dispatch,callback){
+  this.mediador.comunicar(action,params_for_event_to_dispatch,callback,this.stages[0]);
 }
 
 
-ARWeb.prototype.individualDispatch=function(action,object,pointer,callback){
-  this.mediador.comunicarParticular(action,object,pointer,callback.bind(this.stages[0]))
+ARWeb.prototype.individualDispatch=function(action,object,params_for_event_to_dispatch,callback){
+  this.mediador.comunicarParticular(action,object,params_for_event_to_dispatch,callback.bind(this.stages[0]));
 }
 
 ARWeb.prototype.changeThreshold=function(i){

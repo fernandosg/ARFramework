@@ -1016,7 +1016,9 @@ function ARWeb(configuration){//
   var WebcamStream=require("./utils/webcamstream.js");
   var DetectorAR=require("./utils/detector_ar");
   var Mediador=require("./utils/Mediador.js");
+  var PositionUtil=require("./utils/position_util.js");
   this.Elemento=require("./class/elemento.js");
+  this.position_util=new PositionUtil();
   this.configuration=configuration;
   this.mediador=new Mediador();
   this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
@@ -1146,21 +1148,21 @@ ARWeb.prototype.loop=function(){
   }
 }
 
-ARWeb.prototype.watch=function(action){
-  this.mediador.suscribir(action,this.objetos[this.objetos.length-1]);
+ARWeb.prototype.watch=function(action,event_to_dispatch){
+  this.mediador.suscribir(action,this.objetos[this.objetos.length-1],event_to_dispatch);
 }
 
 ARWeb.prototype.removeWatch=function(action,object){
   this.mediador.baja(action,object);
 }
 
-ARWeb.prototype.dispatch=function(action,object,callback){
-  this.mediador.comunicar(action,object,callback,this.stages[0]);
+ARWeb.prototype.dispatch=function(action,params_for_event_to_dispatch,callback){
+  this.mediador.comunicar(action,params_for_event_to_dispatch,callback,this.stages[0]);
 }
 
 
-ARWeb.prototype.individualDispatch=function(action,object,pointer,callback){
-  this.mediador.comunicarParticular(action,object,pointer,callback.bind(this.stages[0]))
+ARWeb.prototype.individualDispatch=function(action,object,params_for_event_to_dispatch,callback){
+  this.mediador.comunicarParticular(action,object,params_for_event_to_dispatch,callback.bind(this.stages[0]));
 }
 
 ARWeb.prototype.changeThreshold=function(i){
@@ -1187,7 +1189,7 @@ ARWeb.prototype.finishStage=function(){
 
 window.ARWeb=ARWeb;
 
-},{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/webcamstream.js":10}],2:[function(require,module,exports){
+},{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/position_util.js":9,"./utils/webcamstream.js":10}],2:[function(require,module,exports){
 /**
  * @file Elemento
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -1663,6 +1665,7 @@ module.exports=function(width,height){
  */
 function Mediador(){
 	this.lista_eventos={};
+	this.lista_eventos_a_disparar={};
 };
 
 
@@ -1672,10 +1675,11 @@ function Mediador(){
  * @param {String} evento - El evento que el Mediador ocupara para comunicarse con el objeto añadido.
  * @param {Elemento} objeto - El objeto el cual puede tener comunicación con el Mediador con un evento especifico.
 */
-Mediador.prototype.suscribir=function(evento,objeto){
+Mediador.prototype.suscribir=function(evento,objeto,event){
 	if(!this.lista_eventos[evento]) this.lista_eventos[evento]=[];
 	if(this.lista_eventos[evento].indexOf(objeto)==-1){
 		this.lista_eventos[evento].push(objeto);
+		this.lista_eventos_a_disparar[objeto.get().id]=event;
 	}
 }
 
@@ -1688,11 +1692,15 @@ Mediador.prototype.suscribir=function(evento,objeto){
  * @param {Function} callback
  * @param {extras} Object
 */
-Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
+Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callback,stage){//Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
 	if(!this.lista_eventos[evento]) return;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];
-		callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
+		var new_params=params_for_event_to_dispatch.slice();
+		new_params.push(objeto_action.get().getWorldPosition());
+		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params));
+		//callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
+
 	}
 }
 
@@ -1705,13 +1713,14 @@ Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
  * @param {Function} callback
  * @param {extras} Object
 */
-Mediador.prototype.comunicarParticular=function(evento,objeto,compara,callback){
+Mediador.prototype.comunicarParticular=function(evento,objeto,params_for_event_to_dispatch,callback){
 	if(!this.lista_eventos[evento]) return;
 	var pos=this.lista_eventos[evento].indexOf(objeto);
 	if(pos==-1) return;
-	var extras={};
-	extras["mediador"]=this;
-	callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
+	var new_params=params_for_event_to_dispatch.slice();
+	new_params.push(objeto.get().getWorldPosition());
+	callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id].call(this,new_params));
+	//callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
 
@@ -2109,12 +2118,54 @@ module.exports=DetectorMarker;
 
 },{}],9:[function(require,module,exports){
 function PositionUtil(config){
+/*
+	var width=config.WIDTH;
+	var height=config.HEIGHT;
+	var escena=config.SCENE;
+	var distancia=config.DISTANCE;
+*/
+	var obtenerPosicionPantalla=function(obj){
+		var vector = new THREE.Vector3();
+		vector.setFromMatrixPosition(obj.matrixWorld);
+		vector.project(escena.camara);
+		var mitadAncho = width / 2, mitadAlto = height / 2;
+		vector.x = ( vector.x * mitadAncho ) + mitadAlto;
+		vector.y = -( vector.y * mitadAlto ) + mitadAlto;
+		return vector;
+	}
+
+	var getDistancia=function(pos1,pos2){
+		pos1.z=0;
+		pos2.z=0;
+		return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
+	}
+
+	var estaColisionando=function(params){
+		var distancia=getDistancia(params[0],params[1]);
+		return distancia>0 && distancia<=60;
+	}
+
+
+	var isColliding=function(params){
+		var distancia=getDistancia(params[0],params[1]);
+		return distancia>0 && distancia<=60;
+	}
+
+	return{
+		obtenerPosicionPantalla:obtenerPosicionPantalla,
+		getDistancia:getDistancia,
+		estaColisionando:estaColisionando,
+		isColliding:isColliding
+	}
+}
+/*
+function PositionUtil(config){
 	/*
 	this.width=config.WIDTH;
 	this.height=config.HEIGHT;
 	this.escena=config.SCENE;
 	this.distancia=config.DISTANCE;
-	*/
+
 }
 
 PositionUtil.prototype.obtenerPosicionPantalla=function(obj){
@@ -2138,6 +2189,12 @@ PositionUtil.prototype.estaColisionando=function(pos1,pos2){
 	return distancia>0 && distancia<=60;
 }
 
+
+PositionUtil.prototype.isColliding=function(pos1,pos2){
+	var distancia=this.getDistancia(pos1,pos2);
+	return distancia>0 && distancia<=60;
+}
+*/
 
 module.exports=PositionUtil;
 

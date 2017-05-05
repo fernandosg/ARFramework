@@ -11,6 +11,7 @@
  */
 function Mediador(){
 	this.lista_eventos={};
+	this.lista_eventos_a_disparar={};
 };
 
 
@@ -20,10 +21,11 @@ function Mediador(){
  * @param {String} evento - El evento que el Mediador ocupara para comunicarse con el objeto añadido.
  * @param {Elemento} objeto - El objeto el cual puede tener comunicación con el Mediador con un evento especifico.
 */
-Mediador.prototype.suscribir=function(evento,objeto){
+Mediador.prototype.suscribir=function(evento,objeto,event){
 	if(!this.lista_eventos[evento]) this.lista_eventos[evento]=[];
 	if(this.lista_eventos[evento].indexOf(objeto)==-1){
 		this.lista_eventos[evento].push(objeto);
+		this.lista_eventos_a_disparar[objeto.get().id]=event;
 	}
 }
 
@@ -36,11 +38,15 @@ Mediador.prototype.suscribir=function(evento,objeto){
  * @param {Function} callback
  * @param {extras} Object
 */
-Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
+Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callback,stage){//Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
 	if(!this.lista_eventos[evento]) return;
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];
-		callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
+		var new_params=params_for_event_to_dispatch.slice();
+		new_params.push(objeto_action.get().getWorldPosition());
+		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params));
+		//callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
+
 	}
 }
 
@@ -53,13 +59,14 @@ Mediador.prototype.comunicar=function(evento,objeto,callback,stage){
  * @param {Function} callback
  * @param {extras} Object
 */
-Mediador.prototype.comunicarParticular=function(evento,objeto,compara,callback){
+Mediador.prototype.comunicarParticular=function(evento,objeto,params_for_event_to_dispatch,callback){
 	if(!this.lista_eventos[evento]) return;
 	var pos=this.lista_eventos[evento].indexOf(objeto);
 	if(pos==-1) return;
-	var extras={};
-	extras["mediador"]=this;
-	callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
+	var new_params=params_for_event_to_dispatch.slice();
+	new_params.push(objeto.get().getWorldPosition());
+	callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id].call(this,new_params));
+	//callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
 
