@@ -5,6 +5,7 @@ function PositionUtil(config){
 	var escena=config.SCENE;
 	var distancia=config.DISTANCE;
 */
+	var DISTANCE=(config && config.DISTANCE) || 60;
 	var obtenerPosicionPantalla=function(obj){
 		var vector = new THREE.Vector3();
 		vector.setFromMatrixPosition(obj.matrixWorld);
@@ -23,16 +24,23 @@ function PositionUtil(config){
 
 	var estaColisionando=function(params){
 		var distancia=getDistancia(params[0],params[1]);
-		return distancia>0 && distancia<=60;
+		return distancia>0 && distancia<=DISTANCE;
 	}
 
 
 	var isColliding=function(params){
 		var distancia=getDistancia(params[0],params[1]);
-		return distancia>0 && distancia<=60;
+		return distancia>0 && distancia<=DISTANCE;
+	}
+
+
+	//Handle new configuration.
+	var init=function(config){
+		return new PositionUtil(config);
 	}
 
 	return{
+		init:init,
 		obtenerPosicionPantalla:obtenerPosicionPantalla,
 		getDistancia:getDistancia,
 		estaColisionando:estaColisionando,
