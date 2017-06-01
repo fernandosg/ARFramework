@@ -29,7 +29,7 @@ function PositionUtil(config){
 
 
 	var isColliding=function(params){
-		var distancia=getDistancia(params[0],params[1]);
+		var distancia=getDistancia(params[0].getWorldPosition(),params[1].get().getWorldPosition());
 		return distancia>0 && distancia<=DISTANCE;
 	}
 

@@ -43,10 +43,9 @@ Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callba
 	for(var i=0;i<this.lista_eventos[evento].length;i++){
 		objeto_action=this.lista_eventos[evento][i];
 		var new_params=params_for_event_to_dispatch.slice();
-		new_params.push(objeto_action.get().getWorldPosition());
-		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params));
+		new_params.push(objeto_action);
+		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params),objeto_action);
 		//callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
-
 	}
 }
 
@@ -64,8 +63,8 @@ Mediador.prototype.comunicarParticular=function(evento,objeto,params_for_event_t
 	var pos=this.lista_eventos[evento].indexOf(objeto);
 	if(pos==-1) return;
 	var new_params=params_for_event_to_dispatch.slice();
-	new_params.push(objeto.get().getWorldPosition());
-	callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id].call(this,new_params));
+	new_params.push(objeto);
+	callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id].call(this,new_params),objeto);
 	//callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 }
 
