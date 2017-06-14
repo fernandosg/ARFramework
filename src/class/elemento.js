@@ -4,7 +4,7 @@
  * @version 0.1
  */
  /**
-  * Clase Elemento
+  * Clase Elementos
   * @class
   * @constructor
   * @param {integer} width_canvas - El ancho del canvas que se agrego al documento HTML
@@ -63,10 +63,6 @@ Elemento.prototype.label=function(etiqueta){
     this.nombre=etiqueta
 }
 
-Elemento.prototype.dimensiones=function(){
-    return " "+width+" "+height;
-}
-
 
 /**
  * @function calculoOrigen
@@ -78,13 +74,6 @@ Elemento.prototype.calculoOrigen=function(){
     this.z=this.posiciones.z;
 }
 
-/**
- * @function cambiarVisible
- * @summary Permite hacer visible el objeto, si anteriormente estaba invisible o viceversa
-*/
-Elemento.prototype.cambiarVisible=function(){
-    this.elemento_raiz.visible=this.elemento_raiz.visible ? false : true;
-}
 
 
 /**
@@ -100,16 +89,6 @@ Elemento.prototype.defineSurfaceByColor=function(color){
 }
 
 
-/**
- * @function definirSuperficiePorImagen
- * @summary Permite definir la superficie de un objeto a partir de un recurso grafico (una imagen)
- * @param {String} ruta - La ubicación como string del recurso grafico
-*/
-Elemento.prototype.definirSuperficiePorImagen=function(ruta){
-    this.textureLoader.load( ruta, function(texture) {
-        this.actualizarMaterialFrente(texture);
-    }.bind(this));
-}
 
 
 /**
@@ -147,21 +126,6 @@ Elemento.prototype.actualizarMaterialFrente=function(texture1){
     this.textura_frente.needsUpdate = true;
 }
 
-
-/**
- * @function definirCaras
- * @summary Permite definir la superficie de enfrente y trasera de un objeto
- * @param {THREE.Texture} frontal - La textura a definir en la parte de enfrente del objeto
- * @param {THREE.Texture} trasera - La textura a definir en la parte trasera del objeto
-*/
-Elemento.prototype.definirCaras=function(frontal,trasera){
-    this.textureLoader.load( frontal, function(texture1) {
-        this.actualizarMaterialFrente(texture1);
-        this.textureLoader.load(trasera, function(texture2) {
-            this.actualizarMaterialAtras(texture2);
-        }.bind(this));
-    }.bind(this));
-}
 
 
 Elemento.prototype.defineSurfaceByResource=function(frontal,trasera){
@@ -269,15 +233,6 @@ Elemento.prototype.dispatch=function(mano){
     return this.position_util.estaColisionando(this.get().getWorldPosition(),mano.getWorldPosition());
 }
 
-
-
-Elemento.prototype.calculateDistance=function(obj,obj2){
-    box=new THREE.Box3().setFromObject(obj);
-    box2=new THREE.Box3().setFromObject(obj2);
-    pos1=box.center().clone();
-    // pos2=box2.center().clone();
-    return Math.sqrt(Math.pow((pos1.x-pos2.x),2)+Math.pow((pos1.y-pos2.y),2));
-}
 
 Elemento.prototype.abajoDe=function(puntero){
     var aument=(arguments.length>1) ? arguments[1] : 0;
