@@ -12,13 +12,13 @@ module.exports = function (grunt) {
         }
       }
     },
-    jsdoc : {
-      dist : {
-        src: ['src/memorama.js','src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
-        options: {
-          destination: 'doc'
+    esdoc : {
+        dist : {
+            options: {
+                source: ['src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
+                destination: './doc'
+            }
         }
-      }
     },
     concat: {
       options: {
