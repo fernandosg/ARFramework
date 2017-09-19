@@ -12,16 +12,13 @@ module.exports = function (grunt) {
         }
       }
     },
-    esdoc : {
-        dist : {
-            options: {
-                source: 'src/',
-                destination: './doc',
-                plugins: [
-                   {"unexportedIdentifier": {"enable": false}}
-                ]
-            }
+    jsdoc : {
+      dist : {
+        src: ['src/memorama.js','src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
+        options: {
+          destination: 'doc'
         }
+      }
     },
     concat: {
       options: {
@@ -41,8 +38,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-esdoc');
+  grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.registerTask("generating-doc",["esdoc"])
+  grunt.registerTask("generating-doc",["jsdoc"])
   grunt.registerTask('default', ['watch']);
 };
