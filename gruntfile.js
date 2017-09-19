@@ -15,8 +15,11 @@ module.exports = function (grunt) {
     esdoc : {
         dist : {
             options: {
-                source: ['src/class/escenario.js', 'src/utils/detector_ar.js', 'src/utils/Mediador.js','src/class/elemento.js'],
-                destination: './doc'
+                source: 'src/',
+                destination: './doc',
+                plugins: [
+                   {"unexportedIdentifier": {"enable": false}}
+                ]
             }
         }
     },
@@ -38,8 +41,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-jsdoc');
+  grunt.loadNpmTasks('grunt-esdoc');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.registerTask("generating-doc",["jsdoc"])
+  grunt.registerTask("generating-doc",["esdoc"])
   grunt.registerTask('default', ['watch']);
 };
