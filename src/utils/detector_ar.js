@@ -5,6 +5,9 @@
 */
 
 /**
+* Clase DetectorAR
+* @class DetectorAR
+* @constructor
 * @param {Canvas} WIDTH - Recibe el elemento canvas el cual se obtendra la información para detectar el marcador
 */
 function DetectorAR(canvas_element){
@@ -19,7 +22,9 @@ function DetectorAR(canvas_element){
   var in_process_detect=false;
 
   /**
-  * @desc Inicializa las dependencias y variables necesarias.
+  * @function init
+  * @memberof DetectorAR
+  * @summary Inicializa las dependencias y variables necesarias.
   */
   function init(){
     JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
@@ -46,8 +51,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Inicializa las dependencias y variables necesarias.
-  * @public
+  * @function setCameraMatrix
+  * @memberof DetectorAR
+  * @summary Inicializa las dependencias y variables necesarias.
   * @param {THREE.Camera} realidadCamera - Recibe la cámara que observa los objetos que usaara JSArtoolkit como punteros.
   */
   var setCameraMatrix=function(realidadCamera){
@@ -55,8 +61,9 @@ function DetectorAR(canvas_element){
   }
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function getMarkerNumber
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function getMarkerNumber(idx) {
@@ -75,8 +82,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function getTransformMatrix
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function getTransformMatrix(idx) {
@@ -106,8 +114,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function obtenerMarcador
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function obtenerMarcador(markerCount,pos){
@@ -123,8 +132,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function isAttached
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function isAttached(id){
@@ -133,8 +143,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function detectMarker
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var detectMarker=function(stage){
@@ -184,8 +195,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function attach
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var attach=function(markers_to_attach){
@@ -201,8 +213,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function addMarker
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var addMarker=function(marker){
@@ -215,18 +228,15 @@ function DetectorAR(canvas_element){
     return lastMarker;
   }
 
-  /**
-  * @desc Obtiene el marcador a partir del id del marcador
-  * @public
-  */
   var getMarker=function(marker_id){
     return markers[marker_id];
   }
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function cleanMarkers
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var cleanMarkers=function(){
@@ -235,7 +245,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
+  * @function cambiarThreshold
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var cambiarThreshold=function(threshold_nuevo){

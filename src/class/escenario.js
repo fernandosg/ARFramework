@@ -1,13 +1,22 @@
 /**
+ * @file Escenario
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.2
+ */
+
+/**
  * Clase Escenario
+ * @class Escenario
+ * @constructor
 */
 function Escenario(){
 	this.escena=new THREE.Scene();
 }
 
 /**
- * @desc Permite inicializar la cámara que se encargara de observar este escenario
- * @public
+ * @function initCamara
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {Function} - (Opcional) Esta función se ejecutara usando el ambito de la función Escenario. Sirve principalmente para definir una configuración predefinida para la cámara
 */
 Escenario.prototype.initCamara=function(fn){
@@ -19,8 +28,9 @@ Escenario.prototype.initCamara=function(fn){
 
 
 /**
- * @desc Permite inicializar la cámara que se encargara de observar este escenario
- * @public
+ * @function anadir
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
 Escenario.prototype.anadir=function(elemento){
@@ -29,8 +39,10 @@ Escenario.prototype.anadir=function(elemento){
 
 
 /**
- * @desc Retorna la cámara de esta escena
- * @return {THREE.Camera} - La cámara definida en este escenario
+ * @function getCamara
+ * @memberof Escenario
+ * @summary Retorna la cámara de esta escena
+ * @returns {THREE.Camera} - La cámara definida en este escenario
 */
 Escenario.prototype.getCamara=function(){
 	return this.camara;
@@ -38,7 +50,9 @@ Escenario.prototype.getCamara=function(){
 
 
 /**
- * @desc Renderiza el escneario
+ * @function update
+ * @memberof Escenario
+ * @summary Renderiza el escneario
  * @param {THREE.Scene}
 */
 Escenario.prototype.update=function(scene){
@@ -48,7 +62,9 @@ Escenario.prototype.update=function(scene){
 
 
 /**
- * @desc Limpia todos los elementos en la escena
+ * @function limpiar
+ * @memberof Escenario
+ * @summary Limpia todos los elementos en la escena
 */
 Escenario.prototype.limpiar=function(){
 	while(this.escena.children.length>0)

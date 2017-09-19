@@ -1,5 +1,12 @@
+/**
+ * @file Elemento
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.1
+ */
  /**
-  * @desc Constructor
+  * Clase Elemento
+  * @class Elemento
+  * @constructor
   * @param {integer} width_canvas - El ancho del canvas que se agrego al documento HTML
   * @param {integer} height_canvas - El alto del canvas que se agrego al documento HTML
   * @param {THREE.Geometry} geometry - Instancia de una geometria para el objeto generado.
@@ -13,13 +20,7 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.position_util=new PositionUtil();
 }
 
-/**
- * @desc Cambia el umbral de colision
- * @public
- * @param {integer} width_canvas - El ancho del canvas que se agrego al documento HTML
- * @param {integer} height_canvas - El alto del canvas que se agrego al documento HTML
- * @param {THREE.Geometry} geometry - Instancia de una geometria para el objeto generado.
-*/
+
 Elemento.prototype.cambiarUmbral=function(escala){
     this.umbral_colision=this.width/4;
 }
@@ -30,8 +31,9 @@ Elemento.prototype.next=function(callback){
 
 
 /**
- * @desc Inicializa el objeto raiz (la instancia de THREE.Object3D), la geometria de la superficie trasera del objeto, y una utilidad para descargar una textura sobre el objeto
- * @public
+ * @function init
+ * @memberof Elemento
+ * @summary Inicializa el objeto raiz (la instancia de THREE.Object3D), la geometria de la superficie trasera del objeto, y una utilidad para descargar una textura sobre el objeto
 */
 Elemento.prototype.init=function(){
     this.elemento_raiz=new THREE.Object3D();
@@ -54,8 +56,9 @@ Elemento.prototype.iterateCalls=function(){
 }
 
 /**
- * @desc Permite definir una etiqueta al objeto (es un string que identifica este de otros objetos)
- * @public
+ * @function etiqueta
+ * @memberof Elemento
+ * @summary Permite definir una etiqueta al objeto (es un string que identifica este de otros objetos)
  * @param {String} etiqueta - String representando la etiqueta del objeto.
 */
 Elemento.prototype.label=function(etiqueta){
@@ -64,8 +67,9 @@ Elemento.prototype.label=function(etiqueta){
 
 
 /**
- * @desc Se calcula la posicion del centro en X,Y y Z del objeto
- * @public
+ * @function calculoOrigen
+ * @memberof Elemento
+ * @summary Se calcula la posicion del centro en X,Y y Z del objeto
 */
 Elemento.prototype.calculoOrigen=function(){
     this.x=(this.posiciones.x+(this.width/2));
@@ -76,8 +80,9 @@ Elemento.prototype.calculoOrigen=function(){
 
 
 /**
- * @desc Permite definir la superficie del objeto con un color.
- * @public
+ * @function defineSurfaceByColor
+ * @memberof Elemento
+ * @summary Permite definir la superficie del objeto con un color.
  * @param {THREE.Color} color - Una instancia de THREE.Color
 */
 Elemento.prototype.defineSurfaceByColor=function(color){
@@ -91,8 +96,9 @@ Elemento.prototype.defineSurfaceByColor=function(color){
 
 
 /**
- * @desc Permite definir la superficie trasera del objeto.
- * @public
+ * @function actualizarMaterialAtras
+ * @memberof Elemento
+ * @summary Permite definir la superficie trasera del objeto.
  * @param {THREE.Texture} texture2 - La textura a definir en la parte de atras del objeto
 */
 Elemento.prototype.actualizarMaterialAtras=function(texture2){
@@ -110,8 +116,9 @@ Elemento.prototype.actualizarMaterialAtras=function(texture2){
 
 
 /**
- * @desc Permite definir la superficie de enfrente del objeto.
- * @public
+ * @function actualizarMaterialFrente
+ * @memberof Elemento
+ * @summary Permite definir la superficie de enfrente del objeto.
  * @param {THREE.Texture} texture1 - La textura a definir en la parte de enfrente del objeto
 */
 Elemento.prototype.actualizarMaterialFrente=function(texture1){
@@ -140,9 +147,9 @@ Elemento.prototype.defineSurfaceByResource=function(frontal,trasera){
 
 
 /**
- * @desc Permite definir el objeto THREE.Object3D del elemento
- * @public
- * @return {THREE.Object3D}
+ * @function get
+ * @summary Permite definir el objeto THREE.Object3D del elemento
+ * @returns {THREE.Object3D}
 */
 Elemento.prototype.get=function(){
     return this.elemento_raiz;
@@ -150,8 +157,9 @@ Elemento.prototype.get=function(){
 
 
 /**
- * @desc Permite definir las dimensiones del elemento
- * @public
+ * @function actualizarMedidas
+ * @memberof Elemento
+ * @summary Permite definir las dimensiones del elemento
 */
 Elemento.prototype.actualizarMedidas=function(){
     this.width=this.width*this.elemento_raiz.scale.x;
@@ -161,8 +169,9 @@ Elemento.prototype.actualizarMedidas=function(){
 
 
 /**
- * @desc Permite escalar las medidas de un objeto
- * @public
+ * @function scale
+ * @memberof Elemento
+ * @summary Permite escalar las medidas de un objeto
  * @param {Double} x - Un valor con punto decimal el cual sirve para definir a que valor se tiene que escalar el elemento_raiz en X
  * @param {Double} y - Un valor con punto decimal el cual sirve para definir a que valor se tiene que escalar el elemento_raiz en y
 */
@@ -173,8 +182,9 @@ Elemento.prototype.scale=function(x,y){
 }
 
 /**
- * @desc Permite definir la posicion de un elemento
- * @public
+ * @function position
+ * @memberof Elemento
+ * @summary Permite definir la posicion de un elemento
 */
 Elemento.prototype.position=function(pos){
     for(var prop in pos){

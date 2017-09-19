@@ -1,3 +1,14 @@
+/**
+ * @file Mediador
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.1
+ */
+
+ /**
+  * Clase Mediador
+  * @class Mediador
+  * @constructor
+ */
 function Mediador(){
 	this.lista_eventos={};
 	this.lista_eventos_a_disparar={};
@@ -5,8 +16,9 @@ function Mediador(){
 
 
 /**
- * @desc Permite suscribir un evento a la escucha que el Mediador ocupara para comunicar a ciertos objetos que esten escuchando a dicho evento
- * @public
+ * @function suscribir
+ * @memberof Mediador
+ * @summary Permite suscribir un evento a la escucha que el Mediador ocupara para comunicar a ciertos objetos que esten escuchando a dicho evento
  * @param {String} evento - El evento que el Mediador ocupara para comunicarse con el objeto añadido.
  * @param {Elemento} objeto - El objeto el cual puede tener comunicación con el Mediador con un evento especifico.
 */
@@ -20,8 +32,9 @@ Mediador.prototype.suscribir=function(evento,objeto,event){
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function comunicar
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
  * @param {Function} callback
@@ -40,8 +53,9 @@ Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callba
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function comunicarParticular
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
  * @param {Function} callback
@@ -59,8 +73,9 @@ Mediador.prototype.comunicarParticular=function(evento,objeto,params_for_event_t
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function baja
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
 */
