@@ -1,4 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * @file arweb
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.2
+ */
+
+/**
+ * Clase ARWeb
+ * @class ARWeb
+ * @constructor
+ * @param {Object} - Recibe un objeto con 2 propiedades, WIDTH: Ancho del canvas, HEIGHT: Alto del canvas
+*/
 function ARWeb(configuration){//
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
@@ -27,10 +39,24 @@ function ARWeb(configuration){//
   this.refresh_object=[];
 }
 
+/**
+ * @function getAnimation
+ * @memberof ARWeb
+ * @summary Retorna una instancia de Animacion.js
+ * @returns {Animacion}
+*/
 ARWeb.prototype.getAnimation=function(){
   return this.animacion;
 }
 
+/**
+ * @function addToScene
+ * @memberof ARWeb
+ * @summary Se encarga de agregar un objeto a la escena, e identificar si el objeto es "accionable" (debe de actualizarse/redibujarse)
+ * @param {Elemento} object - Recibe el objeto, una instancia de
+ * @param {Boolean} is_an_object_actionable - Un valor booleano para identificar si es accionable
+ * @returns {ARWeb} - Retorna una instancia de ARWeb, lo que permite aplicar encadenamiento de métodos
+*/
 ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
   this.planoEscena.anadir(object.get());
   this.refresh_object.push(is_an_object_actionable);
@@ -38,22 +64,52 @@ ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
   return this;
 }
 
+/**
+ * @function checkLenghtObjects
+ * @memberof ARWeb
+ * @summary Retorna el total de objetos agregados a escena.
+ * @returns {integer}
+*/
 ARWeb.prototype.checkLenghtObjects=function(){
   return this.objetos.length;
 }
 
+/**
+ * @function getObject
+ * @memberof ARWeb
+ * @summary Retorna un objeto dependiendo de la posición en la cual se haya agregado a escena.
+ * @param {Integer} position - Valor entero correspondiente a la posición a buscar.
+ * @returns {Elemento} - Retorna el objeto, instancia de Elemento.js
+*/
 ARWeb.prototype.getObject=function(position){
   return this.objetos[position];
 }
 
+/**
+ * @function getWidth
+ * @memberof ARWeb
+ * @summary Retorna el ancho del canvas
+ * @returns {Integer}
+*/
 ARWeb.prototype.getWidth=function(){
   return this.configuration.WIDTH;
 }
 
+/**
+ * @function getHeight
+ * @memberof ARWeb
+ * @summary Retorna el alto del canvas
+ * @returns {Integer}
+*/
 ARWeb.prototype.getHeight=function(){
   return this.configuration.HEIGHT;
 }
 
+/**
+ * @function init
+ * @memberof ARWeb
+ * @summary Función necesaria para inicializar dependencias internas
+*/
 ARWeb.prototype.init=function(){
   this.planoEscena.initCamara(function(){
     this.camara=new THREE.PerspectiveCamera();
@@ -68,14 +124,32 @@ ARWeb.prototype.init=function(){
   this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
 }
 
+/**
+ * @function createElement
+ * @memberof ARWeb
+ * @summary Crea un elemento, instancia de Elemento.js
+ * @param {Object} configuration - Objeto con 3 propiedades, WIDTH: Ancho del objeto, HEIGHT: Alto del objeto, GEOMETRY: Geometria del objeto
+ * @returns {Elemento} - Retorna la instancia creada de la función Elemento.js
+*/
 ARWeb.prototype.createElement=function(configuration){
   return new this.Elemento(configuration.WIDTH,configuration.HEIGHT,configuration.GEOMETRY);
 }
 
+/**
+ * @function addStage
+ * @memberof ARWeb
+ * @summary Añadie un "nivel" al framework, facilitando el paso de un nivel a otro
+ * @param {Function} - Función con 2 métodos, finishStage y start
+*/
 ARWeb.prototype.addStage=function(stage){
   this.stages.push(stage);
 }
 
+/**
+ * @function start
+ * @memberof ARWeb
+ * @summary Inicia el redibujado y el nivel actual.
+*/
 ARWeb.prototype.start=function(){
   this.stages[0].start();
   this.loop();
@@ -83,6 +157,7 @@ ARWeb.prototype.start=function(){
 
 /**
 * @function addMarker
+* @memberof ARWeb
 * @summary Agrega un marcador a la instancia de DetectorAR, donde una vez que se identifique el marcador se ejecutara el callback especificado
 * @param {Object} marcador - Un objeto con 3 propiedades
 * 1) id (integer - es el identificador que ocupa JSArtoolkit para un marcador especifico),
@@ -96,6 +171,14 @@ ARWeb.prototype.addMarker=function(marcador){
   return this;
 }
 
+
+/**
+ * @function attach
+ * @memberof ARWeb
+ * @summary Adjunta un marcador con el id de un marcador especifico. Esto permite hacer obligatorio el detectar ambios marcadores
+ * @param {Integer} parent_id - El id del marcador "padre"
+ * @param {Object} marker - El objeto marcador
+*/
 ARWeb.prototype.attach=function(parent_id,marker){
   this.detector_ar.getMarker(parent_id).attach(marker);
   this.addMarker(marker);
@@ -105,9 +188,11 @@ ARWeb.prototype.attach=function(parent_id,marker){
 
 /**
 * @function allowDetect
-* @param {boolean} bool
+* @memberof ARWeb
+* @summary Permite definir si la librería debe realizar la detección del marcador o no.
+* @param {boolean} enable_detect - Una bandera booleana que identifique si se debe de detectar los marcadores (true) o no (false)
 */
-ARWeb.prototype.allowDetect=function(boolean){
+ARWeb.prototype.allowDetect=function(enable_detect){
   this.detecting_marker=boolean;
 }
 
@@ -117,6 +202,7 @@ ARWeb.prototype.allowedDetected=function(){
 
 /**
 * @function loop
+* @memberof ARWeb
 * @summary Esta función se estara ejecutando finitamente hasta que se cierre la aplicación.
 * Se encargara del redibujo de todos los elementos agregados a escena y la actualización del canvas con la transmisión de la webcam.
 */
@@ -137,31 +223,79 @@ ARWeb.prototype.loop=function(){
   }
 }
 
+/**
+* @function watch
+* @memberof ARWeb
+* @summary Agrega el ultimo objeto agregado a la "escucha" de cierto evento, una vez se dispare dicho evento, un callback es lanzado
+* @param {String} action - Un string identificando un "tema" a la escucha.
+* @param {Function} event_to_dispatch - Una función la cual será lanzada cuando el mediador se comunique con dicho objeto que este a la escucha del tema.
+*/
 ARWeb.prototype.watch=function(action,event_to_dispatch){
   this.mediador.suscribir(action,this.objetos[this.objetos.length-1],event_to_dispatch);
 }
 
+/**
+* @function removeWatch
+* @memberof ARWeb
+* @summary Elimina un objeto a la escucha de un "tema"
+* @param {String} action - Un string identificando un "tema" a la escucha el cual servira para dar de baja el objeto.
+* @param {Elemento} object - El objeto que se dará de baja de la escucha del tema
+*/
 ARWeb.prototype.removeWatch=function(action,object){
   this.mediador.baja(action,object);
 }
 
+/**
+* @function dispatch
+* @memberof ARWeb
+* @summary Dispara un evento, el cual el objeto Mediador se encargará de hablar con todos los elementos que esten a la escucha de dicho evento.
+* @param {String} action - Un string identificando un "tema" a la escucha.
+* @param {Array} params_for_event_to_dispatch - Un arreglo con instancias de Elemento, estas instancias se usarán como parametros, dependiendo del callback agregado al momento de agregar a la escucha con el método "watch"
+* @param {Function} callback - Método que se ejcutará si la condición se cumple (la función agregada al método watch, usará params_for_event_to_dispatch y lo que retorne se enviara al callback definido aqui)
+*/
 ARWeb.prototype.dispatch=function(action,params_for_event_to_dispatch,callback){
   this.mediador.comunicar(action,params_for_event_to_dispatch,callback,this.stages[0]);
 }
 
-
+/**
+* @function individualDispatch
+* @memberof ARWeb
+* @summary Dispara un evento, a un objeto en particular usando el objeto Mediador se encargará de hablar con el si esta a la escucha de dicho tema.
+* @param {String} action - Un string identificando un "tema" a la escucha.
+* @param {Elemento} object - Objeto particular el cual se disparará el evento
+* @param {Array} params_for_event_to_dispatch - Un arreglo con instancias de Elemento, estas instancias se usarán como parametros, dependiendo del callback agregado al momento de agregar a la escucha con el método "watch"
+* @param {Function} callback - Método que se ejcutará si la condición se cumple (la función agregada al método watch, usará params_for_event_to_dispatch y lo que retorne se enviara al callback definido aqui)
+*/
 ARWeb.prototype.individualDispatch=function(action,object,params_for_event_to_dispatch,callback){
   this.mediador.comunicarParticular(action,object,params_for_event_to_dispatch,callback.bind(this.stages[0]));
 }
 
+/**
+* @function changeThreshold
+* @memberof ARWeb
+* @summary Cambia el umbral usado por JSArtoolkit
+* @param {Integer} i - Un valor entero entre 1 y 200.
+*/
 ARWeb.prototype.changeThreshold=function(i){
   this.detector_ar.cambiarThreshold(i);
 }
 
+/**
+* @function canDetectMarker
+* @memberof ARWeb
+* @summary Identifica si en el nivel actual se detectó un marcador.
+* @param {Function} stage - El nivel el cual buscará si detecto un marcador.
+* @returns {Boolean} - Retorna verdadero o falso dependiendo si detecto un marcador o no.
+*/
 ARWeb.prototype.canDetectMarker=function(stage){
   return this.detector_ar.detectMarker(stage);
 }
 
+/**
+* @function clean
+* @memberof ARWeb
+* @summary Limpia todos los elementos en escena.
+*/
 ARWeb.prototype.clean=function(){
   this.planoEscena.limpiar();
   this.realidadEscena.limpiar();
@@ -169,6 +303,11 @@ ARWeb.prototype.clean=function(){
   this.objetos=[];
 }
 
+/**
+* @function finishStage
+* @memberof ARWeb
+* @summary Finaliza el nivel actual.
+*/
 ARWeb.prototype.finishStage=function(){
   this.clean();
   this.stages.shift();
@@ -179,8 +318,15 @@ ARWeb.prototype.finishStage=function(){
 window.ARWeb=ARWeb;
 
 },{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/position_util.js":9,"./utils/webcamstream.js":10}],2:[function(require,module,exports){
+/**
+ * @file Elemento
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.1
+ */
  /**
-  * @desc Constructor
+  * Clase Elemento
+  * @class Elemento
+  * @constructor
   * @param {integer} width_canvas - El ancho del canvas que se agrego al documento HTML
   * @param {integer} height_canvas - El alto del canvas que se agrego al documento HTML
   * @param {THREE.Geometry} geometry - Instancia de una geometria para el objeto generado.
@@ -194,13 +340,7 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.position_util=new PositionUtil();
 }
 
-/**
- * @desc Cambia el umbral de colision
- * @public
- * @param {integer} width_canvas - El ancho del canvas que se agrego al documento HTML
- * @param {integer} height_canvas - El alto del canvas que se agrego al documento HTML
- * @param {THREE.Geometry} geometry - Instancia de una geometria para el objeto generado.
-*/
+
 Elemento.prototype.cambiarUmbral=function(escala){
     this.umbral_colision=this.width/4;
 }
@@ -211,8 +351,9 @@ Elemento.prototype.next=function(callback){
 
 
 /**
- * @desc Inicializa el objeto raiz (la instancia de THREE.Object3D), la geometria de la superficie trasera del objeto, y una utilidad para descargar una textura sobre el objeto
- * @public
+ * @function init
+ * @memberof Elemento
+ * @summary Inicializa el objeto raiz (la instancia de THREE.Object3D), la geometria de la superficie trasera del objeto, y una utilidad para descargar una textura sobre el objeto
 */
 Elemento.prototype.init=function(){
     this.elemento_raiz=new THREE.Object3D();
@@ -235,8 +376,9 @@ Elemento.prototype.iterateCalls=function(){
 }
 
 /**
- * @desc Permite definir una etiqueta al objeto (es un string que identifica este de otros objetos)
- * @public
+ * @function etiqueta
+ * @memberof Elemento
+ * @summary Permite definir una etiqueta al objeto (es un string que identifica este de otros objetos)
  * @param {String} etiqueta - String representando la etiqueta del objeto.
 */
 Elemento.prototype.label=function(etiqueta){
@@ -245,8 +387,9 @@ Elemento.prototype.label=function(etiqueta){
 
 
 /**
- * @desc Se calcula la posicion del centro en X,Y y Z del objeto
- * @public
+ * @function calculoOrigen
+ * @memberof Elemento
+ * @summary Se calcula la posicion del centro en X,Y y Z del objeto
 */
 Elemento.prototype.calculoOrigen=function(){
     this.x=(this.posiciones.x+(this.width/2));
@@ -257,8 +400,9 @@ Elemento.prototype.calculoOrigen=function(){
 
 
 /**
- * @desc Permite definir la superficie del objeto con un color.
- * @public
+ * @function defineSurfaceByColor
+ * @memberof Elemento
+ * @summary Permite definir la superficie del objeto con un color.
  * @param {THREE.Color} color - Una instancia de THREE.Color
 */
 Elemento.prototype.defineSurfaceByColor=function(color){
@@ -272,8 +416,9 @@ Elemento.prototype.defineSurfaceByColor=function(color){
 
 
 /**
- * @desc Permite definir la superficie trasera del objeto.
- * @public
+ * @function actualizarMaterialAtras
+ * @memberof Elemento
+ * @summary Permite definir la superficie trasera del objeto.
  * @param {THREE.Texture} texture2 - La textura a definir en la parte de atras del objeto
 */
 Elemento.prototype.actualizarMaterialAtras=function(texture2){
@@ -291,8 +436,9 @@ Elemento.prototype.actualizarMaterialAtras=function(texture2){
 
 
 /**
- * @desc Permite definir la superficie de enfrente del objeto.
- * @public
+ * @function actualizarMaterialFrente
+ * @memberof Elemento
+ * @summary Permite definir la superficie de enfrente del objeto.
  * @param {THREE.Texture} texture1 - La textura a definir en la parte de enfrente del objeto
 */
 Elemento.prototype.actualizarMaterialFrente=function(texture1){
@@ -321,9 +467,9 @@ Elemento.prototype.defineSurfaceByResource=function(frontal,trasera){
 
 
 /**
- * @desc Permite definir el objeto THREE.Object3D del elemento
- * @public
- * @return {THREE.Object3D}
+ * @function get
+ * @summary Permite definir el objeto THREE.Object3D del elemento
+ * @returns {THREE.Object3D}
 */
 Elemento.prototype.get=function(){
     return this.elemento_raiz;
@@ -331,8 +477,9 @@ Elemento.prototype.get=function(){
 
 
 /**
- * @desc Permite definir las dimensiones del elemento
- * @public
+ * @function actualizarMedidas
+ * @memberof Elemento
+ * @summary Permite definir las dimensiones del elemento
 */
 Elemento.prototype.actualizarMedidas=function(){
     this.width=this.width*this.elemento_raiz.scale.x;
@@ -342,8 +489,9 @@ Elemento.prototype.actualizarMedidas=function(){
 
 
 /**
- * @desc Permite escalar las medidas de un objeto
- * @public
+ * @function scale
+ * @memberof Elemento
+ * @summary Permite escalar las medidas de un objeto
  * @param {Double} x - Un valor con punto decimal el cual sirve para definir a que valor se tiene que escalar el elemento_raiz en X
  * @param {Double} y - Un valor con punto decimal el cual sirve para definir a que valor se tiene que escalar el elemento_raiz en y
 */
@@ -354,8 +502,9 @@ Elemento.prototype.scale=function(x,y){
 }
 
 /**
- * @desc Permite definir la posicion de un elemento
- * @public
+ * @function position
+ * @memberof Elemento
+ * @summary Permite definir la posicion de un elemento
 */
 Elemento.prototype.position=function(pos){
     for(var prop in pos){
@@ -476,15 +625,24 @@ module.exports=Elemento;
 
 },{"../utils/position_util.js":9}],3:[function(require,module,exports){
 /**
+ * @file Escenario
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.2
+ */
+
+/**
  * Clase Escenario
+ * @class Escenario
+ * @constructor
 */
 function Escenario(){
 	this.escena=new THREE.Scene();
 }
 
 /**
- * @desc Permite inicializar la cámara que se encargara de observar este escenario
- * @public
+ * @function initCamara
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {Function} - (Opcional) Esta función se ejecutara usando el ambito de la función Escenario. Sirve principalmente para definir una configuración predefinida para la cámara
 */
 Escenario.prototype.initCamara=function(fn){
@@ -496,8 +654,9 @@ Escenario.prototype.initCamara=function(fn){
 
 
 /**
- * @desc Permite inicializar la cámara que se encargara de observar este escenario
- * @public
+ * @function anadir
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
 Escenario.prototype.anadir=function(elemento){
@@ -506,8 +665,10 @@ Escenario.prototype.anadir=function(elemento){
 
 
 /**
- * @desc Retorna la cámara de esta escena
- * @return {THREE.Camera} - La cámara definida en este escenario
+ * @function getCamara
+ * @memberof Escenario
+ * @summary Retorna la cámara de esta escena
+ * @returns {THREE.Camera} - La cámara definida en este escenario
 */
 Escenario.prototype.getCamara=function(){
 	return this.camara;
@@ -515,7 +676,9 @@ Escenario.prototype.getCamara=function(){
 
 
 /**
- * @desc Renderiza el escneario
+ * @function update
+ * @memberof Escenario
+ * @summary Renderiza el escneario
  * @param {THREE.Scene}
 */
 Escenario.prototype.update=function(scene){
@@ -525,7 +688,9 @@ Escenario.prototype.update=function(scene){
 
 
 /**
- * @desc Limpia todos los elementos en la escena
+ * @function limpiar
+ * @memberof Escenario
+ * @summary Limpia todos los elementos en la escena
 */
 Escenario.prototype.limpiar=function(){
 	while(this.escena.children.length>0)
@@ -585,6 +750,17 @@ module.exports=function(width,height){
 	//}
 }
 },{}],5:[function(require,module,exports){
+/**
+ * @file Mediador
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.1
+ */
+
+ /**
+  * Clase Mediador
+  * @class Mediador
+  * @constructor
+ */
 function Mediador(){
 	this.lista_eventos={};
 	this.lista_eventos_a_disparar={};
@@ -592,8 +768,9 @@ function Mediador(){
 
 
 /**
- * @desc Permite suscribir un evento a la escucha que el Mediador ocupara para comunicar a ciertos objetos que esten escuchando a dicho evento
- * @public
+ * @function suscribir
+ * @memberof Mediador
+ * @summary Permite suscribir un evento a la escucha que el Mediador ocupara para comunicar a ciertos objetos que esten escuchando a dicho evento
  * @param {String} evento - El evento que el Mediador ocupara para comunicarse con el objeto añadido.
  * @param {Elemento} objeto - El objeto el cual puede tener comunicación con el Mediador con un evento especifico.
 */
@@ -607,8 +784,9 @@ Mediador.prototype.suscribir=function(evento,objeto,event){
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function comunicar
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
  * @param {Function} callback
@@ -627,8 +805,9 @@ Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callba
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function comunicarParticular
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
  * @param {Function} callback
@@ -646,8 +825,9 @@ Mediador.prototype.comunicarParticular=function(evento,objeto,params_for_event_t
 
 
 /**
- * @desc Evento comunicar
- * @public
+ * @function baja
+ * @memberof Mediador
+ * @summary Evento comunicar
  * @param {String} evento
  * @param {Elemento} objeto
 */
@@ -757,6 +937,9 @@ module.exports=Animacion;
 */
 
 /**
+* Clase DetectorAR
+* @class DetectorAR
+* @constructor
 * @param {Canvas} WIDTH - Recibe el elemento canvas el cual se obtendra la información para detectar el marcador
 */
 function DetectorAR(canvas_element){
@@ -771,7 +954,9 @@ function DetectorAR(canvas_element){
   var in_process_detect=false;
 
   /**
-  * @desc Inicializa las dependencias y variables necesarias.
+  * @function init
+  * @memberof DetectorAR
+  * @summary Inicializa las dependencias y variables necesarias.
   */
   function init(){
     JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
@@ -798,8 +983,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Inicializa las dependencias y variables necesarias.
-  * @public
+  * @function setCameraMatrix
+  * @memberof DetectorAR
+  * @summary Inicializa las dependencias y variables necesarias.
   * @param {THREE.Camera} realidadCamera - Recibe la cámara que observa los objetos que usaara JSArtoolkit como punteros.
   */
   var setCameraMatrix=function(realidadCamera){
@@ -807,8 +993,9 @@ function DetectorAR(canvas_element){
   }
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function getMarkerNumber
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function getMarkerNumber(idx) {
@@ -827,8 +1014,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function getTransformMatrix
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function getTransformMatrix(idx) {
@@ -858,8 +1046,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function obtenerMarcador
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function obtenerMarcador(markerCount,pos){
@@ -875,8 +1064,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @private
+  * @function isAttached
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   function isAttached(id){
@@ -885,8 +1075,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function detectMarker
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var detectMarker=function(stage){
@@ -936,8 +1127,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function attach
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var attach=function(markers_to_attach){
@@ -953,8 +1145,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function addMarker
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var addMarker=function(marker){
@@ -967,18 +1160,15 @@ function DetectorAR(canvas_element){
     return lastMarker;
   }
 
-  /**
-  * @desc Obtiene el marcador a partir del id del marcador
-  * @public
-  */
   var getMarker=function(marker_id){
     return markers[marker_id];
   }
 
 
   /**
-  * @desc Obtiene el número de marcador
-  * @public
+  * @function cleanMarkers
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var cleanMarkers=function(){
@@ -987,7 +1177,9 @@ function DetectorAR(canvas_element){
 
 
   /**
-  * @desc Obtiene el número de marcador
+  * @function cambiarThreshold
+  * @memberof DetectorAR
+  * @summary Obtiene el número de marcador
   * @param {Integer} idx - Recibe el id del marcador.
   */
   var cambiarThreshold=function(threshold_nuevo){
