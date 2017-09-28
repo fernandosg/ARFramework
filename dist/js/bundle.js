@@ -12,29 +12,31 @@
  * @param {Object} - Recibe un objeto con 2 propiedades, WIDTH: Ancho del canvas, HEIGHT: Alto del canvas
 */
 function ARWeb(configuration){//
+  this.count=0;
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
-  var WebcamStream=require("./utils/webcamstream.js");
-  var DetectorAR=require("./utils/detector_ar");
+  //var WebcamStream=require("./utils/webcamstream.js");
   var Mediador=require("./utils/Mediador.js");
   var PositionUtil=require("./utils/position_util.js");
   this.Elemento=require("./class/elemento.js");
   this.position_util=new PositionUtil();
   this.configuration=configuration;
   this.mediador=new Mediador();
-  this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
-  this.renderer=new THREE.WebGLRenderer();
-  this.renderer.autoClear = false;
+  //this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
+  //this.renderer=new THREE.WebGLRenderer();
+  //this.renderer.autoClear = false;
   this.objetos=[]
-  this.renderer.setSize(configuration.WIDTH,configuration.HEIGHT);
+  //this.renderer.setSize(configuration.WIDTH,configuration.HEIGHT);
   //Should be use "ra" in the example of Memorama
-  document.getElementById(configuration.canvas_id).appendChild(this.renderer.domElement);
-  this.detector_ar=DetectorAR(this.webcam.getCanvas());
-  this.detector_ar.init();
+  //document.getElementById(configuration.canvas_id).appendChild(this.renderer.domElement);
+  //this.detector_ar.init();
+  /*
   this.animacion=new Animacion();
-  this.planoEscena=new Escenario();
-  this.realidadEscena=new Escenario();
+  this.realidadEscena=new Escenario(); b
   this.videoEscena=new Escenario();
+  */
+  this.planoEscena=new Escenario();
+  console.dir(this.planoEscena);
   this.stages=[];
   this.refresh_object=[];
 }
@@ -58,11 +60,24 @@ ARWeb.prototype.getAnimation=function(){
  * @returns {ARWeb} - Retorna una instancia de ARWeb, lo que permite aplicar encadenamiento de métodos
 */
 ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
-  this.planoEscena.anadir(object.get());
+  if(!this.detector_ar.is_loaded){
+    this.detector_ar.addPendingTask(function(){
+      this.planoEscena.anadir(object.get());
+    }.bind(this,object))
+  }else{
+    this.planoEscena.anadir(object.get());
+  }
+
   this.refresh_object.push(is_an_object_actionable);
   this.objetos.push(object);
   return this;
 }
+
+
+
+
+
+
 
 /**
  * @function checkLenghtObjects
@@ -105,23 +120,40 @@ ARWeb.prototype.getHeight=function(){
   return this.configuration.HEIGHT;
 }
 
+ARWeb.prototype.initScene=function(scene){
+  this.planoEscena.initScene(scene);
+}
+
+ARWeb.prototype.initRenderer=function(renderer){
+  this.renderer=renderer;
+  console.log("Definiendo renderer");
+}
+
+ARWeb.prototype.initCamera=function(camera){
+
+}
+
 /**
  * @function init
  * @memberof ARWeb
  * @summary Función necesaria para inicializar dependencias internas
 */
 ARWeb.prototype.init=function(){
+  var DetectorAR=require("./utils/detector_ar");
+  this.detector_ar=new DetectorAR(document.getElementById(this.configuration.canvas_id),this);
+  /*
   this.planoEscena.initCamara(function(){
     this.camara=new THREE.PerspectiveCamera();
     this.camara.near=0.1;
     this.camara.far=2000;
     this.camara.updateProjectionMatrix();
   });
+  */
   this.cantidad_cartas=4;
-  this.realidadEscena.initCamara();
-  this.videoEscena.initCamara();
-  this.videoEscena.anadir(this.webcam.getElemento());
-  this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
+  //this.realidadEscena.initCamara();
+  //this.videoEscena.initCamara();
+  //this.videoEscena.anadir(this.webcam.getElemento());
+  //this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
 }
 
 /**
@@ -165,9 +197,31 @@ ARWeb.prototype.start=function(){
 * 3) puntero (THREE.Object3D - es el objeto el cual tendra la posicion del marcador detectado)
 */
 ARWeb.prototype.addMarker=function(marcador){
-  this.detector_ar.addMarker.call(this,marcador);
+  //this.detector_ar.addMarker.call(this,marcador);
+  this.detector_ar.addMarker(marcador);
+  /*
   if(marcador.puntero!=undefined)
   this.realidadEscena.anadir(marcador.puntero);
+  */
+  return this;
+}
+
+/**
+* @function addMarker
+* @memberof ARWeb
+* @summary Agrega un marcador a la instancia de DetectorAR, donde una vez que se identifique el marcador se ejecutara el callback especificado
+* @param {Object} marcador - Un objeto con 3 propiedades
+* 1) id (integer - es el identificador que ocupa JSArtoolkit para un marcador especifico),
+* 2) callback (function - es la función a ejecutar una vez que el marcador se haya detectado),
+* 3) puntero (THREE.Object3D - es el objeto el cual tendra la posicion del marcador detectado)
+*/
+ARWeb.prototype.addMarkerToScene=function(marcador){
+  //this.detector_ar.addMarker.call(this,marcador);
+  this.planoEscena.anadir(marcador);
+  /*
+  if(marcador.puntero!=undefined)
+  this.realidadEscena.anadir(marcador.puntero);
+  */
   return this;
 }
 
@@ -180,7 +234,7 @@ ARWeb.prototype.addMarker=function(marcador){
  * @param {Object} marker - El objeto marcador
 */
 ARWeb.prototype.attach=function(parent_id,marker){
-  this.detector_ar.getMarker(parent_id).attach(marker);
+  //this.detector_ar.getMarker(parent_id).attach(marker);
   this.addMarker(marker);
   return this;
 }
@@ -207,7 +261,8 @@ ARWeb.prototype.allowedDetected=function(){
 * Se encargara del redibujo de todos los elementos agregados a escena y la actualización del canvas con la transmisión de la webcam.
 */
 ARWeb.prototype.loop=function(){
-  this.renderer.clear();
+  //this.renderer.clear();
+  /*
   this.videoEscena.update.call(this,this.videoEscena);
   this.planoEscena.update.call(this,this.planoEscena);
   this.realidadEscena.update.call(this,this.realidadEscena);
@@ -217,9 +272,17 @@ ARWeb.prototype.loop=function(){
   for(var i=0;i<this.objetos.length;i++)
     if(this.refresh_object[i]==true)
       this.objetos[i].actualizar();
+  */
+  //console.dir(this.planoEscena.update);
+  //console.dir(this.initScene);
+  this.planoEscena.update(this.renderer);
+//  arScene.process();
+  //arScene.renderOn(renderer);
+
   if(this.stages.length>0){
-    this.stages[0].loop();
+    //this.stages[0].loop();
     requestAnimationFrame(this.loop.bind(this));
+    //requestAnimationFrame(this.loop.bind(this));
   }
 }
 
@@ -277,7 +340,7 @@ ARWeb.prototype.individualDispatch=function(action,object,params_for_event_to_di
 * @param {Integer} i - Un valor entero entre 1 y 200.
 */
 ARWeb.prototype.changeThreshold=function(i){
-  this.detector_ar.cambiarThreshold(i);
+  //this.detector_ar.cambiarThreshold(i);
 }
 
 /**
@@ -288,7 +351,7 @@ ARWeb.prototype.changeThreshold=function(i){
 * @returns {Boolean} - Retorna verdadero o falso dependiendo si detecto un marcador o no.
 */
 ARWeb.prototype.canDetectMarker=function(stage){
-  return this.detector_ar.detectMarker(stage);
+  //return this.detector_ar.detectMarker(stage);
 }
 
 /**
@@ -298,7 +361,7 @@ ARWeb.prototype.canDetectMarker=function(stage){
 */
 ARWeb.prototype.clean=function(){
   this.planoEscena.limpiar();
-  this.realidadEscena.limpiar();
+  //this.realidadEscena.limpiar();
   this.detector_ar.cleanMarkers();
   this.objetos=[];
 }
@@ -315,9 +378,11 @@ ARWeb.prototype.finishStage=function(){
     this.stages[0].start();
 }
 
+
+
 window.ARWeb=ARWeb;
 
-},{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/position_util.js":9,"./utils/webcamstream.js":10}],2:[function(require,module,exports){
+},{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/position_util.js":9}],2:[function(require,module,exports){
 /**
  * @file Elemento
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -636,7 +701,10 @@ module.exports=Elemento;
  * @constructor
 */
 function Escenario(){
-	this.escena=new THREE.Scene();
+}
+
+Escenario.prototype.initScene=function(scene){
+	this.escena=scene;
 }
 
 /**
@@ -660,7 +728,8 @@ Escenario.prototype.initCamara=function(fn){
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
 Escenario.prototype.anadir=function(elemento){
-	this.escena.add(elemento);
+	console.dir(elemento);
+	this.escena.scene.add(elemento);
 }
 
 
@@ -681,9 +750,15 @@ Escenario.prototype.getCamara=function(){
  * @summary Renderiza el escneario
  * @param {THREE.Scene}
 */
-Escenario.prototype.update=function(scene){
-	this.renderer.render(scene.escena,scene.camara);
-	this.renderer.clearDepth();
+Escenario.prototype.update=function(renderer){
+	//this.renderer.render(scene.escena,scene.camara);
+	//this.renderer.clearDepth();
+	//console.log("ACTUALIZANDO escneario");
+	if(renderer!=undefined){
+//		console.log("Actualizando");
+		this.escena.process();
+		this.escena.renderOn(renderer);
+	}
 }
 
 
@@ -942,261 +1017,105 @@ module.exports=Animacion;
 * @constructor
 * @param {Canvas} WIDTH - Recibe el elemento canvas el cual se obtendra la información para detectar el marcador
 */
-function DetectorAR(canvas_element){
-  var JSARRaster,JSARParameters,detector,result;
-  var markers_attach={};
-  var threshold=120;
-  var markers={};
-  var DetectorMarker;
-  var rootMarker,markermatrix;
-  var list_marker_id_detected=[];
-  var list_marker_id_with_attachment=[];
-  var in_process_detect=false;
-
-  /**
-  * @function init
-  * @memberof DetectorAR
-  * @summary Inicializa las dependencias y variables necesarias.
-  */
-  function init(){
-    JSARRaster = new NyARRgbRaster_Canvas2D(canvas_element);
-    DetectorMarker=require("./detectormarker.js");
-    JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
-    detector = new FLARMultiIdMarkerDetector(JSARParameters, 40);
-    result = new Float32Array(16);
-    detector.setContinueMode(true);
-    JSARParameters.copyCameraMatrix(result, .1, 2000);
-    THREE.Matrix4.prototype.setFromArray = function(m) {
-      return this.set(
-        m[0], m[4], m[8], m[12],
-        m[1], m[5], m[9], m[13],
-        m[2], m[6], m[10], m[14],
-        m[3], m[7], m[11], m[15]
-      );
-    }
-
-    THREE.Object3D.prototype.transformFromArray = function(m) {
-      this.matrix.setFromArray(m);
-      this.matrixWorldNeedsUpdate = true;
-    }
-  }
-
-
-  /**
-  * @function setCameraMatrix
-  * @memberof DetectorAR
-  * @summary Inicializa las dependencias y variables necesarias.
-  * @param {THREE.Camera} realidadCamera - Recibe la cámara que observa los objetos que usaara JSArtoolkit como punteros.
-  */
-  var setCameraMatrix=function(realidadCamera){
-    realidadCamera.projectionMatrix.setFromArray(result);
-  }
-
-  /**
-  * @function getMarkerNumber
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  function getMarkerNumber(idx) {
-    var data = detector.getIdMarkerData(idx);
-    if (data.packetLength > 4) {
-      return -1;
-    }
-
-    var result=0;
-    for (var i = 0; i < data.packetLength; i++ ) {
-      result = (result << 8) | data.getPacketData(i);
-    }
-
-    return result;
-  }
-
-
-  /**
-  * @function getTransformMatrix
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  function getTransformMatrix(idx) {
-    var mat = new NyARTransMatResult();
-    detector.getTransformMatrix(idx, mat);
-
-    var cm = new Float32Array(16);
-    cm[0] = mat.m00*-1;
-    cm[1] = -mat.m10;
-    cm[2] = mat.m20;
-    cm[3] = 0;
-    cm[4] = mat.m01*-1;
-    cm[5] = -mat.m11;
-    cm[6] = mat.m21;
-    cm[7] = 0;
-    cm[8] = -mat.m02;
-    cm[9] = mat.m12;
-    cm[10] = -mat.m22;
-    cm[11] = 0;
-    cm[12] = mat.m03*-1;
-    cm[13] = -mat.m13;
-    cm[14] = mat.m23;
-    cm[15] = 1;
-
-    return cm;
-  }
-
-
-  /**
-  * @function obtenerMarcador
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  function obtenerMarcador(markerCount,pos){
-    var matriz_encontrada
-    for(var i=0;i<markerCount;i++){
-      if(i==pos){
-        matriz_encontrada=getTransformMatrix(i);
-        break;
-      }
-    }
-    return matriz_encontrada;
-  }
-
-
-  /**
-  * @function isAttached
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  function isAttached(id){
-    return markers_attach[id]!=undefined;
-  }
-
-
-  /**
-  * @function detectMarker
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  var detectMarker=function(stage){
-    var markerCount = detector.detectMarkerLite(JSARRaster, threshold);
-    var marker;
-    if(markerCount>0){
-      for(var i=0,marcador_id=-1;i<markerCount;i++){
-        var marcador_id=getMarkerNumber(i);
-        if(markers[marcador_id]!=undefined){
-          if(markers[marcador_id].puntero!=undefined){
-            markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount,i));
-            markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
-          }
-          if(!markers[marcador_id].hasAttachments()){
-            if(markers[marcador_id].callback!=undefined)
-              markers[marcador_id].detected().call(stage,markers[marcador_id].puntero);
-          }else{
-            if(list_marker_id_with_attachment.indexOf(marcador_id)==-1)
-              list_marker_id_with_attachment.push(marcador_id)
-          }
-          if(list_marker_id_detected.indexOf(marcador_id)==-1)
-            list_marker_id_detected.push(marcador_id)
+function DetectorAR(domParent,ARWeb){
+  this.is_loaded=false;
+  this.markers={};
+  this.tasks_pending=[];
+  this.stage;
+  this.ARWeb=ARWeb;
+  this.DetectorMarker=require("./detectormarker.js");
+  this.arController;
+  window.ARThreeOnLoad=function(){
+    ARController.getUserMediaThreeScene({maxARVideoSize: 320, cameraParam: 'data/camera_para-iPhone_5_rear_640x480_1.0m.dat',
+    onSuccess: function(arScene, arCtrl, arCamera) {
+      this.arController=arCtrl;
+      console.log("Definiendo arController");
+      document.body.className = this.arController.orientation;
+      this.ARWeb.initScene(arScene);
+      this.ARWeb.initCamera(arCamera);
+      var renderer = new THREE.WebGLRenderer({antialias: true});
+      if (this.arController.orientation === 'portrait') {
+        var w = (window.innerWidth / this.arController.videoHeight) * this.arController.videoWidth;
+        var h = window.innerWidth;
+        renderer.setSize(w, h);
+        renderer.domElement.style.paddingBottom = (w-h) + 'px';
+      } else {
+        if (/Android|mobile|iPad|iPhone/i.test(navigator.userAgent)) {
+          renderer.setSize(window.innerWidth, (window.innerWidth / this.arController.videoWidth) * arController.videoHeight);
+        } else {
+          renderer.setSize(this.arController.videoWidth, this.arController.videoHeight);
+          document.body.className += ' desktop';
         }
       }
-      if(!in_process_detect && list_marker_id_with_attachment.length>0)
-        setTimeout(function(){
-          in_process_detect=true;
-          if(list_marker_id_with_attachment.length>0){
-            for(var i=0,total_attachments=[],count_attachments=0,length=list_marker_id_with_attachment.length;i<length;i++,count_attachments=0){
-              total_attachments=markers[list_marker_id_with_attachment[i]].getAttachmentsId();
-              total_attachments.forEach(function(attached_id){
-                if(list_marker_id_detected.indexOf(attached_id)>-1)
-                  count_attachments++;
-              });
-              if(total_attachments.length==count_attachments)
-                markers[list_marker_id_with_attachment[i]].detected().call(stage,markers[list_marker_id_with_attachment[i]].puntero);
-            }
-          }
-          list_marker_id_with_attachment.length=0;
-          list_marker_id_detected.length=0;
-          in_process_detect=false;
-        },350);
-      return true;
+      this.ARWeb.initRenderer(renderer);
+      this.arController.addEventListener('getMarker', function (ev) {
+        if(ev.data.type==0){
+          console.dir(ev);//
+          //this.markers[ev.data.marker.id].puntero.get().matrixWorld.elements=ev.data.matrix;
+          this.dispatchEventMarker(this.markers[ev.data.marker.id],ev.target.threePatternMarkers[ev.data.marker.id]);
+        }
+      }.bind(this));
+
+      domParent.appendChild(renderer.domElement);
+      this.is_loaded=true;
+      if(this.tasks_pending.length>0)
+        callingTasksPending.call(this);
+    }.bind(this)
+  });
+}
+
+if (window.ARController && ARController.getUserMediaThreeScene) {
+  ARThreeOnLoad.call(this);
+}
+}
+
+DetectorAR.prototype.changeStage=function(new_stage){
+  this.stage=new_stage;
+}
+
+function addingMarker(marker){
+  this.markers[marker.id]=new this.DetectorMarker(marker.id,marker.callback,marker.puntero);
+  this.arController.loadMarker('data/'+marker.path, function(markerId) {
+    var markerRoot = this.arController.createThreeMarker(markerId);
+    console.log("Añadiendo marcador "+marker.id);
+    markerRoot.add(marker.puntero.get().children[0].children[0]);
+    this.ARWeb.addMarkerToScene(markerRoot);
+    //arScene.scene.add(markerRoot);
+    //this.ARWeb.addToScene(puntero,markerRoot);
+    this.ARWeb
+  }.bind(this));
+}
+
+function callingTasksPending(){
+  while(this.tasks_pending.length>0)
+    this.tasks_pending.pop()();
+}
+
+DetectorAR.prototype.addMarker=function(marker){
+  console.log("Agregando "+this.is_loaded);
+  if(this.is_loaded==false){
+    this.tasks_pending.push(addingMarker.bind(this,marker));
+  }else{
+    if(this.tasks_pending.length>0)
+      callingTasksPending.call(this);
+    else{
+      console.log("Segun fue verdadero y se cargo todo");
+      addingMarker.call(this,marker);
     }
-    return false;
   }
+}
 
+DetectorAR.prototype.addPendingTask=function(fn){
+  this.tasks_pending.push(fn);
+}
 
-  /**
-  * @function attach
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  var attach=function(markers_to_attach){
-    var marker_list=Object.keys(markers);
-    if(marker_list.length>0)
-    rootMarker=markers[marker_list.pop()];
-    markers_attach[rootMarker.id]=0;
-    for(var i=0,length=markers_to_attach.length;i<length;i++){
-      this.addMarker(markers_to_attach[i]);
-      markers_attach[markers_to_attach[i].id]=0;
-    }
-  }
+DetectorAR.prototype.cleanMarkers=function(){
+  this.markers={};
+}
 
-
-  /**
-  * @function addMarker
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  var addMarker=function(marker){
-    markers[marker.id]=new DetectorMarker(marker.id,marker.callback,marker.puntero);
-    lastMarker=markers[marker.id];
-    return markers[marker.id];
-  }
-
-  var getLastMarker=function(){
-    return lastMarker;
-  }
-
-  var getMarker=function(marker_id){
-    return markers[marker_id];
-  }
-
-
-  /**
-  * @function cleanMarkers
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  var cleanMarkers=function(){
-    markers={};
-  }
-
-
-  /**
-  * @function cambiarThreshold
-  * @memberof DetectorAR
-  * @summary Obtiene el número de marcador
-  * @param {Integer} idx - Recibe el id del marcador.
-  */
-  var cambiarThreshold=function(threshold_nuevo){
-    threshold=threshold_nuevo;
-  }
-
-  return{
-    init:init,
-    attach:attach,
-    setCameraMatrix:setCameraMatrix,
-    detectMarker:detectMarker,
-    getMarker:getMarker,
-    addMarker:addMarker,
-    markermatrix:markermatrix,
-    cambiarThreshold:cambiarThreshold,
-    cleanMarkers:cleanMarkers
-  }
+DetectorAR.prototype.dispatchEventMarker=function(marker,ev){
+  if(marker!=null)
+  marker.detected().call(this.stage,marker,ev);
 }
 
 module.exports=DetectorAR;

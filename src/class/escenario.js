@@ -10,7 +10,10 @@
  * @constructor
 */
 function Escenario(){
-	this.escena=new THREE.Scene();
+}
+
+Escenario.prototype.initScene=function(scene){
+	this.escena=scene;
 }
 
 /**
@@ -34,7 +37,8 @@ Escenario.prototype.initCamara=function(fn){
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
 Escenario.prototype.anadir=function(elemento){
-	this.escena.add(elemento);
+	console.dir(elemento);
+	this.escena.scene.add(elemento);
 }
 
 
@@ -55,9 +59,15 @@ Escenario.prototype.getCamara=function(){
  * @summary Renderiza el escneario
  * @param {THREE.Scene}
 */
-Escenario.prototype.update=function(scene){
-	this.renderer.render(scene.escena,scene.camara);
-	this.renderer.clearDepth();
+Escenario.prototype.update=function(renderer){
+	//this.renderer.render(scene.escena,scene.camara);
+	//this.renderer.clearDepth();
+	//console.log("ACTUALIZANDO escneario");
+	if(renderer!=undefined){
+//		console.log("Actualizando");
+		this.escena.process();
+		this.escena.renderOn(renderer);
+	}
 }
 
 
