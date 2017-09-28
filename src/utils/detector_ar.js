@@ -43,9 +43,9 @@ function DetectorAR(domParent,ARWeb){
       this.ARWeb.initRenderer(renderer);
       this.arController.addEventListener('getMarker', function (ev) {
         if(ev.data.type==0){
-          console.dir(ev);//
+          //console.dir(ev);//
           //this.markers[ev.data.marker.id].puntero.get().matrixWorld.elements=ev.data.matrix;
-          this.dispatchEventMarker(this.markers[ev.data.marker.id],ev.target.threePatternMarkers[ev.data.marker.id]);
+          this.dispatchEventMarker(this.markers[ev.data.marker.id],ev.target.threePatternMarkers[ev.data.marker.id],ev);
         }
       }.bind(this));
 
@@ -71,7 +71,8 @@ function addingMarker(marker){
   this.arController.loadMarker('data/'+marker.path, function(markerId) {
     var markerRoot = this.arController.createThreeMarker(markerId);
     console.log("Añadiendo marcador "+marker.id);
-    markerRoot.add(marker.puntero.get().children[0].children[0]);
+    console.dir(marker.puntero.get().children[0])//
+    markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
@@ -106,9 +107,9 @@ DetectorAR.prototype.cleanMarkers=function(){
   this.markers={};
 }
 
-DetectorAR.prototype.dispatchEventMarker=function(marker,ev){
+DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
   if(marker!=null)
-  marker.detected().call(this.stage,marker,ev);
+  marker.detected().call(this.stage,marker,ev,complete);
 }
 
 module.exports=DetectorAR;
