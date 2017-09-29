@@ -14,6 +14,7 @@ function ARWeb(configuration){//
   this.count=0;
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
+  var EscenarioReal=require("./class/escenario_real.js");
   //var WebcamStream=require("./utils/webcamstream.js");
   var Mediador=require("./utils/Mediador.js");
   var PositionUtil=require("./utils/position_util.js");
@@ -31,10 +32,10 @@ function ARWeb(configuration){//
   //this.detector_ar.init();
   /*
   this.animacion=new Animacion();
-  this.realidadEscena=new Escenario(); b
   this.videoEscena=new Escenario();
   */
   this.planoEscena=new Escenario();
+  this.realidadEscena=new EscenarioReal();
   console.dir(this.planoEscena);
   this.stages=[];
   this.refresh_object=[];
@@ -67,6 +68,19 @@ ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
     this.planoEscena.anadir(object.get());
   }
 
+  this.refresh_object.push(is_an_object_actionable);
+  this.objetos.push(object);
+  return this;
+}
+
+ARWeb.prototype.addRealToScene=function(object,is_an_object_actionable){
+  if(!this.detector_ar.is_loaded){
+    this.detector_ar.addPendingTask(function(){
+      this.realidadEscena.anadir(object.get());
+    }.bind(this,object))
+  }else{
+    this.realidadEscena.anadir(object.get());
+  }
   this.refresh_object.push(is_an_object_actionable);
   this.objetos.push(object);
   return this;
@@ -150,6 +164,14 @@ ARWeb.prototype.init=function(){
   */
   this.cantidad_cartas=4;
   //this.realidadEscena.initCamara();
+  //*
+  this.realidadEscena.initCamara(function(){
+    this.camera=new THREE.PerspectiveCamera();
+    this.camera.near=0.1;
+    this.camera.far=2000;
+    this.camera.updateProjectionMatrix();
+  });
+  //*/
   //this.videoEscena.initCamara();
   //this.videoEscena.anadir(this.webcam.getElemento());
   //this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
@@ -275,6 +297,9 @@ ARWeb.prototype.loop=function(){
   //console.dir(this.planoEscena.update);
   //console.dir(this.initScene);
   this.planoEscena.update(this.renderer);
+  if(this.renderer)
+  this.renderer.clearDepth();
+  this.realidadEscena.update(this.renderer);
 //  arScene.process();
   //arScene.renderOn(renderer);
 

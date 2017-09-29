@@ -15,6 +15,7 @@ function ARWeb(configuration){//
   this.count=0;
   var Animacion=require('./utils/animacion.js');
   var Escenario=require("./class/escenario.js");
+  var EscenarioReal=require("./class/escenario_real.js");
   //var WebcamStream=require("./utils/webcamstream.js");
   var Mediador=require("./utils/Mediador.js");
   var PositionUtil=require("./utils/position_util.js");
@@ -32,10 +33,10 @@ function ARWeb(configuration){//
   //this.detector_ar.init();
   /*
   this.animacion=new Animacion();
-  this.realidadEscena=new Escenario(); b
   this.videoEscena=new Escenario();
   */
   this.planoEscena=new Escenario();
+  this.realidadEscena=new EscenarioReal();
   console.dir(this.planoEscena);
   this.stages=[];
   this.refresh_object=[];
@@ -68,6 +69,19 @@ ARWeb.prototype.addToScene=function(object,is_an_object_actionable){
     this.planoEscena.anadir(object.get());
   }
 
+  this.refresh_object.push(is_an_object_actionable);
+  this.objetos.push(object);
+  return this;
+}
+
+ARWeb.prototype.addRealToScene=function(object,is_an_object_actionable){
+  if(!this.detector_ar.is_loaded){
+    this.detector_ar.addPendingTask(function(){
+      this.realidadEscena.anadir(object.get());
+    }.bind(this,object))
+  }else{
+    this.realidadEscena.anadir(object.get());
+  }
   this.refresh_object.push(is_an_object_actionable);
   this.objetos.push(object);
   return this;
@@ -151,6 +165,14 @@ ARWeb.prototype.init=function(){
   */
   this.cantidad_cartas=4;
   //this.realidadEscena.initCamara();
+  //*
+  this.realidadEscena.initCamara(function(){
+    this.camera=new THREE.PerspectiveCamera();
+    this.camera.near=0.1;
+    this.camera.far=2000;
+    this.camera.updateProjectionMatrix();
+  });
+  //*/
   //this.videoEscena.initCamara();
   //this.videoEscena.anadir(this.webcam.getElemento());
   //this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
@@ -276,6 +298,9 @@ ARWeb.prototype.loop=function(){
   //console.dir(this.planoEscena.update);
   //console.dir(this.initScene);
   this.planoEscena.update(this.renderer);
+  if(this.renderer)
+  this.renderer.clearDepth();
+  this.realidadEscena.update(this.renderer);
 //  arScene.process();
   //arScene.renderOn(renderer);
 
@@ -382,7 +407,7 @@ ARWeb.prototype.finishStage=function(){
 
 window.ARWeb=ARWeb;
 
-},{"./class/elemento.js":2,"./class/escenario.js":3,"./utils/Mediador.js":5,"./utils/animacion.js":6,"./utils/detector_ar":7,"./utils/position_util.js":9}],2:[function(require,module,exports){
+},{"./class/elemento.js":2,"./class/escenario.js":3,"./class/escenario_real.js":4,"./utils/Mediador.js":6,"./utils/animacion.js":7,"./utils/detector_ar":8,"./utils/position_util.js":10}],2:[function(require,module,exports){
 /**
  * @file Elemento
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -688,7 +713,7 @@ Elemento.prototype.igualA=function(objeto){
 
 module.exports=Elemento;
 
-},{"../utils/position_util.js":9}],3:[function(require,module,exports){
+},{"../utils/position_util.js":10}],3:[function(require,module,exports){
 /**
  * @file Escenario
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -715,7 +740,7 @@ Escenario.prototype.initScene=function(scene){
 */
 Escenario.prototype.initCamara=function(fn){
 	if(fn==undefined){
-		this.camara=new THREE.Camera();
+		this.camera=new THREE.Camera();
 	}else
 		fn.call(this);
 }
@@ -728,8 +753,10 @@ Escenario.prototype.initCamara=function(fn){
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
 Escenario.prototype.anadir=function(elemento){
-	console.dir(elemento);
-	this.escena.scene.add(elemento);
+	if(this.escena)
+		this.escena.scene.add(elemento);
+	else
+		this.scene.add(elemento);
 }
 
 
@@ -740,7 +767,7 @@ Escenario.prototype.anadir=function(elemento){
  * @returns {THREE.Camera} - La cámara definida en este escenario
 */
 Escenario.prototype.getCamara=function(){
-	return this.camara;
+	return this.camera;
 }
 
 
@@ -752,12 +779,11 @@ Escenario.prototype.getCamara=function(){
 */
 Escenario.prototype.update=function(renderer){
 	//this.renderer.render(scene.escena,scene.camara);
-	//this.renderer.clearDepth();
 	//console.log("ACTUALIZANDO escneario");
 	if(renderer!=undefined){
 //		console.log("Actualizando");
-		this.escena.process();
-		this.escena.renderOn(renderer);
+			this.escena.process();
+			this.escena.renderOn(renderer);
 	}
 }
 
@@ -774,6 +800,90 @@ Escenario.prototype.limpiar=function(){
 module.exports=Escenario;
 
 },{}],4:[function(require,module,exports){
+/**
+ * @file Escenario
+ * @author Fernando Segura Gómez, Twitter: @fsgdev
+ * @version 0.2
+ */
+
+/**
+ * Clase Escenario
+ * @class Escenario
+ * @constructor
+*/
+function EscenarioReal(){
+	this.scene=new THREE.Scene();
+}
+
+
+/**
+ * @function initCamara
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
+ * @param {Function} - (Opcional) Esta función se ejecutara usando el ambito de la función Escenario. Sirve principalmente para definir una configuración predefinida para la cámara
+*/
+EscenarioReal.prototype.initCamara=function(fn){
+	if(fn==undefined){
+		this.camera=new THREE.Camera();
+    //this.camera.lookAt(this.scene.position);
+	}else
+		fn.call(this);
+  //this.camera.lookAt(this.scene.position);
+}
+
+
+/**
+ * @function anadir
+ * @memberof Escenario
+ * @summary Permite inicializar la cámara que se encargara de observar este escenario
+ * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
+*/
+EscenarioReal.prototype.anadir=function(elemento){
+		this.scene.add(elemento);
+}
+
+
+/**
+ * @function getCamara
+ * @memberof Escenario
+ * @summary Retorna la cámara de esta escena
+ * @returns {THREE.Camera} - La cámara definida en este escenario
+*/
+EscenarioReal.prototype.getCamara=function(){
+	return this.camera;
+}
+
+
+/**
+ * @function update
+ * @memberof Escenario
+ * @summary Renderiza el escneario
+ * @param {THREE.Scene}
+*/
+EscenarioReal.prototype.update=function(renderer){
+	//this.renderer.render(scene.escena,scene.camara);
+	//console.log("ACTUALIZANDO escneario");
+	if(renderer!=undefined){
+//		console.log("Actualizando");
+    renderer.autoClear=false;
+    renderer.render(this.scene,this.camera);
+    //renderer.autoClear=true;
+	}
+}
+
+
+/**
+ * @function limpiar
+ * @memberof Escenario
+ * @summary Limpia todos los elementos en la escena
+*/
+EscenarioReal.prototype.limpiar=function(){
+	while(this.escena.children.length>0)
+		this.escena.remove(this.escena.children[0]);
+}
+module.exports=EscenarioReal;
+
+},{}],5:[function(require,module,exports){
 module.exports=function(width,height){
 	//var Labels=function(){
 		var canvas,context,material,textura,sprite,x_origen,y_origen;
@@ -824,7 +934,7 @@ module.exports=function(width,height){
 
 	//}
 }
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * @file Mediador
  * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -912,7 +1022,7 @@ Mediador.prototype.baja=function(evento,objeto){
 }
 module.exports=Mediador;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function Animacion(){
 	this.easein_configuration={
 		limit_z:-800,
@@ -1004,7 +1114,7 @@ Animacion.prototype.ocultar=function(objeto){
 }
 module.exports=Animacion;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
 * @file DetectorAR
 * @author Fernando Segura Gómez, Twitter: @fsgdev
@@ -1052,7 +1162,9 @@ function DetectorAR(domParent,ARWeb){
         if(ev.data.type==0){
           //console.dir(ev);//
           //this.markers[ev.data.marker.id].puntero.get().matrixWorld.elements=ev.data.matrix;
-          this.dispatchEventMarker(this.markers[ev.data.marker.id],ev.target.threePatternMarkers[ev.data.marker.id],ev);
+          var marker=ev.target.threePatternMarkers[ev.data.marker.id];
+          //console.log("Encontre este "+ev.data.marker.id);
+          this.dispatchEventMarker(this.markers[ev.data.marker.id],marker,ev);
         }
       }.bind(this));
 
@@ -1074,13 +1186,14 @@ DetectorAR.prototype.changeStage=function(new_stage){
 }
 
 function addingMarker(marker){
-  this.markers[marker.id]=new this.DetectorMarker(marker.id,marker.callback,marker.puntero);
   this.arController.loadMarker('data/'+marker.path, function(markerId) {
     var markerRoot = this.arController.createThreeMarker(markerId);
-    console.log("Añadiendo marcador "+marker.id);
-    console.dir(marker.puntero.get().children[0])//
+    //console.log("Añadiendo marcador "+marker.id+" "+markerId);
+    //console.dir(marker.puntero.get().children[0])//
     markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
+    marker.puntero.elemento_raiz=markerRoot;
+    this.markers[markerId]=new this.DetectorMarker(markerId,marker.callback,marker.puntero);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
     this.ARWeb
@@ -1116,12 +1229,12 @@ DetectorAR.prototype.cleanMarkers=function(){
 
 DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
   if(marker!=null)
-  marker.detected().call(this.stage,marker,ev,complete);
+  marker.detected().call(this.stage,marker.puntero);
 }
 
 module.exports=DetectorAR;
 
-},{"./detectormarker.js":8}],8:[function(require,module,exports){
+},{"./detectormarker.js":9}],9:[function(require,module,exports){
 function DetectorMarker(id,callback,puntero){
 	this.id=id;
 	this.callback=callback;
@@ -1148,7 +1261,7 @@ DetectorMarker.prototype.getAttachmentsId=function(){
 }
 module.exports=DetectorMarker;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function PositionUtil(config){
 /*
 	var width=config.WIDTH;
@@ -1200,7 +1313,7 @@ function PositionUtil(config){
 }
 module.exports=PositionUtil;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function WebcamStream(configuracion){
   this.canvas=document.createElement("canvas");
   this.canvas.width=configuracion["WIDTH"];
@@ -1233,4 +1346,4 @@ WebcamStream.prototype.getCanvas=function(){
 
 module.exports=WebcamStream;
 
-},{}]},{},[2,3,4,6,7,8,5,9,10,1]);
+},{}]},{},[2,4,3,5,7,8,9,6,10,11,1]);

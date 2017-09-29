@@ -9,12 +9,10 @@
  * @class Escenario
  * @constructor
 */
-function Escenario(){
+function EscenarioReal(){
+	this.scene=new THREE.Scene();
 }
 
-Escenario.prototype.initScene=function(scene){
-	this.escena=scene;
-}
 
 /**
  * @function initCamara
@@ -22,11 +20,13 @@ Escenario.prototype.initScene=function(scene){
  * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {Function} - (Opcional) Esta función se ejecutara usando el ambito de la función Escenario. Sirve principalmente para definir una configuración predefinida para la cámara
 */
-Escenario.prototype.initCamara=function(fn){
+EscenarioReal.prototype.initCamara=function(fn){
 	if(fn==undefined){
 		this.camera=new THREE.Camera();
+    //this.camera.lookAt(this.scene.position);
 	}else
 		fn.call(this);
+  //this.camera.lookAt(this.scene.position);
 }
 
 
@@ -36,10 +36,7 @@ Escenario.prototype.initCamara=function(fn){
  * @summary Permite inicializar la cámara que se encargara de observar este escenario
  * @param {THREE.Object3D} - Es el objeto que se añadira al escenario
 */
-Escenario.prototype.anadir=function(elemento){
-	if(this.escena)
-		this.escena.scene.add(elemento);
-	else
+EscenarioReal.prototype.anadir=function(elemento){
 		this.scene.add(elemento);
 }
 
@@ -50,7 +47,7 @@ Escenario.prototype.anadir=function(elemento){
  * @summary Retorna la cámara de esta escena
  * @returns {THREE.Camera} - La cámara definida en este escenario
 */
-Escenario.prototype.getCamara=function(){
+EscenarioReal.prototype.getCamara=function(){
 	return this.camera;
 }
 
@@ -61,13 +58,14 @@ Escenario.prototype.getCamara=function(){
  * @summary Renderiza el escneario
  * @param {THREE.Scene}
 */
-Escenario.prototype.update=function(renderer){
+EscenarioReal.prototype.update=function(renderer){
 	//this.renderer.render(scene.escena,scene.camara);
 	//console.log("ACTUALIZANDO escneario");
 	if(renderer!=undefined){
 //		console.log("Actualizando");
-			this.escena.process();
-			this.escena.renderOn(renderer);
+    renderer.autoClear=false;
+    renderer.render(this.scene,this.camera);
+    //renderer.autoClear=true;
 	}
 }
 
@@ -77,8 +75,8 @@ Escenario.prototype.update=function(renderer){
  * @memberof Escenario
  * @summary Limpia todos los elementos en la escena
 */
-Escenario.prototype.limpiar=function(){
+EscenarioReal.prototype.limpiar=function(){
 	while(this.escena.children.length>0)
 		this.escena.remove(this.escena.children[0]);
 }
-module.exports=Escenario;
+module.exports=EscenarioReal;
