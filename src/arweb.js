@@ -254,10 +254,24 @@ ARWeb.prototype.addMarkerToScene=function(marcador){
  * @param {Integer} parent_id - El id del marcador "padre"
  * @param {Object} marker - El objeto marcador
 */
-ARWeb.prototype.attach=function(parent_id,marker){
-  this.detector_ar.getMarker(parent_id).attach(marker);
-  this.addMarker(marker);
-  return this;
+ARWeb.prototype.attach=function(parent_id,marker){//
+  if(!this.detector_ar.is_loaded){
+    this.detector_ar.addPendingTask(function(){
+      var marker_search= this.detector_ar.getMarker(parent_id);
+      if(marker_search!=null){
+        console.log("No fue nulo el buscar "+parent_id);
+        marker_search.attach(marker);
+      }else
+        setTimeout(function(){
+          console.log("Segun esto fue nulo encontrar "+parent_id);
+          this.detector_ar.getMarker(parent_id).attach(marker);
+          this.addMarker(marker);
+        }.bind(this,parent_id,marker),2000);
+    }.bind(this,parent_id,marker))
+  }else{
+    this.detector_ar.getMarker(parent_id).attach(marker);
+    this.addMarker(marker);
+  }
 }
 
 

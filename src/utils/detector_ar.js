@@ -14,6 +14,8 @@ function DetectorAR(domParent,ARWeb){
   this.is_loaded=false;
   this.markers={};
   this.tasks_pending=[];
+  this.tasks_markers={};
+  this.checking_attachment=false;
   this.stage;
   this.ARWeb=ARWeb;
   this.DetectorMarker=require("./detectormarker.js");
@@ -49,7 +51,7 @@ function DetectorAR(domParent,ARWeb){
           //var markerId=ev.data.marker.id;
           var marker=this.markers[ev.data.marker.id];
           if(marker.hasAttachments()){
-              this.manageAttachmentEvent(marker);
+              this.manageAttachmentEvent(marker,ev.data.marker.id,ev);
           }else{
           //console.log("Encontre este "+ev.data.marker.id);
             this.dispatchEventMarker(marker,marker,ev);
@@ -68,18 +70,18 @@ function DetectorAR(domParent,ARWeb){
 /*
   Checking attachments
 */
-DetectorAR.prototype.manageAttachmentEvent=function(marker){
-  if(!checking_attachment){
-    checking_attachment=true;
-    setTimeOut(function(){
+DetectorAR.prototype.manageAttachmentEvent=function(marker,markerId,ev){
+  if(!this.checking_attachment){
+    this.checking_attachment=true;
+    setTimeout(function(){
       var continue_event=true;
       for(var i=0,length=this.markers[markerId].getAttachmentsId().length;i<length;i++){
-        if(!marker.get().visible){
+        if(!marker.puntero.get().visible){
           continue_event=false;
           break;
         }
       }
-      finish_check_attachment=false;
+      this.checking_attachment=false;
       if(continue_event){
         this.dispatchEventMarker(marker,marker,ev);
       }
@@ -107,7 +109,7 @@ function addingMarker(marker){
     this.markers[markerId]=new this.DetectorMarker(markerId,marker.callback,marker.puntero);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
-    this.ARWeb
+    //this.ARWeb
   }.bind(this));
 }
 
@@ -131,6 +133,8 @@ DetectorAR.prototype.addMarker=function(marker){
 }
 
 DetectorAR.prototype.getMarker=function(markerId){
+  console.log("Buscando "+markerId);
+  console.dir(this.markers);
   return this.markers[markerId];
 }
 
@@ -138,12 +142,16 @@ DetectorAR.prototype.addPendingTask=function(fn){
   this.tasks_pending.push(fn);
 }
 
+DetectorAR.prototype.addPendingMarkerTask=function(markerId,fn){
+  this.tasks_markers[markerId]=fn;
+}
+
 DetectorAR.prototype.cleanMarkers=function(){
   this.markers={};
 }
 
 DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
-  if(marker!=null)
+  if(marker!=null && marker.detected()!=undefined)
   marker.detected().call(this.stage,marker.puntero);
 }
 

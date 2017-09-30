@@ -255,10 +255,24 @@ ARWeb.prototype.addMarkerToScene=function(marcador){
  * @param {Integer} parent_id - El id del marcador "padre"
  * @param {Object} marker - El objeto marcador
 */
-ARWeb.prototype.attach=function(parent_id,marker){
-  this.detector_ar.getMarker(parent_id).attach(marker);
-  this.addMarker(marker);
-  return this;
+ARWeb.prototype.attach=function(parent_id,marker){//
+  if(!this.detector_ar.is_loaded){
+    this.detector_ar.addPendingTask(function(){
+      var marker_search= this.detector_ar.getMarker(parent_id);
+      if(marker_search!=null){
+        console.log("No fue nulo el buscar "+parent_id);
+        marker_search.attach(marker);
+      }else
+        setTimeout(function(){
+          console.log("Segun esto fue nulo encontrar "+parent_id);
+          this.detector_ar.getMarker(parent_id).attach(marker);
+          this.addMarker(marker);
+        }.bind(this,parent_id,marker),2000);
+    }.bind(this,parent_id,marker))
+  }else{
+    this.detector_ar.getMarker(parent_id).attach(marker);
+    this.addMarker(marker);
+  }
 }
 
 
@@ -1133,6 +1147,8 @@ function DetectorAR(domParent,ARWeb){
   this.is_loaded=false;
   this.markers={};
   this.tasks_pending=[];
+  this.tasks_markers={};
+  this.checking_attachment=false;
   this.stage;
   this.ARWeb=ARWeb;
   this.DetectorMarker=require("./detectormarker.js");
@@ -1168,7 +1184,7 @@ function DetectorAR(domParent,ARWeb){
           //var markerId=ev.data.marker.id;
           var marker=this.markers[ev.data.marker.id];
           if(marker.hasAttachments()){
-              this.manageAttachmentEvent(marker);
+              this.manageAttachmentEvent(marker,ev.data.marker.id,ev);
           }else{
           //console.log("Encontre este "+ev.data.marker.id);
             this.dispatchEventMarker(marker,marker,ev);
@@ -1187,18 +1203,18 @@ function DetectorAR(domParent,ARWeb){
 /*
   Checking attachments
 */
-DetectorAR.prototype.manageAttachmentEvent=function(marker){
-  if(!checking_attachment){
-    checking_attachment=true;
-    setTimeOut(function(){
+DetectorAR.prototype.manageAttachmentEvent=function(marker,markerId,ev){
+  if(!this.checking_attachment){
+    this.checking_attachment=true;
+    setTimeout(function(){
       var continue_event=true;
       for(var i=0,length=this.markers[markerId].getAttachmentsId().length;i<length;i++){
-        if(!marker.get().visible){
+        if(!marker.puntero.get().visible){
           continue_event=false;
           break;
         }
       }
-      finish_check_attachment=false;
+      this.checking_attachment=false;
       if(continue_event){
         this.dispatchEventMarker(marker,marker,ev);
       }
@@ -1226,7 +1242,7 @@ function addingMarker(marker){
     this.markers[markerId]=new this.DetectorMarker(markerId,marker.callback,marker.puntero);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
-    this.ARWeb
+    //this.ARWeb
   }.bind(this));
 }
 
@@ -1250,6 +1266,8 @@ DetectorAR.prototype.addMarker=function(marker){
 }
 
 DetectorAR.prototype.getMarker=function(markerId){
+  console.log("Buscando "+markerId);
+  console.dir(this.markers);
   return this.markers[markerId];
 }
 
@@ -1257,12 +1275,16 @@ DetectorAR.prototype.addPendingTask=function(fn){
   this.tasks_pending.push(fn);
 }
 
+DetectorAR.prototype.addPendingMarkerTask=function(markerId,fn){
+  this.tasks_markers[markerId]=fn;
+}
+
 DetectorAR.prototype.cleanMarkers=function(){
   this.markers={};
 }
 
 DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
-  if(marker!=null)
+  if(marker!=null && marker.detected()!=undefined)
   marker.detected().call(this.stage,marker.puntero);
 }
 
