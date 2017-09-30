@@ -45,9 +45,15 @@ function DetectorAR(domParent,ARWeb){
         if(ev.data.type==0){
           //console.dir(ev);//
           //this.markers[ev.data.marker.id].puntero.get().matrixWorld.elements=ev.data.matrix;
-          var marker=ev.target.threePatternMarkers[ev.data.marker.id];
+          //var marker=ev.target.threePatternMarkers[ev.data.marker.id];
+          //var markerId=ev.data.marker.id;
+          var marker=this.markers[ev.data.marker.id];
+          if(marker.hasAttachments()){
+              this.manageAttachmentEvent(marker);
+          }else{
           //console.log("Encontre este "+ev.data.marker.id);
-          this.dispatchEventMarker(this.markers[ev.data.marker.id],marker,ev);
+            this.dispatchEventMarker(marker,marker,ev);
+          }
         }
       }.bind(this));
 
@@ -57,6 +63,28 @@ function DetectorAR(domParent,ARWeb){
         callingTasksPending.call(this);
     }.bind(this)
   });
+}
+
+/*
+  Checking attachments
+*/
+DetectorAR.prototype.manageAttachmentEvent=function(marker){
+  if(!checking_attachment){
+    checking_attachment=true;
+    setTimeOut(function(){
+      var continue_event=true;
+      for(var i=0,length=this.markers[markerId].getAttachmentsId().length;i<length;i++){
+        if(!marker.get().visible){
+          continue_event=false;
+          break;
+        }
+      }
+      finish_check_attachment=false;
+      if(continue_event){
+        this.dispatchEventMarker(marker,marker,ev);
+      }
+    }.bind(this),350);
+  }
 }
 
 if (window.ARController && ARController.getUserMediaThreeScene) {
@@ -102,8 +130,8 @@ DetectorAR.prototype.addMarker=function(marker){
   }
 }
 
-DetectorAR.prototype.getMarker=function(marker){
-  
+DetectorAR.prototype.getMarker=function(markerId){
+  return this.markers[markerId];
 }
 
 DetectorAR.prototype.addPendingTask=function(fn){

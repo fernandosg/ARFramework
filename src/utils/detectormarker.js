@@ -12,11 +12,11 @@ DetectorMarker.prototype.detected = function() {
 
 DetectorMarker.prototype.attach=function(marker){
 	this.attached_id.push(marker.id);
-	this.attached.push(new DetectorMarker(marker.id,marker.callback,marker.puntero));
+	//this.attached.push(new DetectorMarker(marker.id,marker.callback,marker.puntero));
 }
 
 DetectorMarker.prototype.hasAttachments=function(){
-	return this.attached.length>0;
+	return this.attached_id.length>0;
 }
 
 DetectorMarker.prototype.getAttachmentsId=function(){
