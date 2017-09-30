@@ -165,9 +165,9 @@ ARWeb.prototype.init=function(){
   */
   this.cantidad_cartas=4;
   //this.realidadEscena.initCamara();
-  //*
+  ///*
   this.realidadEscena.initCamara(function(){
-    this.camera=new THREE.PerspectiveCamera();
+    this.camera=new THREE.PerspectiveCamera();//
     this.camera.near=0.1;
     this.camera.far=2000;
     this.camera.updateProjectionMatrix();
@@ -256,7 +256,7 @@ ARWeb.prototype.addMarkerToScene=function(marcador){
  * @param {Object} marker - El objeto marcador
 */
 ARWeb.prototype.attach=function(parent_id,marker){
-  //this.detector_ar.getMarker(parent_id).attach(marker);
+  this.detector_ar.getMarker(parent_id).attach(marker);
   this.addMarker(marker);
   return this;
 }
@@ -298,9 +298,11 @@ ARWeb.prototype.loop=function(){
   //console.dir(this.planoEscena.update);
   //console.dir(this.initScene);
   this.planoEscena.update(this.renderer);
+  ///*
   if(this.renderer)
   this.renderer.clearDepth();
-  this.realidadEscena.update(this.renderer);
+  this.realidadEscena.update(this.renderer);//
+  //*/
 //  arScene.process();
   //arScene.renderOn(renderer);
 
@@ -1188,7 +1190,7 @@ DetectorAR.prototype.changeStage=function(new_stage){
 function addingMarker(marker){
   this.arController.loadMarker('data/'+marker.path, function(markerId) {
     var markerRoot = this.arController.createThreeMarker(markerId);
-    //console.log("Añadiendo marcador "+marker.id+" "+markerId);
+    console.log("Añadiendo marcador "+marker.path+" "+markerId);
     //console.dir(marker.puntero.get().children[0])//
     markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
@@ -1217,6 +1219,10 @@ DetectorAR.prototype.addMarker=function(marker){
       addingMarker.call(this,marker);
     }
   }
+}
+
+DetectorAR.prototype.getMarker=function(marker){
+  
 }
 
 DetectorAR.prototype.addPendingTask=function(fn){

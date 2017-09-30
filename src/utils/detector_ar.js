@@ -71,7 +71,7 @@ DetectorAR.prototype.changeStage=function(new_stage){
 function addingMarker(marker){
   this.arController.loadMarker('data/'+marker.path, function(markerId) {
     var markerRoot = this.arController.createThreeMarker(markerId);
-    //console.log("Añadiendo marcador "+marker.id+" "+markerId);
+    console.log("Añadiendo marcador "+marker.path+" "+markerId);
     //console.dir(marker.puntero.get().children[0])//
     markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
@@ -100,6 +100,10 @@ DetectorAR.prototype.addMarker=function(marker){
       addingMarker.call(this,marker);
     }
   }
+}
+
+DetectorAR.prototype.getMarker=function(marker){
+  
 }
 
 DetectorAR.prototype.addPendingTask=function(fn){

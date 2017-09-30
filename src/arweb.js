@@ -164,9 +164,9 @@ ARWeb.prototype.init=function(){
   */
   this.cantidad_cartas=4;
   //this.realidadEscena.initCamara();
-  //*
+  ///*
   this.realidadEscena.initCamara(function(){
-    this.camera=new THREE.PerspectiveCamera();
+    this.camera=new THREE.PerspectiveCamera();//
     this.camera.near=0.1;
     this.camera.far=2000;
     this.camera.updateProjectionMatrix();
@@ -255,7 +255,7 @@ ARWeb.prototype.addMarkerToScene=function(marcador){
  * @param {Object} marker - El objeto marcador
 */
 ARWeb.prototype.attach=function(parent_id,marker){
-  //this.detector_ar.getMarker(parent_id).attach(marker);
+  this.detector_ar.getMarker(parent_id).attach(marker);
   this.addMarker(marker);
   return this;
 }
@@ -297,9 +297,11 @@ ARWeb.prototype.loop=function(){
   //console.dir(this.planoEscena.update);
   //console.dir(this.initScene);
   this.planoEscena.update(this.renderer);
+  ///*
   if(this.renderer)
   this.renderer.clearDepth();
-  this.realidadEscena.update(this.renderer);
+  this.realidadEscena.update(this.renderer);//
+  //*/
 //  arScene.process();
   //arScene.renderOn(renderer);
 
