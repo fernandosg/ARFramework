@@ -133,8 +133,8 @@ DetectorAR.prototype.addMarker=function(marker){
 }
 
 DetectorAR.prototype.getMarker=function(markerId){
-  console.log("Buscando "+markerId);
-  console.dir(this.markers);
+  //console.log("Buscando "+markerId);
+  //console.dir(this.markers);
   return this.markers[markerId];
 }
 
@@ -152,7 +152,7 @@ DetectorAR.prototype.cleanMarkers=function(){
 
 DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
   if(marker!=null && marker.detected()!=undefined)
-  marker.detected().call(this.stage,marker.puntero);
+  marker.detected().call(this.ARWeb.stages[0],marker.puntero);
 }
 
 module.exports=DetectorAR;

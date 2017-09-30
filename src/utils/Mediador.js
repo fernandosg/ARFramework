@@ -46,6 +46,9 @@ Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callba
 		objeto_action=this.lista_eventos[evento][i];
 		var new_params=params_for_event_to_dispatch.slice();
 		new_params.push(objeto_action);
+		//console.dir(callback);
+		//console.dir(this.lista_eventos_a_disparar);
+		//console.dir(this.lista_eventos_a_disparar[objeto_action.get().id]);
 		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params),objeto_action);
 		//callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
 	}

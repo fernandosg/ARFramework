@@ -37,7 +37,7 @@ function ARWeb(configuration){//
   */
   this.planoEscena=new Escenario();
   this.realidadEscena=new EscenarioReal();
-  console.dir(this.planoEscena);
+  //console.dir(this.planoEscena);
   this.stages=[];
   this.refresh_object=[];
 }
@@ -358,6 +358,7 @@ ARWeb.prototype.removeWatch=function(action,object){
 * @param {Function} callback - Método que se ejcutará si la condición se cumple (la función agregada al método watch, usará params_for_event_to_dispatch y lo que retorne se enviara al callback definido aqui)
 */
 ARWeb.prototype.dispatch=function(action,params_for_event_to_dispatch,callback){
+  //console.dir(callback);
   this.mediador.comunicar(action,params_for_event_to_dispatch,callback,this.stages[0]);
 }
 
@@ -999,6 +1000,9 @@ Mediador.prototype.comunicar=function(evento,params_for_event_to_dispatch,callba
 		objeto_action=this.lista_eventos[evento][i];
 		var new_params=params_for_event_to_dispatch.slice();
 		new_params.push(objeto_action);
+		//console.dir(callback);
+		//console.dir(this.lista_eventos_a_disparar);
+		//console.dir(this.lista_eventos_a_disparar[objeto_action.get().id]);
 		callback.call(stage,this.lista_eventos_a_disparar[objeto_action.get().id].call(stage,new_params),objeto_action);
 		//callback.call(stage,objeto_action.dispatch(objeto),objeto_action);
 	}
@@ -1266,8 +1270,8 @@ DetectorAR.prototype.addMarker=function(marker){
 }
 
 DetectorAR.prototype.getMarker=function(markerId){
-  console.log("Buscando "+markerId);
-  console.dir(this.markers);
+  //console.log("Buscando "+markerId);
+  //console.dir(this.markers);
   return this.markers[markerId];
 }
 
@@ -1285,7 +1289,7 @@ DetectorAR.prototype.cleanMarkers=function(){
 
 DetectorAR.prototype.dispatchEventMarker=function(marker,ev,complete){
   if(marker!=null && marker.detected()!=undefined)
-  marker.detected().call(this.stage,marker.puntero);
+  marker.detected().call(this.ARWeb.stages[0],marker.puntero);
 }
 
 module.exports=DetectorAR;

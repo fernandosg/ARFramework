@@ -36,7 +36,7 @@ function ARWeb(configuration){//
   */
   this.planoEscena=new Escenario();
   this.realidadEscena=new EscenarioReal();
-  console.dir(this.planoEscena);
+  //console.dir(this.planoEscena);
   this.stages=[];
   this.refresh_object=[];
 }
@@ -357,6 +357,7 @@ ARWeb.prototype.removeWatch=function(action,object){
 * @param {Function} callback - Método que se ejcutará si la condición se cumple (la función agregada al método watch, usará params_for_event_to_dispatch y lo que retorne se enviara al callback definido aqui)
 */
 ARWeb.prototype.dispatch=function(action,params_for_event_to_dispatch,callback){
+  //console.dir(callback);
   this.mediador.comunicar(action,params_for_event_to_dispatch,callback,this.stages[0]);
 }
 
