@@ -52,6 +52,28 @@ ARWeb.prototype.getAnimation=function(){
   return this.animacion;
 }
 
+
+/**
+ * @function animar
+ * @memberof ARWeb
+ * @summary Retorna una instancia de Animacion.js
+ * @returns {Animacion}
+*/
+ARWeb.prototype.animar=function(){
+  return this.animacion;
+}
+
+
+/**
+ * @function definirUtilidadAnimacion
+ * @memberof ARWeb
+ * @summary Permite definir uan función personalizada que se encarge de realizar las animaciones
+ * @param {Object}
+*/
+ARWeb.prototype.definirUtilidadAnimacion=function(utilidad_animacion){
+  this.animacion=utilidad_animacion;
+}
+
 /**
  * @function addToScene
  * @memberof ARWeb
