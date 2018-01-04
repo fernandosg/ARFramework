@@ -22,6 +22,7 @@ function ARWeb(configuration){//
   this.position_util=new PositionUtil();
   this.configuration=configuration;
   this.mediador=new Mediador();
+  this.animacion=new Animacion();
   //this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
   //this.renderer=new THREE.WebGLRenderer();
   //this.renderer.autoClear = false;
