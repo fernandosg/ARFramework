@@ -18,6 +18,7 @@ function Elemento(width_canvas,height_canvas,geometry){
     this.callbacks=[];
     var PositionUtil=require("../utils/position_util.js");
     this.position_util=new PositionUtil();
+    this.sin_actualizar=false;
 }
 
 
@@ -221,6 +222,16 @@ Elemento.prototype.visible=function(){
     this.elemento_raiz.visible=true;
 }
 
+/**
+ * @function defineVisibilidad
+ * @memberof Elemento
+ * @summary Permite definir la visibilidad del elemento en escena. Si se define como falso (no es visible), aunque se agregue a escena no aparecera.
+ * @param {Boolean} visible - Un valor booleano indicando si es visible (true) o no (false) el elemento
+*/
+Elemento.prototype.defineVisibilidad=function(visible){
+  this.elemento_raiz.visible=visible;
+}
+
 
 Elemento.prototype.actualizar=function(){
     for(var i=0;i<this.elemento_raiz.children.length;i++){
@@ -280,9 +291,17 @@ Elemento.prototype.decrementGrados=function(){
 Elemento.prototype.turnState=function(){
     this.estado=(this.estado) ? false : true;
 }
-
-Elemento.prototype.setState=function(state){
+Elemento.prototype.setState=function(state,position=undefined){
   this.estado=state;
+  if(position && !this.sin_actualizar){
+    this.position(position);
+    this.sin_actualizar=true;
+    this.elemento_raiz.visible=true;
+  }
+  if(!this.estado && position==undefined){
+    this.sin_actualizar=false;
+    this.elemento_raiz.visible=false;
+  }
 }
 
 Elemento.prototype.getState=function(){//Checking if the object is visible or not
