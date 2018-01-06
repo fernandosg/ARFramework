@@ -106,7 +106,7 @@ function addingMarker(marker){
     markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
     marker.puntero.elemento_raiz=markerRoot;
-    this.markers[markerId]=new this.DetectorMarker(markerId,marker.callback,marker.puntero);
+    this.markers[marker.id]=new this.DetectorMarker(marker.id,marker.callback,marker.puntero);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
     //this.ARWeb
