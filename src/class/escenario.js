@@ -77,8 +77,8 @@ Escenario.prototype.update=function(renderer){
  * @memberof Escenario
  * @summary Limpia todos los elementos en la escena
 */
-Escenario.prototype.limpiar=function(){
-	while(this.escena.children.length>0)
-		this.escena.remove(this.escena.children[0]);
+Escenario.prototype.limpiar=function(){	
+	while(this.escena.scene.children.length>0)
+		this.escena.scene.remove(this.escena.scene.children[0]);
 }
 module.exports=Escenario;
