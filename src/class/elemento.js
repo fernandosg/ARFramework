@@ -217,6 +217,15 @@ Elemento.prototype.increase=function(pos){
     this.posiciones=this.elemento_raiz.position;
 }
 
+Elemento.prototype.decrease=function(pos){
+    for(var prop in pos){
+        this.elemento_raiz.position[prop]-=pos[prop]
+    }
+    this.x=pos.x;
+    this.y=pos.y;
+    this.posiciones=this.elemento_raiz.position;
+}
+
 
 Elemento.prototype.visible=function(){
     this.elemento_raiz.visible=true;
