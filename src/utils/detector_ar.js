@@ -49,12 +49,14 @@ function DetectorAR(domParent,ARWeb){
           //this.markers[ev.data.marker.id].puntero.get().matrixWorld.elements=ev.data.matrix;
           //var marker=ev.target.threePatternMarkers[ev.data.marker.id];
           //var markerId=ev.data.marker.id;
-          var marker=this.markers[ev.data.marker.id];
-          if(marker.hasAttachments()){
-              this.manageAttachmentEvent(marker,ev.data.marker.id,ev);
-          }else{
-          //console.log("Encontre este "+ev.data.marker.id);
-            this.dispatchEventMarker(marker,marker,ev);
+          if ( this.markers.hasOwnProperty(ev.data.marker.id) ) {
+            var marker=this.markers[ev.data.marker.id];
+            if(marker.hasAttachments()){
+                this.manageAttachmentEvent(marker,ev.data.marker.id,ev);
+            }else{
+            //console.log("Encontre este "+ev.data.marker.id);
+              this.dispatchEventMarker(marker,marker,ev);
+            }
           }
         }
       }.bind(this));
@@ -106,7 +108,7 @@ function addingMarker(marker){
     markerRoot.add(marker.puntero.get().children[0]);
     this.ARWeb.addMarkerToScene(markerRoot);
     marker.puntero.elemento_raiz=markerRoot;
-    this.markers[marker.id]=new this.DetectorMarker(marker.id,marker.callback,marker.puntero);
+    this.markers[markerId]=new this.DetectorMarker(marker.id,marker.callback,marker.puntero);
     //arScene.scene.add(markerRoot);
     //this.ARWeb.addToScene(puntero,markerRoot);
     //this.ARWeb
