@@ -1,50 +1,45 @@
-module.exports=function(width,height){
-	//var Labels=function(){
-		var canvas,context,material,textura,sprite,x_origen,y_origen;
-		function init(){
-			canvas=document.createElement("canvas");
-			canvas.width=width;
-			canvas.height=height;
-			context=canvas.getContext("2d");
-		}
-		var definir=function(parametros){
-			context.fillStyle=parametros.color;
-			context.textAlign=parametros.alineacion;
-			context.font=parametros.tipografia;	
-			x_origen=parametros.x;
-			y_origen=parametros.y;
-		}
+class Label{
+	constructor(){
 
-		var crear=function(texto){
-			context.fillText(texto,x_origen,y_origen);
-			textura = new THREE.Texture(canvas);
-			textura.minFilter = THREE.LinearFilter;
-			textura.magFilter = THREE.LinearFilter;
-		    textura.needsUpdate = true;
+	}
 
-		    var material = new THREE.SpriteMaterial({
-		        map: textura,
-		        transparent: false,
-		        useScreenCoordinates: false,
-		        color: 0xffffff // CHANGED
-		    });
+	init(){
+		this.canvas=document.createElement("canvas");
+		this.canvas.width=width;
+		this.canvas.height=height;
+		this.context=canvas.getContext("2d");
+	}
 
-		    sprite = new THREE.Sprite(material);
-		    sprite.scale.set(15,15, 1 ); // CHANGED
-		    return sprite;
-		}
+	definir(parametros){
+		this.context.fillStyle=parametros.color;
+		this.context.textAlign=parametros.alineacion;
+		this.context.font=parametros.tipografia;
+		this.x_origen=parametros.x;
+		this.y_origen=parametros.y;
+	}
 
-		var actualizar=function(texto){		
-			context.clearRect(0, 0, canvas.width, canvas.height);
-			context.fillText(texto,x_origen,y_origen);
-			textura.needsUpdate=true;
-		}
-		return{
-			init:init,
-			definir:definir,
-			crear:crear,
-			actualizar:actualizar
-		}
+	crear(texto){
+		this.context.fillText(texto,this.x_origen,this.y_origen);
+		this.textura = new THREE.Texture(this.canvas);
+		this.textura.minFilter = THREE.LinearFilter;
+		this.textura.magFilter = THREE.LinearFilter;
+		this.textura.needsUpdate = true;
 
-	//}
+		let material = new THREE.SpriteMaterial({
+			map: textura,
+			transparent: false,
+			useScreenCoordinates: false,
+			color: 0xffffff // CHANGED
+		});
+
+		this.sprite = new THREE.Sprite(material);
+		this.sprite.scale.set(15,15, 1 ); // CHANGED
+		return this.sprite;
+	}
+
+	actualizar(texto){
+		this.context.clearRect(0, 0, canvas.width, canvas.height);
+		this.context.fillText(this.texto,this.x_origen,this.y_origen);
+		this.textura.needsUpdate=true;
+	}
 }
