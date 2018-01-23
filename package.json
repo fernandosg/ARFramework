@@ -4,14 +4,18 @@
   "author": "Fernando Segura",
   "description": "JFramework for use the library JSArtoolkit, and apply concepts like collisions, and drawing elements in 2d and 3d with graphics engine like ThreeJS",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "browserify": "latest",
-    "grunt": "latest",
+    "grunt": "^1.0.1",
+    "grunt-babel": "^7.0.0",
     "grunt-browserify": "latest",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-uglify": "^2.3.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-jsdoc": "^2.1.0",
     "grunt-shell": "^1.1.2",
-    "jsdoc": "^3.4.3"
+    "jsdoc": "^3.4.3",
+    "load-grunt-tasks": "^3.5.2"
   }
 }

@@ -1,10 +1,22 @@
 module.exports = function (grunt) {
+  require('load-grunt-tasks');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     watch: {
       files: ['src/*.js',"src/class/*.js","src/utils/*.js"],
-      tasks: ['browserify']
+      tasks: ['babel']
     },
+    babel: {
+  		options: {
+  			sourceMap: true,
+  			presets: ['env']
+  		},
+  		dist: {
+  			files: {
+  				'dist/app.js': ['src/class/elemento.js']
+  			}
+  		}
+  	},
     browserify: {
       dist: {
         files: {
@@ -42,4 +54,5 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.registerTask("generating-doc",["jsdoc"])
   grunt.registerTask('default', ['watch']);
+  grunt.registerTask('babel-compile', ['babel']);
 };
