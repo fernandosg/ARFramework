@@ -10,7 +10,7 @@
  * @constructor
  * @param {Object} - Recibe un objeto con 2 propiedades, WIDTH: Ancho del canvas, HEIGHT: Alto del canvas
 */
-class ARWeb{
+
   import * as  Animacion from './utils/animacion.js';
   import * as  Escenario from "./class/escenario.js";
   import * as  WebcamStream from "./utils/webcamstream.js";
@@ -18,6 +18,7 @@ class ARWeb{
   import * as  Mediador from "./utils/Mediador.js";
   import * as  PositionUtil from "./utils/position_util.js";
   import * as Elemento from "./class/elemento.js";
+export default class ARWeb{
   constructor(configuration){
     this.configuration=configuration;
     this.mediador=new Mediador();
@@ -305,7 +306,7 @@ class ARWeb{
   * @memberof ARWeb
   * @summary Finaliza el nivel actual.
   */
-  finishStage=function(){
+  finishStage(){
     this.clean();
     this.stages.shift();
     if(this.stages.length>0)

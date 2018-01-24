@@ -10,8 +10,8 @@
 * @constructor
 * @param {Canvas} WIDTH - Recibe el elemento canvas el cual se obtendra la información para detectar el marcador
 */
+import * as  DetectorMarker from "./detectormarker.js";
 class DetectorAR{
-  import * as  DetectorAR from "./detectormarker.js";// including
   constructor(canvas_element){
     this.canvas_element=canvas_element;
     this.threshold=120;
@@ -192,8 +192,9 @@ class DetectorAR{
     */
     attach(markers_to_attach){
       let marker_list=Object.keys(markers);
+      let rootMarker;
       if(marker_list.length>0)
-      let rootMarker=this.markers[marker_list.pop()];
+        rootMarker=this.markers[marker_list.pop()];
       this.markers_attach[rootMarker.id]=0;
       for(let i=0,length=markers_to_attach.length;i<length;i++){
         addMarker(markers_to_attach[i]);

@@ -11,8 +11,8 @@
   * @param {integer} height_canvas - El alto del canvas que se agrego al documento HTML
   * @param {THREE.Geometry} geometry - Instancia de una geometria para el objeto generado.
  */
+import * as  PositionUtil from "../utils/position_util.js";
 class Elemento{
-  import * as  PositionUtil from "../utils/position_util.js";
   constructor(width_canvas,height_canvas,geometry){
     this.width=width_canvas;
     this.height=height_canvas;
@@ -281,3 +281,4 @@ class Elemento{
   igualA(objeto){
       return this.elemento_raiz.id==objeto.get().id;
   }
+}

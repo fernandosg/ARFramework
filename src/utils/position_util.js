@@ -9,7 +9,7 @@
 * @constructor
 * @param {Object} config - Recibe un objeto con 1 propiedad, llamada DISTANCE. Esta propiedad identifica la distancia mìnima para que se identifíque como "colisión"
 */
-class PositionUtil(config){
+class PositionUtil{
 
 	constructor(config){
 		this.DISTANCE=(config && config.DISTANCE) || 60;
