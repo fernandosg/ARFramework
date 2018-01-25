@@ -9,4 +9,4 @@ https://github.com/fernandosg/ARWeb/archive/v1.0.0-alpha.zip
 
 ## License
 
-LGPLv3.
+MIT.
