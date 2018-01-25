@@ -28,4 +28,5 @@ WebcamStream.prototype.getCanvas=function(){
 	return this.canvas;
 }
 
-module.exports=WebcamStream;
+//module.exports=WebcamStream;
+export { WebcamStream as default}

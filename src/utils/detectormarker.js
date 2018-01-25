@@ -24,3 +24,4 @@ class DetectorMarker{
 		return this.attached_id;
 	}
 }
+export { DetectorMarker as default}

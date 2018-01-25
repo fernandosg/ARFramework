@@ -10,7 +10,7 @@
 * @constructor
 * @param {Canvas} WIDTH - Recibe el elemento canvas el cual se obtendra la información para detectar el marcador
 */
-import * as  DetectorMarker from "./detectormarker.js";
+import DetectorMarker from "./detectormarker.js";
 class DetectorAR{
   constructor(canvas_element){
     this.canvas_element=canvas_element;
@@ -242,3 +242,4 @@ class DetectorAR{
       this.threshold=threshold_nuevo;
     }
 }
+export { DetectorAR as default}

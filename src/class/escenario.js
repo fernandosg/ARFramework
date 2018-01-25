@@ -68,3 +68,4 @@ class Escenario{
 			this.escena.remove(this.escena.children[0]);
 	}
 }
+export { Escenario as default}

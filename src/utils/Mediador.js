@@ -82,3 +82,4 @@ class Mediador{
 		this.lista_eventos[evento].splice(this.lista_eventos[evento].indexOf(objeto),1);
 	}
 }
+export { Mediador as default}

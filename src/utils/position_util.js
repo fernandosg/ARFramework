@@ -83,3 +83,4 @@ class PositionUtil{
 		return new PositionUtil(config);
 	}
 }
+export { PositionUtil as default}

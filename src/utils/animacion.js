@@ -63,3 +63,4 @@ class Animacion{
 	    }
 	}
 }
+export { Animacion as default}

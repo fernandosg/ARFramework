@@ -8,17 +8,17 @@
  * Clase ARWeb
  * @class ARWeb
  * @constructor
- * @param {Object} - Recibe un objeto con 2 propiedades, WIDTH: Ancho del canvas, HEIGHT: Alto del canvas
+ * @param {Object} - Recibe un objeto con 2 propiedades, WIDTH: Ancho del canvas, HEIGHT: Alto del canvas.
 */
 
-  import * as  Animacion from './utils/animacion.js';
-  import * as  Escenario from "./class/escenario.js";
-  import * as  WebcamStream from "./utils/webcamstream.js";
-  import * as  DetectorAR from "./utils/detector_ar";
-  import * as  Mediador from "./utils/Mediador.js";
-  import * as  PositionUtil from "./utils/position_util.js";
-  import * as Elemento from "./class/elemento.js";
-export default class ARWeb{
+  import Animacion from './utils/animacion.js';
+  import Escenario from "./class/escenario.js";
+  import WebcamStream from "./utils/webcamstream.js";
+  import DetectorAR from "./utils/detector_ar";
+  import Mediador from "./utils/Mediador.js";
+  import PositionUtil from "./utils/position_util.js";
+  import Elemento from "./class/elemento.js";
+class ARWeb{
   constructor(configuration){
     this.configuration=configuration;
     this.mediador=new Mediador();

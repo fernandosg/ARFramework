@@ -43,3 +43,4 @@ class Label{
 		this.textura.needsUpdate=true;
 	}
 }
+export { Label as default}
