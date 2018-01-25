@@ -29,7 +29,7 @@ class ARWeb{
     this.renderer.setSize(configuration.WIDTH,configuration.HEIGHT);
     //Should be use "ra" in the example of Memorama
     document.getElementById(configuration.canvas_id).appendChild(this.renderer.domElement);
-    this.detector_ar=DetectorAR(this.webcam.getCanvas());
+    this.detector_ar=new DetectorAR(this.webcam.getCanvas());
     this.detector_ar.init();
     this.animacion=new Animacion();
     this.planoEscena=new Escenario();

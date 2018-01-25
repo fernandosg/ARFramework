@@ -24,11 +24,11 @@ class DetectorAR{
 
   init(){
     this.JSARRaster = new NyARRgbRaster_Canvas2D(this.canvas_element);
-    this.JSARParameters = new FLARParam(canvas_element.width, canvas_element.height);
+    this.JSARParameters = new FLARParam(this.canvas_element.width, this.canvas_element.height);
     this.detector = new FLARMultiIdMarkerDetector(this.JSARParameters, 40);
-    let result = new Float32Array(16);
+    this.result = new Float32Array(16);
     this.detector.setContinueMode(true);
-    this.JSARParameters.copyCameraMatrix(result, .1, 2000);
+    this.JSARParameters.copyCameraMatrix(this.result, .1, 2000);
     THREE.Matrix4.prototype.setFromArray = function(m) {
       return this.set(
         m[0], m[4], m[8], m[12],
