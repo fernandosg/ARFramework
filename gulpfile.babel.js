@@ -1,30 +1,33 @@
+var babelify = require('babelify');
 var browserify = require('browserify');
-var gulp = require('gulp');
-
-var babelify=require('babelify');
-var sourcemaps=require('gulp-sourcemaps');
-
-var watch=require('gulp-watch');
-require('gulp-watch');
-require('gulp-sourcemaps');
-var source = require('vinyl-source-stream');
+var gulp=require("gulp");
 var buffer = require('vinyl-buffer');
-gulp.task('scripts', () =>
-  browserify('./src/arweb.js')
-    .transform(babelify,{global:true,"presets": ["es2015"]})
-    .bundle()
-    .on('error', function(err){
-      console.error(err);
-      this.emit('end')
-    })
-    .pipe(source('src/'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./dist/'))
-);
+var source = require('vinyl-source-stream');
+var sourcemaps = require('gulp-sourcemaps');
+var order = require("gulp-order");
+var watch=require('gulp-watch');
+// var uglify = require('gulp-uglify');
+
+gulp.task('scripts', function () {
+    var bundler = browserify({
+        entries: 'src/arweb.js',
+        debug: true
+    });
+    bundler.transform(babelify,{global:true,"presets": ["es2015"]});
+
+    bundler.bundle()
+        .on('error', function (err) { console.error(err); })
+        .pipe(source('arweb.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(sourcemaps.write('.'))
+        .pipe(order([
+          "/src/arweb.js",
+          "/src/**/*.js"
+        ]))
+        .pipe(gulp.dest('dist'));
+});
 
 gulp.task('default', ['scripts'], () => {
-  watch('./src/arweb.js', () => gulp.start('scripts') );
-  watch('./src/**/*.js', () => gulp.start('scripts') );
+  watch(['./src/arweb.js','./src/class/*.js','./src/utils/*.js'], () => gulp.start('scripts') );
 });
