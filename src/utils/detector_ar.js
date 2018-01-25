@@ -211,7 +211,7 @@ class DetectorAR{
     addMarker(marker){
       this.markers[marker.id]=new DetectorMarker(marker.id,marker.callback,marker.puntero);
       this.lastMarker=this.markers[marker.id];
-      return markers[marker.id];
+      return this.markers[marker.id];
     }
 
     getLastMarker(){

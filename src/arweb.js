@@ -24,6 +24,7 @@ class ARWeb{
     this.mediador=new Mediador();
     this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
     this.renderer=new THREE.WebGLRenderer();
+    this.position_util=new PositionUtil();
     this.renderer.autoClear = false;
     this.objetos=[]
     this.renderer.setSize(configuration.WIDTH,configuration.HEIGHT);
@@ -165,7 +166,7 @@ class ARWeb{
   * 3) puntero (THREE.Object3D - es el objeto el cual tendra la posicion del marcador detectado)
   */
   addMarker(marcador){
-    this.detector_ar.addMarker.call(this,marcador);
+    this.detector_ar.addMarker(marcador);
     if(marcador.puntero!=undefined)
     this.realidadEscena.anadir(marcador.puntero);
     return this;
