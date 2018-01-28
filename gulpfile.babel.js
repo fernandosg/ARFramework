@@ -7,6 +7,28 @@ var sourcemaps = require('gulp-sourcemaps');
 var order = require("gulp-order");
 var watch=require('gulp-watch');
 // var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+
+gulp.task('bundle', function() {
+  return gulp.src(['./dist/js/arweb.js','./dist/js/libs/webcam.js'])
+    .pipe(concat('bundle.js'))
+    .pipe(gulp.dest('./dist/'));
+});
+
+var minify = require('gulp-minify');
+
+gulp.task('build', function() {
+  gulp.src('dist/bundle.js')
+    .pipe(minify({
+        ext:{
+            src:'-debug.js',
+            min:'.min.js'
+        },
+        exclude: ['tasks'],
+        ignoreFiles: []
+    }))
+    .pipe(gulp.dest('dist'))
+});
 
 gulp.task('scripts', function () {
     var bundler = browserify({
