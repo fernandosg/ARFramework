@@ -66,7 +66,7 @@ class Mediador{
 		if(pos==-1) return;
 		var new_params=params_for_event_to_dispatch.slice();
 		new_params.push(objeto);
-		callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id].call(this,new_params),objeto);
+		callback(this.lista_eventos_a_disparar[this.lista_eventos[evento][pos].get().id](new_params),objeto);
 		//callback(this.lista_eventos[evento][pos].dispatch(compara),extras);
 	}
 

@@ -116,7 +116,7 @@ class DetectorAR{
       let matriz_encontrada;
       for(let i=0;i<markerCount;i++){
         if(i==pos){
-          matriz_encontrada=getTransformMatrix(i);
+          matriz_encontrada=this.getTransformMatrix(i);
           break;
         }
       }
@@ -144,40 +144,40 @@ class DetectorAR{
       let marker;
       if(markerCount>0){
         for(let i=0,marcador_id=-1;i<markerCount;i++){
-          let marcador_id=getMarkerNumber(i);
+          let marcador_id=this.getMarkerNumber(i);
           if(this.markers[marcador_id]!=undefined){
             if(this.markers[marcador_id].puntero!=undefined){
-              this.markers[marcador_id].puntero.transformFromArray(obtenerMarcador(markerCount,i));
+              this.markers[marcador_id].puntero.transformFromArray(this.obtenerMarcador(markerCount,i));
               this.markers[marcador_id].puntero.matrixWorldNeedsUpdate=true;
             }
             if(!this.markers[marcador_id].hasAttachments()){
               if(this.markers[marcador_id].callback!=undefined)
                 this.markers[marcador_id].detected().call(stage,this.markers[marcador_id].puntero);
             }else{
-              if(list_marker_id_with_attachment.indexOf(marcador_id)==-1)
-                list_marker_id_with_attachment.push(marcador_id)
+              if(this.list_marker_id_with_attachment.indexOf(marcador_id)==-1)
+                this.list_marker_id_with_attachment.push(marcador_id)
             }
-            if(list_marker_id_detected.indexOf(marcador_id)==-1)
-              list_marker_id_detected.push(marcador_id)
+            if(this.list_marker_id_detected.indexOf(marcador_id)==-1)
+              this.list_marker_id_detected.push(marcador_id)
           }
         }
-        if(!in_process_detect && list_marker_id_with_attachment.length>0)
+        if(!this.in_process_detect && this.list_marker_id_with_attachment.length>0)
           setTimeout(function(){
-            in_process_detect=true;
-            if(list_marker_id_with_attachment.length>0){
-              for(let i=0,total_attachments=[],count_attachments=0,length=list_marker_id_with_attachment.length;i<length;i++,count_attachments=0){
-                total_attachments=this.markers[list_marker_id_with_attachment[i]].getAttachmentsId();
+            this.in_process_detect=true;
+            if(this.list_marker_id_with_attachment.length>0){
+              for(let i=0,total_attachments=[],count_attachments=0,length=this.list_marker_id_with_attachment.length;i<length;i++,count_attachments=0){
+                total_attachments=this.markers[this.list_marker_id_with_attachment[i]].getAttachmentsId();
                 total_attachments.forEach(function(attached_id){
-                  if(list_marker_id_detected.indexOf(attached_id)>-1)
+                  if(this.list_marker_id_detected.indexOf(attached_id)>-1)
                     count_attachments++;
                 });
                 if(total_attachments.length==count_attachments)
-                  this.markers[list_marker_id_with_attachment[i]].detected().call(stage,this.markers[list_marker_id_with_attachment[i]].puntero);
+                  this.markers[this.list_marker_id_with_attachment[i]].detected().call(stage,this.markers[this.list_marker_id_with_attachment[i]].puntero);
               }
             }
-            list_marker_id_with_attachment.length=0;
-            list_marker_id_detected.length=0;
-            in_process_detect=false;
+            this.list_marker_id_with_attachment.length=0;
+            this.list_marker_id_detected.length=0;
+            this.in_process_detect=false;
           },350);
         return true;
       }
