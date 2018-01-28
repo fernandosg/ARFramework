@@ -165,7 +165,7 @@ class Elemento{
   scale(x,y){
       this.elemento_raiz.scale.x=x;
       this.elemento_raiz.scale.y=y;
-      actualizarMedidas();
+      //actualizarMedidas();
   }
 
   /**
@@ -275,7 +275,7 @@ class Elemento{
   }
 
   esParDe(objeto){
-      return getNombre()==objeto.getNombre() && this.elemento_raiz.id!=objeto.get().id;
+      return this.getNombre()==objeto.getNombre() && this.elemento_raiz.id!=objeto.get().id;
   }
 
   igualA(objeto){
