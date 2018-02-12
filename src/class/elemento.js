@@ -89,6 +89,74 @@ class Elemento{
   }
 
   /**
+   * @function changeMaterial
+   * @memberof Elemento
+   * @summary Permite cambiar el material del objeto
+   * @param {Object} configuration - Objeto con 2 propiedades, 1) properties, 2) callback.
+   * 1) properties.- Un objeto con 2 propiedades, puede ser: 1) Color.- Un color en hexadecimal. 2) Imagen.- La ruta absoluta de un recurso gráfico (imagen) a utilizar. Estas dos propiedades se usarán para crear una textura a usar en el material.
+   * 2) callback.- En esta propiedad se define una función usada como callback, una vez que se genero la textura (si es que el objeto configuration se le definió una propiedad "properties"), se le pasará como parámetro a esta función.
+   * Dentro del callback se podrá definir que tipo de material se desea crear, retornando la instancia de Material en la función.
+   * Si no se definió un valor de retorno, se mantendrá el material definido en el objeto.
+  */
+  changeMaterial(configuration){
+    var material;
+    if(configuration.hasOwnProperty("properties")){
+      if(configuration["properties"].hasOwnProperty("imagen")){
+        this.textureLoader.load(configuration["properties"]["imagen"],function(textura){
+          configuration["imagen"]=textura;
+          if(configuration.hasOwnProperty("callback"))
+            material=configuration["callback"](configuration["properties"]);
+        })
+      }else if(configuration["properties"].hasOwnProperty("color")){
+        if(configuration.hasOwnProperty("callback"))
+          material=configuration["callback"](configuration["properties"]);
+      }
+    }else{
+      if(configuration.hasOwnProperty("callback"))
+        material=configuration["callback"](configuration["properties"]);
+    }
+    if(material!=undefined && (material instanceof THREE.Material)){
+      if(this.elemento_raiz.children>1)
+        removeMultipleChildrens(1);
+      this.mesh.material=material;
+      this.mesh.material.needsUpdate=true;
+    }
+    return this;
+  }
+
+
+  /**
+   * @function changeGeometry
+   * @memberof Elemento
+   * @summary Permite cambiar la geometria del objeto
+   * @param {Object} callback.- Dentro del callback se podrá definir que tipo de geometria se desea crear, retornando la instancia de THREE.Geometry en la función.
+   * Si no se definió un valor de retorno, se mantendrá la geometria definido en el objeto.
+  */
+  changeGeometry(callback=null){
+    if(callback==null)
+      return this;
+    var new_geometry=callback();
+    if(new_geometry instanceof THREE.Geometry){
+      this.removeMultipleChildrens(0);
+      this.mesh=new THREE.Mesh(new_geometry,this.mesh.material);
+      this.elemento_raiz.add(this.mesh);
+    }
+    return this;
+  }
+
+  /**
+  * @function removeMultipleChildrens
+  * @memberof Elemento
+  * @summary Permite eliminar todos los hijos del elemento raiz (instancia de THREE.Object3D que se usa como agrupador).
+  * @param {Integer} startPosition - Valor entero para indicar a partir de que hijo se desea eliminar. Por default es 0, pero su uso es para prevenir a partir de que hijo se desea eliminar
+  */
+  removeMultipleChildrens(startPosition=0){
+    for(var i=startPosition,length=this.elemento_raiz.children.length;i<length;i++){
+      this.elemento_raiz.remove(this.elemento_raiz.children[i]);
+    }
+  }
+
+  /**
    * @function actualizarMaterialAtras
    * @memberof Elemento
    * @summary Permite definir la superficie trasera del objeto.
