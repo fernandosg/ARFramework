@@ -13,7 +13,7 @@ Animacion.prototype.showAndHide=function(object){
 		this.showIn(object);
 		window.requestAnimationFrame(function(){
 					this.showAndHide(object);
-				}.bind(this));				
+				}.bind(this));
 		object.setState(true);
 	}else if(object.getState()){
 		setTimeout(function(){
@@ -87,4 +87,4 @@ Animacion.prototype.ocultar=function(objeto){
         objeto.decrementGrados();
     }
 }
-module.exports=Animacion;
+export { Animacion as default}
