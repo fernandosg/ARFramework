@@ -10,12 +10,6 @@
 * @param {Object} config - Recibe un objeto con 1 propiedad, llamada DISTANCE. Esta propiedad identifica la distancia mìnima para que se identifíque como "colisión"
 */
 function PositionUtil(config){
-/*
-	var width=config.WIDTH;
-	var height=config.HEIGHT;
-	var escena=config.SCENE;
-	var distancia=config.DISTANCE;
-*/
 	var DISTANCE=(config && config.DISTANCE) || 60;
 	var obtenerPosicionPantalla=function(obj){
 		var vector = new THREE.Vector3();

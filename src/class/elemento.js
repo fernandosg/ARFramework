@@ -334,7 +334,7 @@ class Elemento{
     this.estado=state;
   }
 
-  getState(){//Checking if the object is visible or not
+  getState(){
     return this.estado;
   }
 
