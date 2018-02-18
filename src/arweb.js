@@ -13,7 +13,6 @@
 
   import Animacion from './utils/animacion.js';
   import Escenario from "./class/escenario.js";
-  import WebcamStream from "./utils/webcamstream.js";
   import DetectorAR from "./utils/detector_ar";
   import Mediador from "./utils/Mediador.js";
   import PositionUtil from "./utils/position_util.js";
@@ -22,7 +21,6 @@ class ARWeb{
   constructor(configuration){
     this.configuration=configuration;
     this.mediador=new Mediador();
-    this.webcam=new WebcamStream({"WIDTH":configuration.WIDTH,"HEIGHT":configuration.HEIGHT});
     this.renderer=new THREE.WebGLRenderer();
     this.position_util=new PositionUtil();
     this.renderer.autoClear = false;
@@ -30,12 +28,9 @@ class ARWeb{
     this.renderer.setSize(configuration.WIDTH,configuration.HEIGHT);
     //Should be use "ra" in the example of Memorama
     document.getElementById(configuration.canvas_id).appendChild(this.renderer.domElement);
-    this.detector_ar=new DetectorAR(this.webcam.getCanvas());
-    this.detector_ar.init();
     this.animacion=new Animacion();
     this.planoEscena=new Escenario();
     this.realidadEscena=new Escenario();
-    this.videoEscena=new Escenario();
     this.stages=[];
     this.refresh_object=[];
   }
@@ -119,10 +114,9 @@ class ARWeb{
       this.camara.updateProjectionMatrix();
     });
     this.cantidad_cartas=4;
-    this.realidadEscena.initCamara();
-    this.videoEscena.initCamara();
-    this.videoEscena.anadir(this.webcam.getElemento());
-    this.detector_ar.setCameraMatrix(this.realidadEscena.getCamara());
+    this.realidadEscena.initCamara(); //test
+    this.detector_ar=new DetectorAR(this.realidadEscena.getCamara(),this.renderer);
+    this.detector_ar.init();
   }
 
   /**
@@ -168,7 +162,7 @@ class ARWeb{
   addMarker(marcador){
     this.detector_ar.addMarker(marcador);
     if(marcador.puntero!=undefined)
-    this.realidadEscena.anadir(marcador.puntero);
+    this.realidadEscena.anadir(marcador.puntero.get());
     return this;
   }
 
@@ -207,12 +201,9 @@ class ARWeb{
   */
   loop(){
     this.renderer.clear();
-    this.videoEscena.update.call(this,this.videoEscena);
     this.planoEscena.update.call(this,this.planoEscena);
     this.realidadEscena.update.call(this,this.realidadEscena);
-    this.webcam.update();
-    if(this.detecting_marker)
-    this.detector_ar.detectMarker(this.stages[0]);
+    this.detector_ar.loop();
     for(var i=0;i<this.objetos.length;i++)
       if(this.refresh_object[i]==true)
         this.objetos[i].actualizar();
