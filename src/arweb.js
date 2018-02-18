@@ -21,7 +21,11 @@ class ARWeb{
   constructor(configuration){
     this.configuration=configuration;
     this.mediador=new Mediador();
-    this.renderer=new THREE.WebGLRenderer();
+    this.renderer	= new THREE.WebGLRenderer({
+  		// antialias	: true,
+  		alpha: true
+  	});
+  	this.renderer.setClearColor(new THREE.Color('lightgrey'), 0)
     this.position_util=new PositionUtil();
     this.renderer.autoClear = false;
     this.objetos=[]
