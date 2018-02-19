@@ -1,11 +1,11 @@
 function Animacion(){
 	this.easein_configuration={
-		limit_z:-800,
-		limit_z_out:-2500
+		limit_z:-3,
+		limit_z_out:-26
 	}
-}
+}//
 Animacion.prototype.showIn=function(object){
-		object.get().position.z+=100
+		object.get().position.z+=1
 }
 
 Animacion.prototype.showAndHide=function(object){
@@ -24,7 +24,7 @@ Animacion.prototype.showAndHide=function(object){
 
 Animacion.prototype.hideOut=function(object){
 	if(object.get().position.z>this.easein_configuration.limit_z_out){
-		object.get().position.z-=100;
+		object.get().position.z-=1;
 		window.requestAnimationFrame(function(){
 					this.hideOut(object)
 				}.bind(this));

@@ -114,7 +114,7 @@ class ARWeb{
     this.planoEscena.initCamara(function(){
       this.camara=new THREE.PerspectiveCamera();
       this.camara.near=0.1;
-      this.camara.far=2000;
+      this.camara.far=25;
       this.camara.updateProjectionMatrix();
     });
     this.cantidad_cartas=4;
@@ -151,6 +151,7 @@ class ARWeb{
   */
   start(){
     this.stages[0].start();
+    this.detector_ar.setStage(this.stages[0]);
     this.loop();
   }
 
@@ -305,7 +306,9 @@ class ARWeb{
   finishStage(){
     this.clean();
     this.stages.shift();
-    if(this.stages.length>0)
+    if(this.stages.length>0){
       this.stages[0].start();
+      this.detector_ar.setStage(this.stages[0]);
+    }
   }
 }
