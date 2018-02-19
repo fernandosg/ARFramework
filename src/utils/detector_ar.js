@@ -100,7 +100,7 @@ class DetectorAR{
       this.markers_with_attachment[marker.id]=[];
     }
     for(let i=0,length=marker.attached_id.length;i<length;i++){
-      if(this.markers_with_attachment[marker.id].indexOf(marker.attached_id[i]))
+      if(this.markers_with_attachment[marker.id].indexOf(marker.attached_id[i])==-1)
         this.markers_with_attachment[marker.id].push(marker.attached_id[i]);
     }
     setTimeout(function(marker){
@@ -109,11 +109,13 @@ class DetectorAR{
       let counter_detected=0;
       for(let i=0,length=this.markers_with_attachment[marker.id].length;i<length;i++){
         if(this.markers_detected.indexOf(this.markers_with_attachment[marker.id][i])>-1)
-          counter_detected;
+          counter_detected++;
       }
-      if(counter_detected==this.this.markers_with_attachment[marker.id].length){
+      if(counter_detected==this.markers_with_attachment[marker.id].length){
+        this.markers[marker.id].callback.call(this.stage,this.markers[marker.id].puntero);
         for(let i=0,length=this.markers_with_attachment[marker.id].length;i<length;i++){
-            this.markers[this.markers_with_attachment[marker.id][i]].callback.call(this.stage,this.markers.puntero);
+            if(this.markers_with_attachment[marker.id][i].callback!=undefined)
+              this.markers_with_attachment[marker.id][i].callback.call(this.stage,this.markers_with_attachment[marker.id][i].puntero);
             this.markers_detected.splice(this.markers_detected.indexOf(this.markers_with_attachment[marker.id][i]),1);
         }
         this.markers_with_attachment[marker.id]=[];
@@ -140,10 +142,11 @@ class DetectorAR{
       let marker_obj=this.markers[marker.id];
       markerControl.addEventListener('markerFound', function(marker_obj,event){
         if(!marker_obj.hasAttachments()){
-          if(this.isNotAChildMarker(marker.id)){
+          if(this.isNotAChildMarker(marker.id) && marker_obj.callback!=undefined){
             marker_obj.callback.call(this.stage,marker_obj.puntero);
           }else{
-            this.markers_detected.push(marker.id);
+            if(this.markers_detected.indexOf(marker.id)==-1)
+              this.markers_detected.push(marker.id);
           }
         }else
           this.checkingAttachmentRelation(marker_obj);
