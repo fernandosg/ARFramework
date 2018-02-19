@@ -55,6 +55,9 @@ class DetectorAR{
     }.bind(this))
   }
 
+  setStage(stage){
+    this.stage=stage;
+  }
   loop(){
     if( this.arToolkitSource.ready === false )	return
 
@@ -86,10 +89,10 @@ class DetectorAR{
   isNotAChildMarker(marker_id){
     for(let i=0,keys_arr=Object.keys(this.markers_with_attachment),length=keys_arr.length;i<length;i++){
       if(this.markers_with_attachment[keys_arr[i]].indexOf(marker_id)>-1){
-        return true;
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   checkingAttachmentRelation(marker){
@@ -110,7 +113,7 @@ class DetectorAR{
       }
       if(counter_detected==this.this.markers_with_attachment[marker.id].length){
         for(let i=0,length=this.markers_with_attachment[marker.id].length;i<length;i++){
-            this.markers[this.markers_with_attachment[marker.id][i]].callback(this.markers.puntero);
+            this.markers[this.markers_with_attachment[marker.id][i]].callback.call(this.stage,this.markers.puntero);
             this.markers_detected.splice(this.markers_detected.indexOf(this.markers_with_attachment[marker.id][i]),1);
         }
         this.markers_with_attachment[marker.id]=[];
@@ -138,7 +141,7 @@ class DetectorAR{
       markerControl.addEventListener('markerFound', function(marker_obj,event){
         if(!marker_obj.hasAttachments()){
           if(this.isNotAChildMarker(marker.id)){
-            marker_obj.callback(marker_obj.puntero);
+            marker_obj.callback.call(this.stage,marker_obj.puntero);
           }else{
             this.markers_detected.push(marker.id);
           }
