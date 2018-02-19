@@ -275,6 +275,11 @@ class Elemento{
       this.elemento_raiz.visible=true;
   }
 
+  visibility(visible){
+    this.elemento_raiz.visible=visible;
+  }
+
+
   actualizar(){
       for(let i=0;i<this.elemento_raiz.children.length;i++){
           if(this.elemento_raiz.children[i].material.map)
