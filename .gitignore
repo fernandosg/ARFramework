@@ -6,6 +6,5 @@ apuntes.txt
 example/
 dist/arweb.js.map
 dist/arweb.js
-dist/bundle.min.js
 dist/bundle.js
 dist/bundle-debug.js
